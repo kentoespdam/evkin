@@ -1,12 +1,13 @@
 import { usePaginationHandler } from "@/hooks/use-pagination";
-import { Pagination } from "@/types";
+import { Pagination, PaginationMeta, PaginationMetaLink } from "@/types";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
   ChevronsLeftIcon,
   ChevronsRightIcon,
+  type LucideIcon,
 } from "lucide-react";
-import { memo, useCallback, useMemo } from "react";
+import { memo } from "react";
 import { Button } from "./ui/button";
 import { ButtonGroup } from "./ui/button-group";
 import {
@@ -21,133 +22,157 @@ interface PaginationNavProps {
   page: Pagination<unknown>;
 }
 
-interface NavButtonProps extends PaginationNavProps {
-  type: "first" | "prev" | "next" | "last";
+type NavType = "first" | "prev" | "next" | "last";
+
+interface PaginationHandlerResult {
+  meta: PaginationMeta;
+  handleSelectChange: (value: { per_page?: string; page?: string }) => void;
+  items: PaginationMetaLink[];
+  selected: PaginationMetaLink | undefined;
 }
 
-const iconMap = {
+interface NavButtonProps {
+  type: NavType;
+  meta: PaginationMeta;
+  handleSelectChange: PaginationHandlerResult["handleSelectChange"];
+}
+
+const iconMap: Record<NavType, LucideIcon> = {
   first: ChevronsLeftIcon,
   prev: ArrowLeftIcon,
   next: ArrowRightIcon,
   last: ChevronsRightIcon,
 };
 
-const NavButton = memo(({ page, type }: NavButtonProps) => {
-  const { handleSelectChange, getPageNumber } = usePaginationHandler(page);
-  const linkMap = {
-    first: page.first_page_url,
-    prev: page.prev_page_url,
-    next: page.next_page_url,
-    last: page.last_page_url,
+const NavButton = memo(({ type, meta, handleSelectChange }: NavButtonProps) => {
+  const pageMap: Record<NavType, number | null> = {
+    first: meta.current_page > 1 ? 1 : null,
+    prev: meta.current_page > 1 ? meta.current_page - 1 : null,
+    next: meta.current_page < meta.last_page ? meta.current_page + 1 : null,
+    last: meta.current_page < meta.last_page ? meta.last_page : null,
   };
 
-  // Hide first/prev when on first page, hide next/last when on last page
-  if (type === "first" && page.current_page <= 1) return null;
-  if (type === "last" && page.current_page >= page.last_page) return null;
+  const targetPage = pageMap[type];
+  if (!targetPage) return null;
 
-  const link = linkMap[type];
   const Icon = iconMap[type];
 
-  const onChange = (url: string) => {
-    const pageNum = getPageNumber(url);
-    if (pageNum) {
-      handleSelectChange({ page: pageNum });
-    }
-  };
-  return link ? (
+  return (
     <ButtonGroup>
-      <Button variant="outline" size="icon" onClick={() => onChange(link)}>
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={() => handleSelectChange({ page: targetPage.toString() })}
+      >
         <Icon className="h-4 w-4" />
       </Button>
     </ButtonGroup>
-  ) : null;
+  );
 });
 NavButton.displayName = "NavButton";
 
-const TotalPage = memo(({ page }: { page: Pagination<unknown> }) => {
-  return (
-    <span className="text-sm font-medium text-muted-foreground">
-      {page.from} - {page.to} of {page.total}
-    </span>
-  );
-});
+interface TotalPageProps {
+  meta: PaginationMeta;
+}
+
+const TotalPage = memo(({ meta }: TotalPageProps) => (
+  <span className="text-sm font-medium text-muted-foreground">
+    {meta.from} - {meta.to} of {meta.total}
+  </span>
+));
 TotalPage.displayName = "TotalPage";
 
-const pageSizeList = [2, 10, 25, 50, 100];
-const PageSize = memo(({ page, params }: PaginationNavProps) => {
-  const { handleSelectChange } = usePaginationHandler(page, params);
-  const onChange = (value: string) => {
-    handleSelectChange({ per_page: value });
-  };
-  return (
-    <span className="flex items-center gap-2">
-      <span className="text-sm font-medium text-muted-foreground mr-2">
-        Size:
-      </span>
-      <Select
-        defaultValue={page.per_page.toString()}
-        onValueChange={onChange}
-        value={page.per_page.toString()}
-      >
-        <SelectTrigger>
-          <SelectValue placeholder="Size" />
-        </SelectTrigger>
-        <SelectContent>
-          {pageSizeList.map((size) => (
-            <SelectItem key={size} value={size.toString()}>
-              {size}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </span>
-  );
-});
+const pageSizeList = [1, 2, 10, 25, 50, 100];
+
+interface PageSizeProps {
+  meta: PaginationMeta;
+  handleSelectChange: PaginationHandlerResult["handleSelectChange"];
+}
+
+const PageSize = memo(({ meta, handleSelectChange }: PageSizeProps) => (
+  <span className="flex items-center gap-2">
+    <span className="text-sm font-medium text-muted-foreground">Size:</span>
+    <Select
+      value={meta.per_page.toString()}
+      onValueChange={(value) => handleSelectChange({ per_page: value })}
+    >
+      <SelectTrigger className="w-20">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {pageSizeList.map((size) => (
+          <SelectItem key={size} value={size.toString()}>
+            {size}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  </span>
+));
 PageSize.displayName = "PageSize";
 
-const PageList = memo(({ page, params }: PaginationNavProps) => {
-  const { items, selected, handleSelectChange, getPageNumber } =
-    usePaginationHandler(page, params);
+interface PageListProps {
+  items: PaginationMetaLink[];
+  selected: PaginationMetaLink | undefined;
+  handleSelectChange: PaginationHandlerResult["handleSelectChange"];
+}
 
-  const onChange = (url: string) => {
-    const pageNum = getPageNumber(url);
-    if (pageNum) {
-      handleSelectChange({ page: pageNum });
-    }
-  };
-  return (
+const PageList = memo(
+  ({ items, selected, handleSelectChange }: PageListProps) => (
     <div className="flex items-center gap-2">
       <Select
-        value={selected?.url ?? "#"}
-        defaultValue={selected?.url ?? "#"}
-        onValueChange={onChange}
+        value={selected?.page?.toString() ?? "1"}
+        onValueChange={(value) => handleSelectChange({ page: value })}
       >
-        <SelectTrigger>
-          <SelectValue placeholder="Select a page" />
+        <SelectTrigger className="w-24">
+          <SelectValue />
         </SelectTrigger>
         <SelectContent>
           {items.map((item) => (
-            <SelectItem key={item.label} value={item.url ?? "#"}>
+            <SelectItem key={item.label} value={item.page?.toString() ?? "1"}>
               Page {item.label}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
     </div>
-  );
-});
+  ),
+);
 PageList.displayName = "PageList";
 
-const PaginationNav = ({ page, params }: PaginationNavProps) => {
+const PaginationNav = ({ page }: PaginationNavProps) => {
+  const { meta, handleSelectChange, items, selected } =
+    usePaginationHandler(page);
+
   return (
     <div className="flex justify-end px-4 items-center gap-2">
-      <PageSize page={page} params={params} />
-      <TotalPage page={page} />
-      <NavButton page={page} type="first" params={params} />
-      <NavButton page={page} type="prev" params={params} />
-      <PageList page={page} params={params} />
-      <NavButton page={page} type="next" params={params} />
-      <NavButton page={page} type="last" params={params} />
+      <PageSize meta={meta} handleSelectChange={handleSelectChange} />
+      <TotalPage meta={meta} />
+      <NavButton
+        type="first"
+        meta={meta}
+        handleSelectChange={handleSelectChange}
+      />
+      <NavButton
+        type="prev"
+        meta={meta}
+        handleSelectChange={handleSelectChange}
+      />
+      <PageList
+        items={items}
+        selected={selected}
+        handleSelectChange={handleSelectChange}
+      />
+      <NavButton
+        type="next"
+        meta={meta}
+        handleSelectChange={handleSelectChange}
+      />
+      <NavButton
+        type="last"
+        meta={meta}
+        handleSelectChange={handleSelectChange}
+      />
     </div>
   );
 };

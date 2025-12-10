@@ -8,47 +8,33 @@ interface HandleSelectChangeProps {
   search?: string;
 }
 
-export const usePaginationHandler = (
-  page: Pagination<unknown>,
-  params: Record<string, string | string[]> | null,
-) => {
-  const { items, selected } = useMemo(() => {
-    const items = page.links.filter((link) => {
-      const label = link.label
-        .replaceAll("&laquo; ", "")
-        .replaceAll(" &raquo;", "");
-      return (
-        link.url !== null &&
-        !label.startsWith("Next") &&
-        !label.startsWith("Previous")
-      );
-    });
-    const selected = page.links.find((link) => link.active);
-    return { items, selected };
-  }, [page, params]);
+export const usePaginationHandler = (page: Pagination<unknown>) => {
+  const params=useMemo(()=>{
+    const searchParams=new URLSearchParams(window.location.search);
+    return Object.fromEntries(searchParams.entries());
+  },[])
 
-  const getPageNumber = useCallback((url: string | null) => {
-    if (!url || url === "#") return null;
-    const match = url.match(/[?&]page=(\d+)/);
-    return match ? match[1] : null;
+  const { items, selected } = useMemo(() => {
+    const items = page.meta.links.filter(
+      (link) =>
+        link.url !== null &&
+        !link.label.includes("Previous") &&
+        !link.label.includes("Next"),
+    );
+    const selected = page.meta.links.find((link) => link.active);
+    return { items, selected };
+  }, [page.meta.links]);
+
+  const getPageNumber = useCallback((pageNum: number | null) => {
+    return pageNum?.toString() ?? null;
   }, []);
 
   const handleSelectChange = useCallback(
     (value: HandleSelectChangeProps) => {
-      const searchParams = new URLSearchParams(window.location.search);
-      // Initialize with existing params if valid
-      if (params) {
-        Object.entries(params).forEach(([key, paramValue]) => {
-          if (paramValue) {
-            searchParams.set(key, paramValue.toString());
-          }
-        });
-      }
+      const searchParams = new URLSearchParams(params);
 
       if (value.per_page) {
-        if (searchParams.has("page")) {
-          searchParams.delete("page");
-        }
+        searchParams.delete("page");
         searchParams.set("per_page", value.per_page);
       }
 
@@ -57,26 +43,24 @@ export const usePaginationHandler = (
       }
 
       if (value.search !== undefined) {
-        if (value.search) {
-          searchParams.set("search", value.search);
-        } else {
-          searchParams.delete("search");
-        }
-        // Reset page when searching
-        if (searchParams.has("page")) {
-          searchParams.delete("page");
-        }
+        value.search
+          ? searchParams.set("search", value.search)
+          : searchParams.delete("search");
+        searchParams.delete("page");
       }
 
-      router.visit(`${page.path}?${searchParams.toString()}`);
+      router.visit(`${page.meta.path}?${searchParams.toString()}`);
     },
-    [params, page],
+    [page.meta.path],
   );
 
   return {
+    meta: page.meta,
+    links: page.links,
     handleSelectChange,
     getPageNumber,
     items,
     selected,
+    params,
   };
 };

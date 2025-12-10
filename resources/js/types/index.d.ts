@@ -43,20 +43,20 @@ export interface User {
 }
 
 interface PaginationLink {
- first: string|null;
- last: string|null;
- prev: string|null;
- next: string|null;
+  first: string | null;
+  last: string | null;
+  prev: string | null;
+  next: string | null;
 }
 
-interface PaginationMetaLink{
+export interface PaginationMetaLink {
  active: boolean;
   label: string;
   page: number | null;
   url: string | null;
 }
 
- interface PaginationMeta {
+export interface PaginationMeta {
   current_page: number;
   from: number;
   last_page: number;
@@ -69,6 +69,6 @@ interface PaginationMetaLink{
 
 export interface Pagination<T> {
   data: T[];
-  links: PaginationLink[];
-  meta: PaginationMeta;
+  links: PaginationMetaLink[];
+  meta: PaginationMeta & { links: PaginationLink };
 }
