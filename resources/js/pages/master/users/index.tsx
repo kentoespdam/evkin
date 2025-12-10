@@ -29,6 +29,7 @@ import {
 import { usePaginationHandler } from "@/hooks/use-pagination";
 import AppLayout from "@/layouts/app-layout";
 import { dashboard } from "@/routes";
+import master from "@/routes/master";
 import { Pagination, type BreadcrumbItem } from "@/types";
 import { UserWithRole } from "@/types/user";
 import { Head, Link } from "@inertiajs/react";
@@ -113,7 +114,21 @@ const getInitials = (name: string) => {
     .slice(0, 2);
 };
 
-const UserTable = memo(({ page }: UsersIndexProps) => {
+const UserTableHeader = memo(() => {
+  return (
+    <TableHeader>
+      <TableRow className="hover:bg-transparent">
+        <TableHead className="w-16 text-center">#</TableHead>
+        <TableHead>User</TableHead>
+        <TableHead>Email</TableHead>
+        <TableHead>Role</TableHead>
+      </TableRow>
+    </TableHeader>
+  );
+});
+UserTableHeader.displayName = "UserTableHeader";
+
+const UserTableBody = memo(({ page }: UsersIndexProps) => {
   const rows = useMemo(() => {
     return page.data.map((item, index) => ({
       no: page.meta.from + index,
@@ -121,7 +136,40 @@ const UserTable = memo(({ page }: UsersIndexProps) => {
     }));
   }, [page.data, page.meta.from]);
 
-  if (rows.length === 0) {
+  return (
+    <TableBody>
+      {rows.map((item) => (
+        <TableRow key={item.id} className="group">
+          <TableCell className="text-center font-medium text-muted-foreground">
+            {item.no}
+          </TableCell>
+          <TableCell>
+            <div className="flex items-center gap-3">
+              <TableAction row={item} />
+              <Avatar className="h-9 w-9">
+                <AvatarImage src={item.avatar} alt={item.name} />
+                <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
+                  {getInitials(item.name)}
+                </AvatarFallback>
+              </Avatar>
+              <span className="font-medium">{item.name}</span>
+            </div>
+          </TableCell>
+          <TableCell className="text-muted-foreground">{item.email}</TableCell>
+          <TableCell>
+            <Badge variant="secondary" className="capitalize">
+              {item.role.name}
+            </Badge>
+          </TableCell>
+        </TableRow>
+      ))}
+    </TableBody>
+  );
+});
+UserTableBody.displayName = "UserTableBody";
+
+const UserTable = memo(({ page }: UsersIndexProps) => {
+  if (page.meta.total === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
         <UsersIcon className="h-12 w-12 text-muted-foreground/50" />
@@ -136,46 +184,8 @@ const UserTable = memo(({ page }: UsersIndexProps) => {
   return (
     <div className="overflow-x-auto">
       <Table>
-        <TableHeader>
-          <TableRow className="hover:bg-transparent">
-            <TableHead className="w-16 text-center">#</TableHead>
-            <TableHead>User</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead className="w-20 text-center">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {rows.map((item) => (
-            <TableRow key={item.id} className="group">
-              <TableCell className="text-center font-medium text-muted-foreground">
-                {item.no}
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-9 w-9">
-                    <AvatarImage src={item.avatar} alt={item.name} />
-                    <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
-                      {getInitials(item.name)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="font-medium">{item.name}</span>
-                </div>
-              </TableCell>
-              <TableCell className="text-muted-foreground">
-                {item.email}
-              </TableCell>
-              <TableCell>
-                <Badge variant="secondary" className="capitalize">
-                  {item.role.name}
-                </Badge>
-              </TableCell>
-              <TableCell className="text-center">
-                <TableAction row={item} />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
+        <UserTableHeader />
+        <UserTableBody page={page} />
       </Table>
     </div>
   );
@@ -198,21 +208,24 @@ const TableAction = memo(({ row }: { row: UserWithRole }) => {
       <DropdownMenuContent align="end" className="w-40">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
+        <DropdownMenuItem asChild className="text-blue-500 font-bold">
           <Link
-            href={`/users/${row.id}/edit`}
+            href={`/master/users/${row.id}/edit`}
             className="flex items-center gap-2"
           >
-            <PencilIcon className="h-4 w-4" />
+            <PencilIcon className="size-4 text-blue-500" />
             Edit
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem
           asChild
-          className="text-destructive focus:text-destructive"
+          className="text-destructive focus:text-destructive font-bold"
         >
-          <Link href={`/users/${row.id}`} className="flex items-center gap-2">
-            <TrashIcon className="h-4 w-4" />
+          <Link
+            href={`/master/users/${row.id}`}
+            className="flex items-center gap-2"
+          >
+            <TrashIcon className="size-4 text-destructive" />
             Delete
           </Link>
         </DropdownMenuItem>
@@ -235,9 +248,11 @@ export default function UsersIndex({ page }: UsersIndexProps) {
                 Manage your users and their roles
               </CardDescription>
             </div>
-            <Button className="gap-2">
-              <PlusIcon className="h-4 w-4" />
-              Add User
+            <Button className="gap-2" asChild>
+              <Link href={master.users.add().url}>
+                <PlusIcon className="h-4 w-4" />
+                Add User
+              </Link>
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">

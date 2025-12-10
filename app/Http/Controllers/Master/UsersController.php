@@ -3,8 +3,12 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateUserRequest;
+use App\Http\Resources\RoleResource;
 use App\Http\Resources\UserResource;
+use App\Models\Master\Roles;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -26,25 +30,52 @@ class UsersController extends Controller
         ]);
     }
 
-    // public function edit(User $user): Response
-    // {
-    //     return Inertia::render('master/users/edit', [
-    //         'user' => new UserResource($user->load('role:id,name')),
-    //     ]);
-    // }
+    public function add(): Response
+    {
+        $roles = Roles::all();
 
-    // public function edit(User $user): Response
-    // {
-    //     return Inertia::render('master/users/edit', [
-    //         'user' => new UserResource($user->load('role:id,name')),
-    //     ]);
-    // }
+        return Inertia::render('master/users/input', [
+            'roles' => RoleResource::collection($roles),
+        ]);
+    }
 
-    // public function destroy(User $user): \Illuminate\Http\RedirectResponse
-    // {
-    //     $user->delete();
+    public function store(UpdateUserRequest $request): RedirectResponse
+    {
+        $data = $request->validated();
 
-    //     return redirect()->route('master.users')
-    //         ->with('success', 'User deleted successfully.');
-    // }
+        User::create($data);
+
+        return redirect()
+            ->route('master.users')
+            ->with('success', 'User created successfully');
+    }
+
+    public function edit(User $user): Response
+    {
+        $roles = Roles::all();
+
+        return Inertia::render('master/users/edit', [
+            'user' => new UserResource($user->load('role:id,name')),
+            'roles' => RoleResource::collection($roles),
+        ]);
+    }
+
+    public function update(UpdateUserRequest $request, User $user): RedirectResponse
+    {
+        $data = $request->validated();
+
+        // Only update password if provided
+        if (empty($data['password'])) {
+            unset($data['password']);
+        }
+
+        // Remove password_confirmation from data
+        unset($data['password_confirmation']);
+
+        $user->update($data);
+
+        return redirect()
+            ->route('master.users')
+            ->with('success', 'User updated successfully');
+    }
 }
