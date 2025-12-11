@@ -27,7 +27,7 @@ return new class extends Migration
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
 
-        Schema::create('role_input', function (Blueprint $table) {
+        Schema::create('role_inputs', function (Blueprint $table) {
             $table->id()->unsigned();
             $table->foreignId('role_id')->constrained()->cascadeOnDelete();
             $table->foreignId('master_input_id')->constrained()->cascadeOnDelete();
