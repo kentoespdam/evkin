@@ -1,3 +1,4 @@
+import { resolveUrl } from "@/lib/utils";
 import { NavGroup } from "@/types";
 import { Link, usePage } from "@inertiajs/react";
 import {
@@ -7,7 +8,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "../ui/sidebar";
-import { cn, resolveUrl } from "@/lib/utils";
 
 const NavMaster = ({ group }: { group: NavGroup }) => {
   const page = usePage();

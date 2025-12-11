@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Master;
+namespace App\Http\Requests\Master\Roles;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DeleteUserRequest extends FormRequest
+class DeleteRoleRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,22 +22,20 @@ class DeleteUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'password' => [
-                'required',
-                'string',
-                function ($attribute, $value, $fail) {
-                    if ($value !== 'DELETE') {
-                        $fail('You must type DELETE exactly (case-sensitive) to confirm deletion.');
-                    }
-                },
-            ],
+            'confirmation' => ['required', 'string', 'in:DELETE'],
         ];
     }
 
+    /**
+     * Get custom error messages for validator errors.
+     *
+     * @return array<string, string>
+     */
     public function messages(): array
     {
         return [
-            'password.required' => 'Please type DELETE to confirm.',
+            'confirmation.required' => 'Please type DELETE to confirm.',
+            'confirmation.in' => 'You must type DELETE exactly to confirm deletion.',
         ];
     }
 }

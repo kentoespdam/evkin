@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Master\CreateUserRequest;
-use App\Http\Requests\Master\DeleteUserRequest;
-use App\Http\Requests\Master\UpdateUserRequest;
-use App\Http\Resources\RoleResource;
+use App\Http\Requests\Master\Users\CreateUserRequest;
+use App\Http\Requests\Master\Users\DeleteUserRequest;
+use App\Http\Requests\Master\Users\UpdateUserRequest;
+use App\Http\Resources\RolesResource;
 use App\Http\Resources\UserResource;
 use App\Models\Master\Roles;
 use App\Models\User;
@@ -37,7 +37,7 @@ class UsersController extends Controller
         $roles = Roles::all();
 
         return Inertia::render('master/users/input', [
-            'roles' => RoleResource::collection($roles),
+            'roles' => RolesResource::collection($roles),
         ]);
     }
 
@@ -60,7 +60,7 @@ class UsersController extends Controller
 
         return Inertia::render('master/users/edit', [
             'user' => new UserResource($user->load('role:id,name')),
-            'roles' => RoleResource::collection($roles),
+            'roles' => RolesResource::collection($roles),
         ]);
     }
 

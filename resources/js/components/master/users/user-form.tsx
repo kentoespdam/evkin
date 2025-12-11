@@ -22,6 +22,7 @@ import { useMemo, useState } from "react";
 import { Method } from "@inertiajs/core";
 import master from "@/routes/master";
 import { Spinner } from "../../ui/spinner";
+import ButtonLoading from "@/components/commons/button-loading";
 
 interface UserFormProps {
   roles: Role[];
@@ -30,17 +31,20 @@ interface UserFormProps {
 const UserForm = ({ roles, user }: UserFormProps) => {
   const [showPassword, setShowPassword] = useState(!user ? true : false);
 
-  const { actionLink, method, changePasswordText } = useMemo(
-    () => ({
-      actionLink: user?.id ? `/master/users/${user.id}` : "/master/users",
-      method: user?.id ? "patch" : "post",
-      changePasswordText: user ? "Change Password" : "Set Password",
-    }),
+  const formAction = useMemo(() => {
+    if (user?.id) {
+      return master.users.update.form(user.id);
+    }
+    return master.users.store.form();
+  }, [user]);
+
+  const changePasswordText = useMemo(
+    () => (user ? "Change Password" : "Set Password"),
     [user],
   );
 
   return (
-    <Form action={actionLink} method={method as Method} resetOnSuccess>
+    <Form {...formAction} resetOnSuccess>
       {({ errors, processing, wasSuccessful }) => (
         <Card>
           <CardContent className="pt-6">
@@ -189,23 +193,7 @@ const UserForm = ({ roles, user }: UserFormProps) => {
                     Cancel
                   </Link>
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={processing}
-                  className="gap-2 min-w-32"
-                >
-                  {processing ? (
-                    <>
-                      <Spinner />
-                      Saving...
-                    </>
-                  ) : (
-                    <>
-                      <SaveIcon className="h-4 w-4" />
-                      Save Changes
-                    </>
-                  )}
-                </Button>
+                <ButtonLoading processing={processing} />
               </div>
 
               {/* Success Message */}

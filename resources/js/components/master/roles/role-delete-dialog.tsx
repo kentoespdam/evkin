@@ -1,7 +1,5 @@
-import { Form } from "@inertiajs/react";
-import { useRef } from "react";
-import InputError from "../../commons/input-error";
-import { Button } from "../../ui/button";
+import InputError from "@/components/commons/input-error";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -9,39 +7,40 @@ import {
   DialogDescription,
   DialogFooter,
   DialogTitle,
-} from "../../ui/dialog";
-import { Input } from "../../ui/input";
-import { Label } from "../../ui/label";
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Form } from "@inertiajs/react";
+import { useRef } from "react";
 
-interface DeleteUserDialogProps {
-  userId: string;
+export interface RoleDeleteDialogProps {
+  roleId: string;
   showDeleteDialog: boolean;
   setShowDeleteDialog: (show: boolean) => void;
 }
-const DeleteUserDialog = ({
-  userId,
+const DeleteRoleDialog = ({
+  roleId,
   showDeleteDialog,
   setShowDeleteDialog,
-}: DeleteUserDialogProps) => {
-  const passwordInput = useRef<HTMLInputElement>(null);
-
+}: RoleDeleteDialogProps) => {
+  const confirmationInput = useRef<HTMLInputElement>(null);
   return (
     <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
       <DialogContent>
-        <DialogTitle>Are you sure you want to delete your account?</DialogTitle>
+        <DialogTitle>Are you sure you want to delete this role?</DialogTitle>
         <DialogDescription>
-          Once your account is deleted, all of its resources and data will also
-          be permanently deleted. Please enter <code>DELETE</code> to confirm
-          you would like to permanently delete your account.
+          Once this role is deleted, all of its resources and data will also be
+          permanently deleted. Please enter <code>DELETE</code> to confirm you
+          would like to permanently delete this role.
         </DialogDescription>
 
         <Form
-          action={`/master/users/${userId}`}
+          action={`/master/roles/${roleId}`}
           method="delete"
           options={{
             preserveScroll: true,
           }}
-          onError={() => passwordInput.current?.focus()}
+          onError={() => confirmationInput.current?.focus()}
           resetOnSuccess
           className="space-y-6"
           onSuccess={() => setShowDeleteDialog(false)}
@@ -49,18 +48,18 @@ const DeleteUserDialog = ({
           {({ resetAndClearErrors, processing, errors }) => (
             <>
               <div className="grid gap-2">
-                <Label htmlFor="password">Type DELETE to confirm</Label>
+                <Label htmlFor="confirmation">Type DELETE to confirm</Label>
 
                 <Input
-                  id="password"
+                  id="confirmation"
                   type="text"
-                  name="password"
-                  ref={passwordInput}
+                  name="confirmation"
+                  ref={confirmationInput}
                   placeholder="DELETE"
                   autoComplete="off"
                 />
 
-                <InputError message={errors.password} />
+                <InputError message={errors.confirmation} />
               </div>
 
               <DialogFooter className="gap-2">
@@ -78,7 +77,7 @@ const DeleteUserDialog = ({
                   variant="destructive"
                   disabled={processing}
                 >
-                  Delete account
+                  Delete Role
                 </Button>
               </DialogFooter>
             </>
@@ -89,4 +88,4 @@ const DeleteUserDialog = ({
   );
 };
 
-export default DeleteUserDialog;
+export default DeleteRoleDialog;
