@@ -1,5 +1,5 @@
-import AlertError from "@/components/template/alert-error";
-import InputError from "@/components/template/input-error";
+import AlertError from "@/components/commons/alert-error";
+import InputError from "@/components/commons/input-error";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
