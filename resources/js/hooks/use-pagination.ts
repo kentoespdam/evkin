@@ -1,14 +1,11 @@
+import { HandleSelectChangeProps } from "@/lib/utils";
 import { Pagination } from "@/types";
 import { router } from "@inertiajs/react";
-import { useCallback, useMemo } from "react";
-
-interface HandleSelectChangeProps {
-  per_page?: string;
-  page?: string;
-  search?: string;
-}
+import { useCallback, useMemo, useState } from "react";
 
 export const usePaginationHandler = (page: Pagination<unknown>) => {
+  const [userId, setUserId]=useState<string>("");
+  const [showDeleteDialog, setShowDeleteDialog]=useState<boolean>(false);
   const params=useMemo(()=>{
     const searchParams=new URLSearchParams(window.location.search);
     return Object.fromEntries(searchParams.entries());
@@ -62,5 +59,9 @@ export const usePaginationHandler = (page: Pagination<unknown>) => {
     items,
     selected,
     params,
+    userId,
+    setUserId,
+    showDeleteDialog,
+    setShowDeleteDialog
   };
 };

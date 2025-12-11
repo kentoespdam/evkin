@@ -42,18 +42,58 @@ it('resolves user by sqid via route model binding for edit', function () {
     $response->assertOk();
 });
 
-it('can delete user by sqid via route model binding', function () {
+it('can delete user with DELETE confirmation', function () {
     $admin = User::factory()->create();
     $userToDelete = User::factory()->create();
     $sqid = $userToDelete->sqid;
+    $rawId = $userToDelete->getAttributes()['id'];
 
     $this->actingAs($admin);
 
-    $response = $this->delete(route('master.users.destroy', $sqid));
+    $response = $this->delete(route('master.users.destroy', $sqid), [
+        'password' => 'DELETE',
+    ]);
 
     $response->assertRedirect(route('master.users'));
-    $this->assertDatabaseMissing('users', ['id' => $userToDelete->id]);
+    $response->assertSessionHas('success', 'User deleted successfully');
+    $this->assertDatabaseMissing('users', ['id' => $rawId]);
 });
+
+it('requires DELETE confirmation to delete user', function () {
+    $admin = User::factory()->create();
+    $userToDelete = User::factory()->create();
+    $sqid = $userToDelete->sqid;
+    $rawId = $userToDelete->getAttributes()['id'];
+
+    $this->actingAs($admin);
+
+    $response = $this->delete(route('master.users.destroy', $sqid), [
+        'password' => '',
+    ]);
+
+    $response->assertSessionHasErrors(['password']);
+    $this->assertDatabaseHas('users', ['id' => $rawId]);
+});
+
+it('validates DELETE is case sensitive', function (string $wrongPassword) {
+    $admin = User::factory()->create();
+    $userToDelete = User::factory()->create();
+    $sqid = $userToDelete->sqid;
+    $rawId = $userToDelete->getAttributes()['id'];
+
+    $this->actingAs($admin);
+
+    $response = $this->delete(route('master.users.destroy', $sqid), [
+        'password' => $wrongPassword,
+    ]);
+
+    $response->assertSessionHasErrors(['password']);
+    $this->assertDatabaseHas('users', ['id' => $rawId]);
+})->with([
+    'lowercase' => 'delete',
+    'mixed case' => 'Delete',
+    'other text' => 'yes',
+]);
 
 it('returns 404 for invalid sqid', function () {
     $user = User::factory()->create();

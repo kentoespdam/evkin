@@ -21,7 +21,7 @@ import {
 import { useMemo, useState } from "react";
 import { Method } from "@inertiajs/core";
 import master from "@/routes/master";
-import { Spinner } from "../ui/spinner";
+import { Spinner } from "../../ui/spinner";
 
 interface UserFormProps {
   roles: Role[];

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\CreateUserRequest;
+use App\Http\Requests\Master\DeleteUserRequest;
 use App\Http\Requests\Master\UpdateUserRequest;
 use App\Http\Resources\RoleResource;
 use App\Http\Resources\UserResource;
@@ -80,5 +81,14 @@ class UsersController extends Controller
         return redirect()
             ->route('master.users')
             ->with('success', 'User updated successfully');
+    }
+
+    public function destroy(DeleteUserRequest $request, User $user): RedirectResponse
+    {
+        $user->delete();
+
+        return redirect()
+            ->route('master.users')
+            ->with('success', 'User deleted successfully');
     }
 }

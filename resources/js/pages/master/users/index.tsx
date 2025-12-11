@@ -1,4 +1,5 @@
 import PaginationNav from "@/components/commons/pagination-nav";
+import DeleteUserDialog from "@/components/master/users/user-delete-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ import {
 } from "@/components/ui/table";
 import { usePaginationHandler } from "@/hooks/use-pagination";
 import AppLayout from "@/layouts/app-layout";
+import { HandleSelectChangeProps } from "@/lib/utils";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
 import { Pagination, type BreadcrumbItem } from "@/types";
@@ -42,7 +44,7 @@ import {
   UsersIcon,
   XIcon,
 } from "lucide-react";
-import { ChangeEvent, memo, useMemo, useRef } from "react";
+import { ChangeEvent, memo, useCallback, useMemo, useRef } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -60,8 +62,19 @@ interface UsersIndexProps {
   page: Pagination<UserWithRole>;
 }
 
-const UserSearch = memo(({ page }: UsersIndexProps) => {
-  const { params, handleSelectChange } = usePaginationHandler(page);
+interface UserSearchProps extends UsersIndexProps {
+  params: {
+    [k: string]: string;
+  };
+  handleSelectChange: (value: HandleSelectChangeProps) => void;
+}
+
+interface UserTableProps extends UsersIndexProps {
+  setUserId: (id: string) => void;
+  setShowDeleteDialog: (show: boolean) => void;
+}
+
+const UserSearch = memo(({ params, handleSelectChange }: UserSearchProps) => {
   const search = params.search ?? "";
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -128,114 +141,142 @@ const UserTableHeader = memo(() => {
 });
 UserTableHeader.displayName = "UserTableHeader";
 
-const UserTableBody = memo(({ page }: UsersIndexProps) => {
-  const rows = useMemo(() => {
-    return page.data.map((item, index) => ({
-      no: page.meta.from + index,
-      ...item,
-    }));
-  }, [page.data, page.meta.from]);
+const UserTableBody = memo(
+  ({ page, setUserId, setShowDeleteDialog }: UserTableProps) => {
+    const rows = useMemo(() => {
+      return page.data.map((item, index) => ({
+        no: page.meta.from + index,
+        ...item,
+      }));
+    }, [page.data, page.meta.from]);
 
-  return (
-    <TableBody>
-      {rows.map((item) => (
-        <TableRow key={item.id} className="group">
-          <TableCell className="text-center font-medium text-muted-foreground">
-            {item.no}
-          </TableCell>
-          <TableCell>
-            <div className="flex items-center gap-3">
-              <TableAction row={item} />
-              <Avatar className="h-9 w-9">
-                <AvatarImage src={item.avatar} alt={item.name} />
-                <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
-                  {getInitials(item.name)}
-                </AvatarFallback>
-              </Avatar>
-              <span className="font-medium">{item.name}</span>
-            </div>
-          </TableCell>
-          <TableCell className="text-muted-foreground">{item.email}</TableCell>
-          <TableCell>
-            <Badge variant="secondary" className="capitalize">
-              {item.role.name}
-            </Badge>
-          </TableCell>
-        </TableRow>
-      ))}
-    </TableBody>
-  );
-});
+    return (
+      <TableBody>
+        {rows.map((item) => (
+          <TableRow key={item.id} className="group">
+            <TableCell className="text-center font-medium text-muted-foreground">
+              {item.no}
+            </TableCell>
+            <TableCell>
+              <div className="flex items-center gap-3">
+                <TableAction
+                  row={item}
+                  setUserId={setUserId}
+                  setShowDeleteDialog={setShowDeleteDialog}
+                />
+                <Avatar className="h-9 w-9">
+                  <AvatarImage src={item.avatar} alt={item.name} />
+                  <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
+                    {getInitials(item.name)}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="font-medium">{item.name}</span>
+              </div>
+            </TableCell>
+            <TableCell className="text-muted-foreground">
+              {item.email}
+            </TableCell>
+            <TableCell>
+              <Badge variant="secondary" className="capitalize">
+                {item.role.name}
+              </Badge>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    );
+  },
+);
 UserTableBody.displayName = "UserTableBody";
 
-const UserTable = memo(({ page }: UsersIndexProps) => {
-  if (page.meta.total === 0) {
+const UserTable = memo(
+  ({ page, setUserId, setShowDeleteDialog }: UserTableProps) => {
+    if (page.meta.total === 0) {
+      return (
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <UsersIcon className="h-12 w-12 text-muted-foreground/50" />
+          <h3 className="mt-4 text-lg font-semibold">No users found</h3>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Try adjusting your search or add a new user.
+          </p>
+        </div>
+      );
+    }
+
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center">
-        <UsersIcon className="h-12 w-12 text-muted-foreground/50" />
-        <h3 className="mt-4 text-lg font-semibold">No users found</h3>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Try adjusting your search or add a new user.
-        </p>
+      <div className="overflow-x-auto">
+        <Table>
+          <UserTableHeader />
+          <UserTableBody
+            page={page}
+            setUserId={setUserId}
+            setShowDeleteDialog={setShowDeleteDialog}
+          />
+        </Table>
       </div>
     );
-  }
-
-  return (
-    <div className="overflow-x-auto">
-      <Table>
-        <UserTableHeader />
-        <UserTableBody page={page} />
-      </Table>
-    </div>
-  );
-});
+  },
+);
 UserTable.displayName = "UserTable";
 
-const TableAction = memo(({ row }: { row: UserWithRole }) => {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-        >
-          <span className="sr-only">Open menu</span>
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-40">
-        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild className="text-blue-500 font-bold">
-          <Link
-            href={`/master/users/${row.id}/edit`}
-            className="flex items-center gap-2"
+interface TableActionProps {
+  row: UserWithRole;
+  setUserId: (id: string) => void;
+  setShowDeleteDialog: (show: boolean) => void;
+}
+const TableAction = memo(
+  ({ row, setUserId, setShowDeleteDialog }: TableActionProps) => {
+    const handleDelete = useCallback(() => {
+      setUserId(row.id);
+      setShowDeleteDialog(true);
+    }, [row.id, setUserId, setShowDeleteDialog]);
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
           >
-            <PencilIcon className="size-4 text-blue-500" />
-            Edit
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          asChild
-          className="text-destructive focus:text-destructive font-bold"
-        >
-          <Link
-            href={`/master/users/${row.id}`}
-            className="flex items-center gap-2"
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-40">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild className="text-blue-500 font-bold">
+            <Link
+              href={`/master/users/${row.id}/edit`}
+              className="flex items-center gap-2"
+            >
+              <PencilIcon className="size-4 text-blue-500" />
+              Edit
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="flex items-center gap-2 text-destructive focus:text-destructive font-bold"
+            onClick={handleDelete}
           >
             <TrashIcon className="size-4 text-destructive" />
             Delete
-          </Link>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-});
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  },
+);
 TableAction.displayName = "TableAction";
 
 export default function UsersIndex({ page }: UsersIndexProps) {
+  const {
+    userId,
+    setUserId,
+    showDeleteDialog,
+    setShowDeleteDialog,
+    params,
+    handleSelectChange,
+  } = usePaginationHandler(page);
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Users" />
@@ -257,16 +298,29 @@ export default function UsersIndex({ page }: UsersIndexProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <UserSearch page={page} />
+              <UserSearch
+                page={page}
+                params={params}
+                handleSelectChange={handleSelectChange}
+              />
               <div className="text-sm text-muted-foreground">
                 Showing {page.meta.from ?? 0} - {page.meta.to ?? 0} of{" "}
                 {page.meta.total} users
               </div>
             </div>
-            <UserTable page={page} />
+            <UserTable
+              page={page}
+              setUserId={setUserId}
+              setShowDeleteDialog={setShowDeleteDialog}
+            />
             <PaginationNav page={page} />
           </CardContent>
         </Card>
+        <DeleteUserDialog
+          userId={userId}
+          showDeleteDialog={showDeleteDialog}
+          setShowDeleteDialog={setShowDeleteDialog}
+        />
       </div>
     </AppLayout>
   );
