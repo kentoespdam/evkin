@@ -145,8 +145,8 @@ const UserForm = ({ roles, user }: UserFormProps) => {
                 {showPassword && (
                   <div className="space-y-4 p-4 bg-muted/30 rounded-lg border border-dashed">
                     <p className="text-sm text-muted-foreground">
-                      Leave blank to keep current password. Must be at least 8
-                      characters.
+                      {user ? "Leave blank to keep current password" : ""} Must
+                      be at least 8 characters.
                     </p>
 
                     {/* New Password Field */}
@@ -175,6 +175,7 @@ const UserForm = ({ roles, user }: UserFormProps) => {
                         placeholder="Confirm new password"
                         autoComplete="new-password"
                       />
+                      <FieldError>{errors.password_confirmation}</FieldError>
                     </Field>
                   </div>
                 )}

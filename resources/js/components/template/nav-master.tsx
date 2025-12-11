@@ -6,7 +6,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "./ui/sidebar";
+} from "../ui/sidebar";
 import { cn, resolveUrl } from "@/lib/utils";
 
 const NavMaster = ({ group }: { group: NavGroup }) => {

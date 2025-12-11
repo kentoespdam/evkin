@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UpdateUserRequest;
+use App\Http\Requests\Master\CreateUserRequest;
+use App\Http\Requests\Master\UpdateUserRequest;
 use App\Http\Resources\RoleResource;
 use App\Http\Resources\UserResource;
 use App\Models\Master\Roles;
@@ -39,9 +40,11 @@ class UsersController extends Controller
         ]);
     }
 
-    public function store(UpdateUserRequest $request): RedirectResponse
+    public function store(CreateUserRequest $request): RedirectResponse
     {
         $data = $request->validated();
+
+        unset($data['password_confirmation']);
 
         User::create($data);
 

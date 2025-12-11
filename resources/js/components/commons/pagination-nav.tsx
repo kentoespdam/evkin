@@ -8,15 +8,15 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { memo } from "react";
-import { Button } from "./ui/button";
-import { ButtonGroup } from "./ui/button-group";
+import { Button } from "../ui/button";
+import { ButtonGroup } from "../ui/button-group";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
+} from "../ui/select";
 
 interface PaginationNavProps {
   page: Pagination<unknown>;
