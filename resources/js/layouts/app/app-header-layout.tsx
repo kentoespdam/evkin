@@ -1,17 +1,17 @@
-import { AppContent } from '@/components/app-content';
-import { AppHeader } from '@/components/app-header';
-import { AppShell } from '@/components/app-shell';
-import { type BreadcrumbItem } from '@/types';
-import type { PropsWithChildren } from 'react';
+import { AppContent } from "@/components/template/app-content";
+import { AppHeader } from "@/components/template/app-header";
+import { AppShell } from "@/components/template/app-shell";
+import { type BreadcrumbItem } from "@/types";
+import type { PropsWithChildren } from "react";
 
 export default function AppHeaderLayout({
-    children,
-    breadcrumbs,
+  children,
+  breadcrumbs,
 }: PropsWithChildren<{ breadcrumbs?: BreadcrumbItem[] }>) {
-    return (
-        <AppShell>
-            <AppHeader breadcrumbs={breadcrumbs} />
-            <AppContent>{children}</AppContent>
-        </AppShell>
-    );
+  return (
+    <AppShell>
+      <AppHeader breadcrumbs={breadcrumbs} />
+      <AppContent>{children}</AppContent>
+    </AppShell>
+  );
 }
