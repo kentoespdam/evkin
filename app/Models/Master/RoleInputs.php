@@ -14,6 +14,8 @@ class RoleInputs extends Model
 
     protected $fillable = ['role_id', 'master_input_id'];
 
+    protected $hidden = ['created_at', 'updated_at'];
+
     protected string $sqidPrefix = 'ri';
 
     public function role()

@@ -1,3 +1,9 @@
+import DeleteDialog from "@/components/commons/delete-dialog";
+import PaginationNav from "@/components/commons/pagination-nav";
+import TableShowTotalText from "@/components/commons/table-show-total-text";
+import TableTextSearch from "@/components/commons/table-text-search";
+import RoleTable from "@/components/master/roles/role-table";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -5,22 +11,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { usePaginationHandler } from "@/hooks/use-pagination";
+import { useRolesHook } from "@/hooks/use-roles";
 import AppLayout from "@/layouts/app-layout";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
-import { BreadcrumbItem } from "@/types";
+import { BreadcrumbItem, Pagination } from "@/types";
+import { Role } from "@/types/role";
 import { Head, Link } from "@inertiajs/react";
 import { PlusIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { usePaginationHandler } from "@/hooks/use-pagination";
-import { useRolesHook } from "@/hooks/use-roles";
-import { Pagination } from "@/types";
-import { Role } from "@/types/role";
-import RoleTable from "@/components/master/roles/role-table";
-import PaginationNav from "@/components/commons/pagination-nav";
-import TableShowTotalText from "@/components/commons/table-show-total-text";
-import TableTextSearch from "@/components/commons/table-text-search";
-import DeleteRoleDialog from "@/components/master/roles/role-delete-dialog";
+import { useMemo } from "react";
 
 export interface RolesIndexProps {
   page: Pagination<Role>;
@@ -42,13 +42,14 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const RolesIndex = ({ page }: RolesIndexProps) => {
-  console.log(page);
   const { params, handleSelectChange } = usePaginationHandler(page);
   const { roleId, setRoleId, showDeleteDialog, setShowDeleteDialog } =
     useRolesHook();
+
+  const formAction = useMemo(() => master.roles.destroy(roleId).url, [roleId]);
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title="Users" />
+      <Head title="Roles" />
       <div className="flex flex-col gap-6 p-4">
         <Card>
           <CardHeader className="flex-row items-center justify-between space-y-0">
@@ -79,8 +80,8 @@ const RolesIndex = ({ page }: RolesIndexProps) => {
           </CardContent>
         </Card>
       </div>
-      <DeleteRoleDialog
-        roleId={roleId}
+      <DeleteDialog
+        formAction={formAction}
         showDeleteDialog={showDeleteDialog}
         setShowDeleteDialog={setShowDeleteDialog}
       />

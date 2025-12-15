@@ -17,99 +17,58 @@ use Inertia\Response;
 
 class RolesController extends Controller
 {
-    private function checkPermission(Request $request): void
-    {
-        $user = $request->user();
-        if ($user->role_id != 1) {
-            throw new \Exception("You don't have permission to access this page");
-        }
-    }
-
     public function index(Request $request): Response|RedirectResponse
     {
-        try {
-            $this->checkPermission($request);
-            $perPage = $request->per_page ?? 10;
+        $perPage = $request->per_page ?? 10;
 
-            $query = Roles::query();
+        $query = Roles::query();
 
-            if ($request->has('search')) {
-                $query->where('name', 'like', "%{$request->get('search')}%");
-            }
-
-            $roles = $query->paginate($perPage);
-
-            return Inertia::render('master/roles/index', [
-                'page' => new RolesCollection($roles),
-                'user' => new UserResource($request->user()),
-            ]);
-        } catch (\Exception $e) {
-            return redirect()->route('dashboard')->with('error', $e->getMessage());
+        if ($request->has('search')) {
+            $query->where('name', 'like', "%{$request->get('search')}%");
         }
+
+        $roles = $query->paginate($perPage);
+
+        return Inertia::render('master/roles/index', [
+            'page' => new RolesCollection($roles),
+            'user' => new UserResource($request->user()),
+        ]);
     }
 
     public function add(): Response|RedirectResponse
     {
-        try {
-            $this->checkPermission(request());
-
-            return Inertia::render('master/roles/add');
-        } catch (\Exception $e) {
-            return redirect()->route('dashboard')->with('error', $e->getMessage());
-        }
-
+        return Inertia::render('master/roles/add');
     }
 
     public function store(CreateRoleRequest $request): RedirectResponse
     {
-        try {
-            $this->checkPermission(request());
-            // check if role already exists
-            if (Roles::where('name', $request->name)->exists()) {
-                return redirect()->route('master.roles')->with('error', 'Role already exists');
-            }
-            $role = Roles::create($request->all());
-
-            return redirect()->route('master.roles')->with('success', 'Role created successfully');
-        } catch (\Exception $e) {
-            return redirect()->route('dashboard')->with('error', $e->getMessage());
+        // check if role already exists
+        if (Roles::where('name', $request->name)->exists()) {
+            return redirect()->route('master.roles')->with('error', 'Role already exists');
         }
+        Roles::create($request->all());
+
+        return redirect()->route('master.roles')->with('success', 'Role created successfully');
     }
 
     public function edit(Roles $role): Response|RedirectResponse
     {
-        try {
-            $this->checkPermission(request());
-
-            return Inertia::render('master/roles/edit', [
-                'role' => new RolesResource($role),
-            ]);
-        } catch (\Exception $e) {
-            return redirect()->route('dashboard')->with('error', $e->getMessage());
-        }
+        return Inertia::render('master/roles/edit', [
+            'role' => new RolesResource($role),
+        ]);
     }
 
     public function update(UpdateRoleRequest $request, Roles $role): RedirectResponse
     {
-        try {
-            $this->checkPermission(request());
-            $role->update($request->all());
+        $role->update($request->all());
 
-            return redirect()->route('master.roles')->with('success', 'Role updated successfully');
-        } catch (\Exception $e) {
-            return redirect()->route('dashboard')->with('error', $e->getMessage());
-        }
+        return redirect()->route('master.roles')->with('success', 'Role updated successfully');
     }
 
     public function destroy(DeleteRoleRequest $request, Roles $role): RedirectResponse
     {
-        try {
-            $this->checkPermission(request());
-            $role->delete();
+        $role->delete();
 
-            return redirect()->route('master.roles')->with('success', 'Role deleted successfully');
-        } catch (\Exception $e) {
-            return redirect()->route('dashboard')->with('error', $e->getMessage());
-        }
+        return redirect()->route('master.roles')->with('success', 'Role deleted successfully');
     }
 }

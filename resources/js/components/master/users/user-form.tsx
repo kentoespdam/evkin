@@ -33,9 +33,17 @@ const UserForm = ({ roles, user }: UserFormProps) => {
 
   const formAction = useMemo(() => {
     if (user?.id) {
-      return master.users.update.form(user.id);
+      const form = master.users.update(user.id);
+      return {
+        action: form.url,
+        method: form.method,
+      };
     }
-    return master.users.store.form();
+    const form = master.users.store();
+    return {
+      action: form.url,
+      method: form.method,
+    };
   }, [user]);
 
   const changePasswordText = useMemo(

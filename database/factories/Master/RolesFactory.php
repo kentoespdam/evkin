@@ -16,25 +16,17 @@ class RolesFactory extends Factory
      */
     public function definition(): array
     {
+        $roles = [
+            'Developer',
+            'Keuangan',
+            'Renbang',
+            'Daltek',
+            'Pelayanan',
+            'SDM',
+        ];
+
         return [
-            [
-                'name' => 'Developer',
-            ],
-            [
-                'name' => 'Keuangan',
-            ],
-            [
-                'name' => 'Renbang',
-            ],
-            [
-                'name' => 'Daltek',
-            ],
-            [
-                'name' => 'Pelayanan',
-            ],
-            [
-                'name' => 'SDM',
-            ],
+            'name' => fake()->randomElement($roles),
         ];
     }
 }

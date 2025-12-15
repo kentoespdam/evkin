@@ -13,9 +13,16 @@ import {
 import { dashboard } from "@/routes";
 import { NavGroup, type NavItem } from "@/types";
 import { Link } from "@inertiajs/react";
-import { LayoutGrid, Network, Users2 } from "lucide-react";
+import {
+  GitPullRequestArrow,
+  LayoutGrid,
+  Network,
+  TextCursorInputIcon,
+  Users2,
+} from "lucide-react";
 import AppLogo from "./app-logo";
 import NavMaster from "./nav-master";
+import master from "@/routes/master";
 
 const mainNavItems: NavItem[] = [
   {
@@ -30,13 +37,23 @@ const masterGroupItems: NavGroup = {
   items: [
     {
       title: "Roles",
-      href: "/master/roles",
+      href: master.roles().url,
       icon: Network,
     },
     {
       title: "Users",
-      href: "/master/users",
+      href: master.users().url,
       icon: Users2,
+    },
+    {
+      title: "Sources",
+      href: master.sources().url,
+      icon: GitPullRequestArrow,
+    },
+    {
+      title: "Master Inputs",
+      href: master.inputs().url,
+      icon: TextCursorInputIcon,
     },
   ],
 };

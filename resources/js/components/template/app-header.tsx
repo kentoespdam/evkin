@@ -1,5 +1,4 @@
-import { Breadcrumbs } from "@/components/breadcrumbs";
-import { Icon } from "@/components/icon";
+import { UserMenuContent } from "@/components/template/user-menu-content";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,7 +25,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { UserMenuContent } from "@/components/template/user-menu-content";
 import { useInitials } from "@/hooks/use-initials";
 import { cn, isSameUrl, resolveUrl } from "@/lib/utils";
 import { dashboard } from "@/routes";
@@ -35,6 +33,8 @@ import { Link, usePage } from "@inertiajs/react";
 import { BookOpen, Folder, LayoutGrid, Menu, Search } from "lucide-react";
 import AppLogo from "./app-logo";
 import AppLogoIcon from "./app-logo-icon";
+import { Icon } from "../commons/icon";
+import { Breadcrumbs } from "./breadcrumbs";
 
 const mainNavItems: NavItem[] = [
   {

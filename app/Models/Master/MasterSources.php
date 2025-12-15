@@ -10,9 +10,11 @@ class MasterSources extends Model
 {
     use HasFactory, HasSqids;
 
+    protected string $sqidPrefix = 'src';
+
     protected $table = 'master_sources';
 
     protected $fillable = ['name'];
 
-    protected string $sqidPrefix = 'src';
+    protected $hidden = ['created_at', 'updated_at'];
 }

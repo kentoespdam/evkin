@@ -1,7 +1,5 @@
-import { Form } from "@inertiajs/react";
-import { useRef } from "react";
-import InputError from "../../commons/input-error";
-import { Button } from "../../ui/button";
+import InputError from "@/components/commons/input-error";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -9,9 +7,11 @@ import {
   DialogDescription,
   DialogFooter,
   DialogTitle,
-} from "../../ui/dialog";
-import { Input } from "../../ui/input";
-import { Label } from "../../ui/label";
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Form } from "@inertiajs/react";
+import { useRef } from "react";
 
 interface DeleteUserDialogProps {
   userId: string;

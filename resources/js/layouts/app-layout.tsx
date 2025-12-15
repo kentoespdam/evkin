@@ -1,14 +1,21 @@
-import AppLayoutTemplate from '@/layouts/app/app-sidebar-layout';
-import { type BreadcrumbItem } from '@/types';
-import { type ReactNode } from 'react';
+import AppLayoutTemplate from "@/layouts/app/app-sidebar-layout";
+import { useErrorToast } from "@/hooks/use-error-toast";
+import { type BreadcrumbItem } from "@/types";
+import { type ReactNode } from "react";
+import { Toaster } from "sonner";
 
 interface AppLayoutProps {
-    children: ReactNode;
-    breadcrumbs?: BreadcrumbItem[];
+  children: ReactNode;
+  breadcrumbs?: BreadcrumbItem[];
 }
 
-export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => (
+export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => {
+  useErrorToast();
+
+  return (
     <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
-        {children}
+      {children}
+      <Toaster richColors position="top-right" />
     </AppLayoutTemplate>
-);
+  );
+};

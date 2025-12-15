@@ -1,7 +1,7 @@
+import DeleteDialog from "@/components/commons/delete-dialog";
 import PaginationNav from "@/components/commons/pagination-nav";
 import TableShowTotalText from "@/components/commons/table-show-total-text";
 import TableTextSearch from "@/components/commons/table-text-search";
-import DeleteUserDialog from "@/components/master/users/user-delete-dialog";
 import UserTable from "@/components/master/users/user-table";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,11 +20,16 @@ import { BreadcrumbItem, Pagination } from "@/types";
 import { UserWithRole } from "@/types/user";
 import { Head, Link } from "@inertiajs/react";
 import { PlusIcon } from "lucide-react";
+import { useMemo } from "react";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
     title: "Dashboard",
     href: dashboard().url,
+  },
+  {
+    title: "Master",
+    href: "#",
   },
   {
     title: "Users",
@@ -41,6 +46,8 @@ export default function UsersIndex({ page }: UsersIndexProps) {
 
   const { userId, setUserId, showDeleteDialog, setShowDeleteDialog } =
     useUserHook();
+
+  const deleteUrl = useMemo(() => master.users.destroy(userId).url, [userId]);
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -76,8 +83,8 @@ export default function UsersIndex({ page }: UsersIndexProps) {
             <PaginationNav page={page} />
           </CardContent>
         </Card>
-        <DeleteUserDialog
-          userId={userId}
+        <DeleteDialog
+          formAction={deleteUrl}
           showDeleteDialog={showDeleteDialog}
           setShowDeleteDialog={setShowDeleteDialog}
         />

@@ -14,6 +14,8 @@ class MasterInputs extends Model
 
     protected $fillable = ['kode', 'description', 'master_source_id'];
 
+    protected $hidden = ['created_at', 'updated_at'];
+
     protected string $sqidPrefix = 'in';
 
     public function masterSource()

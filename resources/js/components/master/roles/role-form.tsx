@@ -15,14 +15,22 @@ interface RoleFormProps {
 const RoleForm = memo(({ role }: RoleFormProps) => {
   const formAction = useMemo(() => {
     if (role?.id) {
-      return master.roles.update.form(role.id);
+      const form = master.roles.update(role.id);
+      return {
+        action: form.url,
+        method: form.method,
+      };
     }
-    return master.roles.store.form();
+    const form = master.roles.store();
+    return {
+      action: form.url,
+      method: form.method,
+    };
   }, [role]);
 
   return (
     <Form {...formAction} resetOnSuccess>
-      {({ errors, processing, wasSuccessful }) => (
+      {({ errors, processing }) => (
         <Card>
           <CardContent className="pt-6">
             <div className="space-y-6">
@@ -64,15 +72,6 @@ const RoleForm = memo(({ role }: RoleFormProps) => {
               </Button>
               <ButtonLoading processing={processing} />
             </div>
-
-            {/* Success Message */}
-            {wasSuccessful && (
-              <div className="p-4 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
-                <p className="text-sm text-green-800 dark:text-green-200 font-medium">
-                  ✓ Role {role?.id ? "updated" : "created"} successfully!
-                </p>
-              </div>
-            )}
           </CardContent>
         </Card>
       )}
