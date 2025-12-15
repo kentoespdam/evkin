@@ -11,12 +11,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import input from "@/pages/master/users/input";
 import master from "@/routes/master";
 import { MasterInput } from "@/types/master-input";
 import { MasterSource } from "@/types/master-source";
 import { Form, Link } from "@inertiajs/react";
-import { ArrowLeftIcon, CheckIcon, TextCursorInputIcon } from "lucide-react";
+import { ArrowLeftIcon, TextCursorInputIcon } from "lucide-react";
 import { useMemo } from "react";
 interface InputsFormProps {
   sources: MasterSource[];
@@ -108,9 +107,6 @@ const InputsForm = ({ data, sources }: InputsFormProps) => {
                       {sources.map((item) => (
                         <SelectItem key={item.id} value={item.id}>
                           <span className="capitalize">{item.name}</span>
-                          {item.id === data?.masterSource.id && (
-                            <CheckIcon className="size-4 text-primary" />
-                          )}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -123,7 +119,7 @@ const InputsForm = ({ data, sources }: InputsFormProps) => {
             {/* Form Actions */}
             <div className="flex items-center justify-between pt-4">
               <Button type="button" variant="ghost" asChild>
-                <Link href={master.sources().url} className="gap-2">
+                <Link href={master.inputs().url} className="gap-2">
                   <ArrowLeftIcon className="h-4 w-4" />
                   Cancel
                 </Link>

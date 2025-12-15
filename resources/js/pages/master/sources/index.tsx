@@ -67,6 +67,7 @@ const SourcesIndex = ({ page }: SourcesIndexProps) => {
               <TableTextSearch
                 params={params}
                 handleSelectChange={handleSelectChange}
+                text="Source Name"
               />
             </TableShowTotalText>
             <SourcesTable

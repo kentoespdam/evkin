@@ -139,7 +139,7 @@ SourcesTableAction.displayName = "SourcesTableAction";
 const SourcesTable = memo(
   ({ page, setId, setShowDeleteDialog }: SourcesTableProps) => {
     if (page.meta.total === 0) {
-      return <TableEmpty />;
+      return <TableEmpty tableName="Master Sources" />;
     }
 
     return (

@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/badge";
+import TableEmpty from "@/components/commons/table-empty";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -16,17 +16,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import master from "@/routes/master";
 import { Pagination } from "@/types";
 import { Role } from "@/types/role";
 import { Link } from "@inertiajs/react";
 import {
   MoreHorizontal,
   PencilIcon,
-  TrashIcon,
   ShieldIcon,
+  TrashIcon,
 } from "lucide-react";
 import { memo, useCallback, useMemo, useState } from "react";
-import master from "@/routes/master";
 
 interface RoleTableProps {
   page: Pagination<Role>;
@@ -148,15 +148,7 @@ TableAction.displayName = "TableAction";
 const RoleTable = memo(
   ({ page, setRoleId, setShowDeleteDialog }: RoleTableProps) => {
     if (page.meta.total === 0) {
-      return (
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <ShieldIcon className="h-12 w-12 text-muted-foreground/50" />
-          <h3 className="mt-4 text-lg font-semibold">No roles found</h3>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Try adjusting your search or add a new role.
-          </p>
-        </div>
-      );
+      return <TableEmpty tableName="Role" />;
     }
 
     return (

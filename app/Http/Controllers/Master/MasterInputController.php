@@ -21,7 +21,8 @@ class MasterInputController extends Controller
         $perPage = $request->per_page ?? 10;
         $query = MasterInputs::with('masterSource');
         if ($request->has('search')) {
-            $query->where('name', 'like', "%{$request->get('search')}%");
+            $query->where('kode', 'like', "%{$request->get('search')}%")
+                ->orWhere('description', 'like', "%{$request->get('search')}%");
         }
         $masterInputs = $query->paginate($perPage);
 

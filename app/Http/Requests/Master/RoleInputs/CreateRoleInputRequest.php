@@ -21,7 +21,8 @@ class CreateRoleInputRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        $this->convertSqidsToIds(['role_id', 'master_input_id']);
+        $this->convertSqidsToIds(['role_id']);
+        $this->convertArraySqidsToIds('master_input_ids');
     }
 
     /**
@@ -33,7 +34,8 @@ class CreateRoleInputRequest extends FormRequest
     {
         return [
             'role_id' => ['required', 'exists:roles,id'],
-            'master_input_id' => ['required', 'exists:master_inputs,id'],
+            'master_input_ids' => ['required', 'array', 'min:1'],
+            'master_input_ids.*' => ['exists:master_inputs,id'],
         ];
     }
 
@@ -47,8 +49,10 @@ class CreateRoleInputRequest extends FormRequest
         return [
             'role_id.required' => 'Please select a role.',
             'role_id.exists' => 'The selected role is invalid.',
-            'master_input_id.required' => 'Please select an input.',
-            'master_input_id.exists' => 'The selected input is invalid.',
+            'master_input_ids.required' => 'Please select at least one input.',
+            'master_input_ids.array' => 'Invalid input format.',
+            'master_input_ids.min' => 'Please select at least one input.',
+            'master_input_ids.*.exists' => 'One or more selected inputs are invalid.',
         ];
     }
 
@@ -79,6 +83,27 @@ class CreateRoleInputRequest extends FormRequest
                 return new MasterInputs;
             default:
                 throw new \InvalidArgumentException(sprintf('Model not found for field "%s".', $field));
+        }
+    }
+
+    /**
+     * Convert array of sqids to ids if provided.
+     */
+    private function convertArraySqidsToIds(string $field): void
+    {
+        if ($this->has($field) && is_array($this->{$field})) {
+            $convertedIds = [];
+            foreach ($this->{$field} as $value) {
+                if (! is_numeric($value)) {
+                    $model = (new MasterInputs)->whereSqid($value)->first();
+                    $convertedIds[] = $model?->id;
+                } else {
+                    $convertedIds[] = $value;
+                }
+            }
+            $this->merge([
+                $field => array_filter($convertedIds), // Remove null values
+            ]);
         }
     }
 }

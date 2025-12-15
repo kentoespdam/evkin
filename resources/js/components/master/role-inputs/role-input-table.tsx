@@ -19,33 +19,32 @@ import {
 } from "@/components/ui/table";
 import master from "@/routes/master";
 import { Pagination } from "@/types";
-import { MasterInput } from "@/types/master-input";
+import { RoleInput } from "@/types/role-input";
 import { Link } from "@inertiajs/react";
 import { MoreHorizontal, PencilIcon, TrashIcon } from "lucide-react";
 import { memo, useCallback, useMemo, useState } from "react";
 
-interface InputsTableProps {
-  page: Pagination<MasterInput>;
+interface RoleInputTableProps {
+  page: Pagination<RoleInput>;
   setId: (id: string) => void;
   setShowDeleteDialog: (show: boolean) => void;
 }
 
-const InputsTableHeader = memo(() => {
+const RoleInputTableHeader = memo(() => {
   return (
     <TableHeader>
       <TableRow>
         <TableHead className="w-16 text-center">#</TableHead>
-        <TableHead>Kode</TableHead>
-        <TableHead>Description</TableHead>
-        <TableHead>Source</TableHead>
+        <TableHead>Role</TableHead>
+        <TableHead>Indikator</TableHead>
       </TableRow>
     </TableHeader>
   );
 });
-InputsTableHeader.displayName = "InputsTableHeader";
+RoleInputTableHeader.displayName = "RoleInputTableHeader";
 
-const InputsTableBody = memo(
-  ({ page, setId, setShowDeleteDialog }: InputsTableProps) => {
+const RoleInputTableBody = memo(
+  ({ page, setId, setShowDeleteDialog }: RoleInputTableProps) => {
     const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
 
     const rows = useMemo(() => {
@@ -68,20 +67,20 @@ const InputsTableBody = memo(
             <TableCell className="w-16 text-center">{item.urut}</TableCell>
             <TableCell>
               <div className="flex items-center gap-3">
-                <InputTableActions
+                <TableAction
                   row={item}
                   isSelected={item.id === selectedRowId}
                   setId={setId}
                   setShowDeleteDialog={setShowDeleteDialog}
                 />
-                {item.kode}
+                {item.role.name}
               </div>
             </TableCell>
-            <TableCell>{item.description}</TableCell>
-            <TableCell>
-              <Badge variant="secondary" className="capitalize">
-                {item.masterSource.name}
+            <TableCell className="flex gap-1">
+              <Badge variant="outline" color="secondary">
+                {item.masterInput.kode}
               </Badge>
+              <span>- {item.masterInput.description}</span>
             </TableCell>
           </TableRow>
         ))}
@@ -89,16 +88,16 @@ const InputsTableBody = memo(
     );
   },
 );
-InputsTableBody.displayName = "InputsTableBody";
+RoleInputTableBody.displayName = "RoleInputTableBody";
 
-interface InputTableActionsProps {
-  row: MasterInput;
+interface TableActionProps {
+  row: RoleInput;
   isSelected: boolean;
   setId: (id: string) => void;
   setShowDeleteDialog: (show: boolean) => void;
 }
-const InputTableActions = memo(
-  ({ row, isSelected, setId, setShowDeleteDialog }: InputTableActionsProps) => {
+const TableAction = memo(
+  ({ row, isSelected, setId, setShowDeleteDialog }: TableActionProps) => {
     const handleDelete = useCallback(() => {
       setId(row.id);
       setShowDeleteDialog(true);
@@ -120,7 +119,7 @@ const InputTableActions = memo(
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild className="text-blue-500 font-bold">
             <Link
-              href={master.inputs.edit.url(row.id)}
+              href={master.roleInputs.edit.url(row.role.id)}
               className="flex items-center gap-2"
             >
               <PencilIcon className="size-4 text-blue-500" />
@@ -139,28 +138,28 @@ const InputTableActions = memo(
     );
   },
 );
-InputTableActions.displayName = "InputTableActions";
+TableAction.displayName = "TableAction";
 
-const InputsTable = memo(
-  ({ page, setId, setShowDeleteDialog }: InputsTableProps) => {
-    if (page.meta.total === 0) {
-      return <TableEmpty tableName="Master Inputs" />;
-    }
-    return (
-      <div className="overflow-x-auto">
-        <Table>
-          <InputsTableHeader />
-          <InputsTableBody
-            page={page}
-            setId={setId}
-            setShowDeleteDialog={setShowDeleteDialog}
-          />
-        </Table>
-      </div>
-    );
-  },
-);
+const RoleInputTable = ({
+  page,
+  setId,
+  setShowDeleteDialog,
+}: RoleInputTableProps) => {
+  if (page.meta.total === 0) {
+    return <TableEmpty tableName="Role Inputs" />;
+  }
+  return (
+    <div className="overflow-x-auto">
+      <Table>
+        <RoleInputTableHeader />
+        <RoleInputTableBody
+          page={page}
+          setId={setId}
+          setShowDeleteDialog={setShowDeleteDialog}
+        />
+      </Table>
+    </div>
+  );
+};
 
-InputsTable.displayName = "InputsTable";
-
-export default InputsTable;
+export default RoleInputTable;

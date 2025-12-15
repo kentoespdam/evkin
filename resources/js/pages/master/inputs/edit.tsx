@@ -39,7 +39,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const MasterInputEdit = ({ data, sources }: MasterInputEditProps) => {
-  console.log(data);
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title={`Edit Master Input`} />

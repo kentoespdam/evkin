@@ -10,10 +10,11 @@ export interface TableTextSearchProps {
     [k: string]: string;
   };
   handleSelectChange: (value: HandleSelectChangeProps) => void;
+  text?: string;
 }
 
 const TableTextSearch = memo(
-  ({ params, handleSelectChange }: TableTextSearchProps) => {
+  ({ params, handleSelectChange, text = "" }: TableTextSearchProps) => {
     const search = params.search ?? "";
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -36,7 +37,7 @@ const TableTextSearch = memo(
           id="search"
           type="text"
           name="search"
-          placeholder="Search users..."
+          placeholder={`Search ${text}...`}
           defaultValue={search}
           className="pl-9 pr-9"
           onChange={debouncedSearch}

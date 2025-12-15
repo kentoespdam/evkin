@@ -46,8 +46,8 @@ Route::middleware(['auth', 'role:'.config('master.allowed_roles')])->group(funct
             Route::get('', [RoleInputController::class, 'index'])->name('master.role-inputs');
             Route::get('add', [RoleInputController::class, 'add'])->name('master.role-inputs.add');
             Route::post('', [RoleInputController::class, 'store'])->name('master.role-inputs.store');
-            Route::get('{roleInput}/edit', [RoleInputController::class, 'edit'])->name('master.role-inputs.edit');
-            Route::patch('{roleInput}', [RoleInputController::class, 'update'])->name('master.role-inputs.update');
+            Route::get('{role}/edit', [RoleInputController::class, 'edit'])->name('master.role-inputs.edit');
+            Route::patch('{role}', [RoleInputController::class, 'update'])->name('master.role-inputs.update');
             Route::delete('{roleInput}', [RoleInputController::class, 'destroy'])->name('master.role-inputs.destroy');
         });
     });

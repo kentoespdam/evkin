@@ -1,3 +1,4 @@
+import TableEmpty from "@/components/commons/table-empty";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,7 @@ import {
 import { Pagination } from "@/types";
 import { UserWithRole } from "@/types/user";
 import { Link } from "@inertiajs/react";
-import { MoreHorizontal, PencilIcon, TrashIcon, UsersIcon } from "lucide-react";
+import { MoreHorizontal, PencilIcon, TrashIcon } from "lucide-react";
 import { memo, useCallback, useMemo } from "react";
 
 interface UserTableProps {
@@ -152,15 +153,7 @@ TableAction.displayName = "TableAction";
 const UserTable = memo(
   ({ page, setUserId, setShowDeleteDialog }: UserTableProps) => {
     if (page.meta.total === 0) {
-      return (
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <UsersIcon className="h-12 w-12 text-muted-foreground/50" />
-          <h3 className="mt-4 text-lg font-semibold">No users found</h3>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Try adjusting your search or add a new user.
-          </p>
-        </div>
-      );
+      return <TableEmpty tableName="Master Users" />;
     }
 
     return (

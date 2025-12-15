@@ -15,6 +15,7 @@ import { NavGroup, type NavItem } from "@/types";
 import { Link } from "@inertiajs/react";
 import {
   GitPullRequestArrow,
+  KeyIcon,
   LayoutGrid,
   Network,
   TextCursorInputIcon,
@@ -54,6 +55,11 @@ const masterGroupItems: NavGroup = {
       title: "Master Inputs",
       href: master.inputs().url,
       icon: TextCursorInputIcon,
+    },
+    {
+      title: "Role Inputs",
+      href: master.roleInputs().url,
+      icon: KeyIcon,
     },
   ],
 };

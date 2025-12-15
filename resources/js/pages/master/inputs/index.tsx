@@ -67,6 +67,7 @@ const InputsIndex = ({ page }: InputsIndexProps) => {
               <TableTextSearch
                 params={params}
                 handleSelectChange={handleSelectChange}
+                text="Kode / Description"
               />
             </TableShowTotalText>
             <InputsTable

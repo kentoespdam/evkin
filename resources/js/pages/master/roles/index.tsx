@@ -69,6 +69,7 @@ const RolesIndex = ({ page }: RolesIndexProps) => {
               <TableTextSearch
                 params={params}
                 handleSelectChange={handleSelectChange}
+                text="Role Name"
               />
             </TableShowTotalText>
             <RoleTable

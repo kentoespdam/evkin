@@ -73,6 +73,7 @@ export default function UsersIndex({ page }: UsersIndexProps) {
               <TableTextSearch
                 params={params}
                 handleSelectChange={handleSelectChange}
+                text="User, email, role"
               />
             </TableShowTotalText>
             <UserTable

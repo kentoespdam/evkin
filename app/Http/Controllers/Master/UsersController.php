@@ -24,6 +24,10 @@ class UsersController extends Controller
         if ($request->has('search')) {
             $users = User::with('role:id,name')
                 ->where('name', 'like', "%{$request->get('search')}%")
+                ->orWhere('email', 'like', "%{$request->get('search')}%")
+                ->orWhereHas('role', function ($query) use ($request) {
+                    $query->where('name', 'like', "%{$request->get('search')}%");
+                })
                 ->paginate($request->per_page ?? 10);
         }
 

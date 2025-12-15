@@ -1,4 +1,4 @@
-import InputsForm from "@/components/master/inputs/inputs-form";
+import RoleInputForm from "@/components/master/role-inputs/role-input-form";
 import {
   Card,
   CardDescription,
@@ -9,13 +9,11 @@ import AppLayout from "@/layouts/app-layout";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
 import { BreadcrumbItem } from "@/types";
-import { MasterSource } from "@/types/master-source";
+import { MasterInput } from "@/types/master-input";
+import { Role } from "@/types/role";
+import { RoleInput } from "@/types/role-input";
 import { Head } from "@inertiajs/react";
-import { TextCursorInputIcon } from "lucide-react";
-
-interface MasterInputAddProps {
-  sources: MasterSource[];
-}
+import { KeyIcon } from "lucide-react";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -27,41 +25,45 @@ const breadcrumbs: BreadcrumbItem[] = [
     href: "#",
   },
   {
-    title: "Inputs",
-    href: master.inputs().url,
+    title: "Role Inputs",
+    href: master.roleInputs().url,
   },
   {
-    title: "Add",
+    title: "Edit",
     href: "#",
   },
 ];
 
-const MasterInputAdd = ({ sources }: MasterInputAddProps) => {
+interface EditRoleInputProps {
+  roles: Role[];
+  inputs: MasterInput[];
+  data?: RoleInput;
+}
+
+const EditRoleInput = ({ roles, inputs, data }: EditRoleInputProps) => {
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title={`Add Master Input`} />
+      <Head title={`Edit Role Input`} />
       <div className="flex flex-col gap-6 p-4">
         {/* Header Card */}
         <Card className="border-primary/20">
           <CardHeader className="space-y-1">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-primary/10 rounded-lg">
-                <TextCursorInputIcon className="h-6 w-6 text-primary" />
+                <KeyIcon className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <CardTitle className="text-2xl">Add Master Input</CardTitle>
-                <CardDescription>
-                  Add new master input information
-                </CardDescription>
+                <CardTitle className="text-2xl">Edit Role Input</CardTitle>
+                <CardDescription>Edit role input information</CardDescription>
               </div>
             </div>
           </CardHeader>
         </Card>
 
-        <InputsForm sources={sources} />
+        <RoleInputForm roles={roles} inputs={inputs} data={data} />
       </div>
     </AppLayout>
   );
 };
 
-export default MasterInputAdd;
+export default EditRoleInput;
