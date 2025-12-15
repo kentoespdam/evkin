@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Master\Inputs;
 
 use App\Models\Master\MasterInputs;
+use App\Models\Master\MasterSources;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CreateInputRequest extends FormRequest
@@ -17,9 +18,17 @@ class CreateInputRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        if (MasterInputs::where('name', $this->input('name'))->exists() === false) {
-            $this->merge(['name' => $this->input('name')]);
+        if (MasterInputs::where('kode', $this->input('kode'))->exists() === false) {
+            $this->merge(['kode' => $this->input('kode')]);
         }
+
+        if ($this->has('master_source_id') && ! is_numeric($this->master_source_id)) {
+            $masterSourceId = MasterSources::whereSqid($this->master_source_id)->first();
+            if ($masterSourceId) {
+                $this->merge(['master_source_id' => $masterSourceId->id]);
+            }
+        }
+
     }
 
     /**

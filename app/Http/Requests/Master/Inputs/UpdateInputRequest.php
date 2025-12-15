@@ -27,6 +27,13 @@ class UpdateInputRequest extends FormRequest
                 'master_source_id' => $source?->id,
             ]);
         }
+
+        if ($this->has('master_source_id') && ! is_numeric($this->master_source_id)) {
+            $masterSourceId = MasterSources::whereSqid($this->master_source_id)->first();
+            if ($masterSourceId) {
+                $this->merge(['master_source_id' => $masterSourceId->id]);
+            }
+        }
     }
 
     /**
@@ -39,7 +46,19 @@ class UpdateInputRequest extends FormRequest
         return [
             'kode' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:255'],
-            '' => ['required', 'string', ''],
+            'master_source_id' => ['required', 'integer', 'exists:master_sources,id'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'kode.required' => 'The code field is required.',
+            'kode.max' => 'The code may not be greater than 255 characters.',
+            'description.required' => 'The description field is required.',
+            'description.max' => 'The description may not be greater than 255 characters.',
+            'master_source_id.required' => 'Please select a source.',
+            'master_source_id.exists' => 'The selected source is invalid.',
         ];
     }
 }
