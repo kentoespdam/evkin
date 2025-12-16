@@ -33,7 +33,7 @@ class CreateReportRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'urut' => ['required', 'numeric', 'min:0'],
+            'urut' => ['numeric', 'min:0'],
             'report_type_id' => ['required', 'exists:report_types,id'],
             'descIndicator' => ['required', 'string'],
             'descFormula' => ['required', 'string'],
@@ -46,7 +46,6 @@ class CreateReportRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'urut.required' => 'Urut is required',
             'urut.numeric' => 'Urut must be a number',
             'report_type_id.required' => 'Report type is required',
             'report_type_id.exists' => 'Report type is invalid',

@@ -22,7 +22,16 @@ class UpdateSourceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255', 'unique:master_sources,name,'.$this->id],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Nama sumber harus diisi',
+            'name.string' => 'Nama sumber harus string',
+            'name.max' => 'Nama sumber maksimal 255 karakter',
         ];
     }
 }

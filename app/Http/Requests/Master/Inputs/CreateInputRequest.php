@@ -46,16 +46,6 @@ class CreateInputRequest extends FormRequest
     }
 
     /**
-     * Get custom attributes for validator errors.
-     */
-    public function attributes(): array
-    {
-        return [
-            'master_source_id' => 'Source',
-        ];
-    }
-
-    /**
      * Get custom error messages for validator errors.
      */
     public function messages(): array

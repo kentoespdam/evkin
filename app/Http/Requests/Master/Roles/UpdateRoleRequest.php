@@ -22,7 +22,16 @@ class UpdateRoleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255', 'unique:roles,name,'.$this->id],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Nama peran harus diisi',
+            'name.string' => 'Nama peran harus string',
+            'name.max' => 'Nama peran maksimal 255 karakter',
         ];
     }
 }

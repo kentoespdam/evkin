@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Master\Users;
 
+use App\Models\Master\Roles;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateUserRequest extends FormRequest
@@ -21,7 +22,7 @@ class UpdateUserRequest extends FormRequest
     {
         // Convert sqid to id if provided
         if ($this->has('role_id') && ! is_numeric($this->role_id)) {
-            $role = \App\Models\Master\Roles::whereSqid($this->role_id)->first();
+            $role = Roles::whereSqid($this->role_id)->first();
             $this->merge([
                 'role_id' => $role?->id,
             ]);

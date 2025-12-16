@@ -82,7 +82,7 @@ class UpdateRoleInputRequest extends FormRequest
             case 'master_input_id':
                 return new MasterInputs;
             default:
-                throw new \InvalidArgumentException(sprintf('Model not found for field "%s".', $field));
+                throw new \InvalidArgumentException(sprintf('Error Model not found for field "%s".', $field));
         }
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Master\Users;
 
+use App\Models\Master\Roles;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CreateUserRequest extends FormRequest
@@ -21,7 +22,7 @@ class CreateUserRequest extends FormRequest
     {
         // Convert sqid to id if provided
         if ($this->has('role_id') && ! is_numeric($this->role_id)) {
-            $role = \App\Models\Master\Roles::whereSqid($this->role_id)->first();
+            $role = Roles::whereSqid($this->role_id)->first();
             $this->merge([
                 'role_id' => $role?->id,
             ]);
@@ -51,9 +52,9 @@ class CreateUserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'The name field is required.',
-            'name.max' => 'The name may not be greater than 255 characters.',
-            'email.required' => 'The email field is required.',
+            'name.required' => 'Nama harus diisi',
+            'name.max' => 'Nama may not be greater than 255 characters.',
+            'email.required' => 'Email harus diisi',
             'email.email' => 'Please provide a valid email address.',
             'email.unique' => 'This email is already taken.',
             'role_id.required' => 'Please select a role.',
