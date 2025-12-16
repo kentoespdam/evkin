@@ -22,6 +22,10 @@ const breadcrumbs: BreadcrumbItem[] = [
     href: dashboard().url,
   },
   {
+    title: "Master",
+    href: "#",
+  },
+  {
     title: "Users",
     href: master.users().url,
   },
@@ -46,7 +50,7 @@ const InputUser = ({ roles }: InputUserProps) => {
               <div>
                 <CardTitle className="text-2xl">Add User</CardTitle>
                 <CardDescription>
-                  Add new user information and permissions
+                  Add new User Information and Permissions
                 </CardDescription>
               </div>
             </div>

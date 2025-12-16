@@ -14,13 +14,17 @@ import { Head } from "@inertiajs/react";
 import { GitPullRequestArrow } from "lucide-react";
 
 interface SourcesEditProps {
-  source: MasterSource;
+  data: MasterSource;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
     title: "Dashboard",
     href: dashboard().url,
+  },
+  {
+    title: "Master",
+    href: "#",
   },
   {
     title: "Sources",
@@ -32,7 +36,7 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
-const SourcesEdit = ({ source }: SourcesEditProps) => {
+const SourcesEdit = ({ data }: SourcesEditProps) => {
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title={`Edit Source`} />
@@ -46,13 +50,13 @@ const SourcesEdit = ({ source }: SourcesEditProps) => {
               </div>
               <div>
                 <CardTitle className="text-2xl">Edit Source</CardTitle>
-                <CardDescription>Edit source information</CardDescription>
+                <CardDescription>Edit Source information</CardDescription>
               </div>
             </div>
           </CardHeader>
         </Card>
 
-        <SourcesForm source={source} />
+        <SourcesForm data={data} />
       </div>
     </AppLayout>
   );

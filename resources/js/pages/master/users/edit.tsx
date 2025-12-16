@@ -20,6 +20,10 @@ const breadcrumbs: BreadcrumbItem[] = [
     href: dashboard().url,
   },
   {
+    title: "Master",
+    href: "#",
+  },
+  {
     title: "Users",
     href: master.users().url,
   },
@@ -49,7 +53,7 @@ export default function UsersEdit({ user, roles }: UsersEditProps) {
               <div>
                 <CardTitle className="text-2xl">Edit User</CardTitle>
                 <CardDescription>
-                  Update user information and permissions
+                  Update User Information and Permissions
                 </CardDescription>
               </div>
             </div>

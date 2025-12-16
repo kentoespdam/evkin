@@ -41,7 +41,7 @@ interface AddRoleInputProps {
 const AddRoleInput = ({ roles, inputs }: AddRoleInputProps) => {
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title={`Add Master Input`} />
+      <Head title={`Add Role Input`} />
       <div className="flex flex-col gap-6 p-4">
         {/* Header Card */}
         <Card className="border-primary/20">
@@ -53,7 +53,7 @@ const AddRoleInput = ({ roles, inputs }: AddRoleInputProps) => {
               <div>
                 <CardTitle className="text-2xl">Add Role Input</CardTitle>
                 <CardDescription>
-                  Add new role input information
+                  Add new Role Input information
                 </CardDescription>
               </div>
             </div>

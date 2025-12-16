@@ -19,6 +19,10 @@ const breadcrumbs: BreadcrumbItem[] = [
     href: dashboard().url,
   },
   {
+    title: "Master",
+    href: "#",
+  },
+  {
     title: "Roles",
     href: master.roles().url,
   },
@@ -46,7 +50,7 @@ const RoleEdit = ({ role }: RoleEditProps) => {
               </div>
               <div>
                 <CardTitle className="text-2xl">Edit Role</CardTitle>
-                <CardDescription>Edit role information</CardDescription>
+                <CardDescription>Edit Role information</CardDescription>
               </div>
             </div>
           </CardHeader>

@@ -51,14 +51,14 @@ export default function UsersIndex({ page }: UsersIndexProps) {
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title="Users" />
+      <Head title="Users Management" />
       <div className="flex flex-col gap-6 p-4">
         <Card>
           <CardHeader className="flex-row items-center justify-between space-y-0">
             <div className="space-y-1">
               <CardTitle className="text-xl">Users Management</CardTitle>
               <CardDescription>
-                Manage your users and their roles
+                Manage your Users and their Roles
               </CardDescription>
             </div>
             <Button className="gap-2" asChild>

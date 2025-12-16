@@ -46,15 +46,16 @@ const SourcesIndex = ({ page }: SourcesIndexProps) => {
   const { id, setId, showDeleteDialog, setShowDeleteDialog } =
     useGlobalDeleteHook();
   const formAction = useMemo(() => master.sources.destroy(id).url, [id]);
+
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title="Users" />
+      <Head title="Sources Management" />
       <div className="flex flex-col gap-6 p-4">
         <Card>
           <CardHeader className="flex-row items-center justify-between space-y-0">
             <div className="space-y-1">
               <CardTitle className="text-xl">Sources Management</CardTitle>
-              <CardDescription>Manage your sources</CardDescription>
+              <CardDescription>Manage your Sources</CardDescription>
             </div>
             <Button className="gap-2" asChild>
               <Link href={master.sources.add().url}>

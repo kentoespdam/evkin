@@ -37,7 +37,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 interface EditRoleInputProps {
   roles: Role[];
   inputs: MasterInput[];
-  data?: RoleInput;
+  data: RoleInput;
 }
 
 const EditRoleInput = ({ roles, inputs, data }: EditRoleInputProps) => {
@@ -54,7 +54,7 @@ const EditRoleInput = ({ roles, inputs, data }: EditRoleInputProps) => {
               </div>
               <div>
                 <CardTitle className="text-2xl">Edit Role Input</CardTitle>
-                <CardDescription>Edit role input information</CardDescription>
+                <CardDescription>Edit Role Input information</CardDescription>
               </div>
             </div>
           </CardHeader>

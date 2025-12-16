@@ -55,7 +55,7 @@ const ReportTypesPage = ({ page }: ReportTypesPageProps) => {
           <CardHeader className="flex-row items-center justify-between space-y-0">
             <div className="space-y-1">
               <CardTitle className="text-xl">Report Types Management</CardTitle>
-              <CardDescription>Manage your report types</CardDescription>
+              <CardDescription>Manage your Report Types</CardDescription>
             </div>
             <Button className="gap-2" asChild>
               <Link href={master.reportTypes.add().url}>
@@ -65,7 +65,7 @@ const ReportTypesPage = ({ page }: ReportTypesPageProps) => {
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
-            <TableShowTotalText page={page} tableName="report types">
+            <TableShowTotalText page={page} tableName="Report Types">
               <TableTextSearch
                 params={params}
                 handleSelectChange={handleSelectChange}

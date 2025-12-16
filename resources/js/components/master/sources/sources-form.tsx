@@ -10,13 +10,13 @@ import { ArrowLeftIcon, NetworkIcon } from "lucide-react";
 import { useMemo } from "react";
 
 interface SourcesFormProps {
-  source?: MasterSource;
+  data?: MasterSource;
 }
 
-const SourcesForm = ({ source }: SourcesFormProps) => {
+const SourcesForm = ({ data }: SourcesFormProps) => {
   const formAction = useMemo(() => {
-    if (source?.id) {
-      const form = master.sources.update(source.id);
+    if (data?.id) {
+      const form = master.sources.update(data.id);
 
       return {
         action: form.url,
@@ -28,7 +28,7 @@ const SourcesForm = ({ source }: SourcesFormProps) => {
       action: form.url,
       method: form.method,
     };
-  }, [source]);
+  }, [data]);
 
   const StarRequired = () => {
     return <span className="text-destructive">*</span>;
@@ -58,7 +58,7 @@ const SourcesForm = ({ source }: SourcesFormProps) => {
                     id="name"
                     name="name"
                     type="text"
-                    defaultValue={source?.name}
+                    defaultValue={data?.name}
                     placeholder="Enter source name"
                     className={errors.name ? "border-destructive" : ""}
                     required

@@ -18,6 +18,10 @@ const breadcrumbs: BreadcrumbItem[] = [
     href: dashboard().url,
   },
   {
+    title: "Master",
+    href: "#",
+  },
+  {
     title: "Roles",
     href: master.roles().url,
   },
@@ -41,7 +45,7 @@ const RolesAdd = () => {
               </div>
               <div>
                 <CardTitle className="text-2xl">Add Role</CardTitle>
-                <CardDescription>Add new role information</CardDescription>
+                <CardDescription>Add new Role information</CardDescription>
               </div>
             </div>
           </CardHeader>

@@ -46,6 +46,7 @@ const InputsIndex = ({ page }: InputsIndexProps) => {
   const { id, setId, showDeleteDialog, setShowDeleteDialog } =
     useGlobalDeleteHook();
   const formUrl = useMemo(() => master.inputs.destroy(id).url, [id]);
+
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Master Inputs" />

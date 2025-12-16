@@ -47,6 +47,7 @@ const RolesIndex = ({ page }: RolesIndexProps) => {
     useGlobalDeleteHook();
 
   const formAction = useMemo(() => master.roles.destroy(id).url, [id]);
+
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Roles" />
@@ -55,7 +56,7 @@ const RolesIndex = ({ page }: RolesIndexProps) => {
           <CardHeader className="flex-row items-center justify-between space-y-0">
             <div className="space-y-1">
               <CardTitle className="text-xl">Roles Management</CardTitle>
-              <CardDescription>Manage your roles</CardDescription>
+              <CardDescription>Manage your Roles</CardDescription>
             </div>
             <Button className="gap-2" asChild>
               <Link href={master.roles.add().url}>

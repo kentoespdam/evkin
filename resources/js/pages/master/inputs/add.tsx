@@ -51,7 +51,7 @@ const MasterInputAdd = ({ sources }: MasterInputAddProps) => {
               <div>
                 <CardTitle className="text-2xl">Add Master Input</CardTitle>
                 <CardDescription>
-                  Add new master input information
+                  Add new Master Input information
                 </CardDescription>
               </div>
             </div>

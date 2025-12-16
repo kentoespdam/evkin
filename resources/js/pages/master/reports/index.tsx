@@ -55,7 +55,7 @@ const MasterReports = ({ page }: MasterReportsProps) => {
           <CardHeader className="flex-row items-center justify-between space-y-0">
             <div className="space-y-1">
               <CardTitle className="text-xl">Reports Management</CardTitle>
-              <CardDescription>Manage your master reports</CardDescription>
+              <CardDescription>Manage your Master Reports</CardDescription>
             </div>
             <Button className="gap-2" asChild>
               <Link href={master.reports.add().url}>

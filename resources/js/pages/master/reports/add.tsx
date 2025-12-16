@@ -37,17 +37,12 @@ const breadcrumbs: BreadcrumbItem[] = [
 interface MasterReportAddProps {
   reportTypes: ReportType[];
   availableCode: MasterInput[];
-  data: Report;
 }
 
 const MasterReportAdd = ({
   reportTypes,
   availableCode,
-  data,
 }: MasterReportAddProps) => {
-  console.log(reportTypes);
-  console.log(availableCode);
-  // console.log(data)
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title={`Add Master Report`} />
@@ -62,18 +57,14 @@ const MasterReportAdd = ({
               <div>
                 <CardTitle className="text-2xl">Add Master Report</CardTitle>
                 <CardDescription>
-                  Add new master report information
+                  Add new Master Report information
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
         </Card>
 
-        <ReportsForm
-          data={data}
-          reportType={reportTypes}
-          availableCode={availableCode}
-        />
+        <ReportsForm reportType={reportTypes} availableCode={availableCode} />
       </div>
     </AppLayout>
   );

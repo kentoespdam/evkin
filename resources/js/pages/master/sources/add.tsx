@@ -13,14 +13,14 @@ import { MasterSource } from "@/types/master-source";
 import { Head } from "@inertiajs/react";
 import { GitPullRequestArrow } from "lucide-react";
 
-interface SourcesAddProps {
-  source: MasterSource;
-}
-
 const breadcrumbs: BreadcrumbItem[] = [
   {
     title: "Dashboard",
     href: dashboard().url,
+  },
+  {
+    title: "Master",
+    href: "#",
   },
   {
     title: "Sources",
@@ -32,7 +32,7 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
-const SourcesAdd = ({ source }: SourcesAddProps) => {
+const SourcesAdd = () => {
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title={`Add Source`} />
@@ -46,13 +46,13 @@ const SourcesAdd = ({ source }: SourcesAddProps) => {
               </div>
               <div>
                 <CardTitle className="text-2xl">Add Source</CardTitle>
-                <CardDescription>Add new source information</CardDescription>
+                <CardDescription>Add new Source information</CardDescription>
               </div>
             </div>
           </CardHeader>
         </Card>
 
-        <SourcesForm source={source} />
+        <SourcesForm />
       </div>
     </AppLayout>
   );

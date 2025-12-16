@@ -39,7 +39,7 @@ const ReportTypesAdd = () => {
           <CardHeader className="flex-row items-center justify-between space-y-0">
             <div className="space-y-1">
               <CardTitle className="text-xl">Add Report Type</CardTitle>
-              <CardDescription>Add new report type</CardDescription>
+              <CardDescription>Add new Report Type</CardDescription>
             </div>
           </CardHeader>
         </Card>

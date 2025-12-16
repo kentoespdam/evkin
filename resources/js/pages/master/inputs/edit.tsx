@@ -52,7 +52,7 @@ const MasterInputEdit = ({ data, sources }: MasterInputEditProps) => {
               </div>
               <div>
                 <CardTitle className="text-2xl">Edit Master Input</CardTitle>
-                <CardDescription>Edit master input information</CardDescription>
+                <CardDescription>Edit Master Input information</CardDescription>
               </div>
             </div>
           </CardHeader>

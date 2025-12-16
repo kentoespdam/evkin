@@ -36,7 +36,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     href: "#",
   },
   {
-    title: "RoleInputs",
+    title: "Role Input",
     href: "#",
   },
 ];
@@ -55,7 +55,7 @@ const RoleInputsIndex = ({ page }: RoleInputsIndexProps) => {
           <CardHeader className="flex-row items-center justify-between space-y-0">
             <div className="space-y-1">
               <CardTitle className="text-xl">Role Inputs Management</CardTitle>
-              <CardDescription>Manage your roles</CardDescription>
+              <CardDescription>Manage your Role Inputs</CardDescription>
             </div>
             <Button className="gap-2" asChild>
               <Link href={master.roleInputs.add().url}>
@@ -65,7 +65,7 @@ const RoleInputsIndex = ({ page }: RoleInputsIndexProps) => {
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
-            <TableShowTotalText page={page} tableName="roles">
+            <TableShowTotalText page={page} tableName="role-inputs">
               <TableTextSearch
                 params={params}
                 handleSelectChange={handleSelectChange}

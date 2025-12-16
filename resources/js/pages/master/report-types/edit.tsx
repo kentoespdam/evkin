@@ -44,7 +44,7 @@ const ReportTypesEdit = ({ data }: ReportTypesEditProps) => {
           <CardHeader className="flex-row items-center justify-between space-y-0">
             <div className="space-y-1">
               <CardTitle className="text-xl">Edit Report Type</CardTitle>
-              <CardDescription>Edit report type</CardDescription>
+              <CardDescription>Edit Report Type</CardDescription>
             </div>
           </CardHeader>
         </Card>
