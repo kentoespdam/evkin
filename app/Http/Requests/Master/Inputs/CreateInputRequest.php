@@ -19,7 +19,7 @@ class CreateInputRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         if (MasterInputs::where('kode', $this->input('kode'))->exists() === false) {
-            $this->merge(['kode' => $this->input('kode')]);
+            $this->merge(['kode' => str_replace(' ', '', $this->input('kode'))]);
         }
 
         if ($this->has('master_source_id') && ! is_numeric($this->master_source_id)) {

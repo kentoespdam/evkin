@@ -14,6 +14,7 @@ import { dashboard } from "@/routes";
 import { NavGroup, type NavItem } from "@/types";
 import { Link } from "@inertiajs/react";
 import {
+  FileTextIcon,
   FileTypeIcon,
   GitPullRequestArrow,
   KeyIcon,
@@ -66,6 +67,11 @@ const masterGroupItems: NavGroup = {
       title: "Report Types",
       href: master.reportTypes().url,
       icon: FileTypeIcon,
+    },
+    {
+      title: "Reports",
+      href: master.reports().url,
+      icon: FileTextIcon,
     },
   ],
 };

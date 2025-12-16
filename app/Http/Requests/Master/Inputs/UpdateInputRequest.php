@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Master\Inputs;
 
+use App\Models\Master\MasterInputs;
 use App\Models\Master\MasterSources;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -20,12 +21,8 @@ class UpdateInputRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        // Convert sqid to id if provided
-        if ($this->has('master_source_id') && ! is_numeric($this->master_source_id)) {
-            $source = MasterSources::whereSqid($this->master_source_id)->first();
-            $this->merge([
-                'master_source_id' => $source?->id,
-            ]);
+        if (MasterInputs::where('kode', $this->input('kode'))->exists() === false) {
+            $this->merge(['kode' => str_replace(' ', '', $this->input('kode'))]);
         }
 
         if ($this->has('master_source_id') && ! is_numeric($this->master_source_id)) {
@@ -44,7 +41,7 @@ class UpdateInputRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'kode' => ['required', 'string', 'max:255'],
+            'kode' => ['required', 'string', 'max:255', 'unique:master_inputs,kode,'.$this->id],
             'description' => ['required', 'string', 'max:255'],
             'master_source_id' => ['required', 'integer', 'exists:master_sources,id'],
         ];
