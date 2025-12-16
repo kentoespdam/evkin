@@ -11,8 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useGlobalDeleteHook } from "@/hooks/use-global-delete-hook";
 import { usePaginationHandler } from "@/hooks/use-pagination";
-import { useRolesHook } from "@/hooks/use-roles";
 import AppLayout from "@/layouts/app-layout";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
@@ -43,10 +43,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const RolesIndex = ({ page }: RolesIndexProps) => {
   const { params, handleSelectChange } = usePaginationHandler(page);
-  const { roleId, setRoleId, showDeleteDialog, setShowDeleteDialog } =
-    useRolesHook();
+  const { id, setId, showDeleteDialog, setShowDeleteDialog } =
+    useGlobalDeleteHook();
 
-  const formAction = useMemo(() => master.roles.destroy(roleId).url, [roleId]);
+  const formAction = useMemo(() => master.roles.destroy(id).url, [id]);
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Roles" />
@@ -74,7 +74,7 @@ const RolesIndex = ({ page }: RolesIndexProps) => {
             </TableShowTotalText>
             <RoleTable
               page={page}
-              setRoleId={setRoleId}
+              setId={setId}
               setShowDeleteDialog={setShowDeleteDialog}
             />
             <PaginationNav page={page} />

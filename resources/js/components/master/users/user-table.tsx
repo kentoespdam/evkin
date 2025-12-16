@@ -26,7 +26,7 @@ import { memo, useCallback, useMemo } from "react";
 
 interface UserTableProps {
   page: Pagination<UserWithRole>;
-  setUserId: (id: string) => void;
+  setId: (id: string) => void;
   setShowDeleteDialog: (show: boolean) => void;
 }
 
@@ -54,7 +54,7 @@ export const UserTableHeader = memo(() => {
 UserTableHeader.displayName = "UserTableHeader";
 
 export const UserTableBody = memo(
-  ({ page, setUserId, setShowDeleteDialog }: UserTableProps) => {
+  ({ page, setId, setShowDeleteDialog }: UserTableProps) => {
     const rows = useMemo(() => {
       return page.data.map((item, index) => ({
         no: page.meta.from + index,
@@ -73,7 +73,7 @@ export const UserTableBody = memo(
               <div className="flex items-center gap-3">
                 <TableAction
                   row={item}
-                  setUserId={setUserId}
+                  setId={setId}
                   setShowDeleteDialog={setShowDeleteDialog}
                 />
                 <Avatar className="h-9 w-9">
@@ -103,15 +103,15 @@ UserTableBody.displayName = "UserTableBody";
 
 interface TableActionProps {
   row: UserWithRole;
-  setUserId: (id: string) => void;
+  setId: (id: string) => void;
   setShowDeleteDialog: (show: boolean) => void;
 }
 const TableAction = memo(
-  ({ row, setUserId, setShowDeleteDialog }: TableActionProps) => {
+  ({ row, setId, setShowDeleteDialog }: TableActionProps) => {
     const handleDelete = useCallback(() => {
-      setUserId(row.id);
+      setId(row.id);
       setShowDeleteDialog(true);
-    }, [row.id, setUserId, setShowDeleteDialog]);
+    }, [row.id, setId, setShowDeleteDialog]);
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -151,7 +151,7 @@ const TableAction = memo(
 TableAction.displayName = "TableAction";
 
 const UserTable = memo(
-  ({ page, setUserId, setShowDeleteDialog }: UserTableProps) => {
+  ({ page, setId, setShowDeleteDialog }: UserTableProps) => {
     if (page.meta.total === 0) {
       return <TableEmpty tableName="Master Users" />;
     }
@@ -162,7 +162,7 @@ const UserTable = memo(
           <UserTableHeader />
           <UserTableBody
             page={page}
-            setUserId={setUserId}
+            setId={setId}
             setShowDeleteDialog={setShowDeleteDialog}
           />
         </Table>

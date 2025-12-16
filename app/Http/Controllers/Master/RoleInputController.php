@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Master\CommonDeleteRequest;
 use App\Http\Requests\Master\RoleInputs\CreateRoleInputRequest;
-use App\Http\Requests\Master\RoleInputs\DeleteRoleInputRequest;
 use App\Http\Requests\Master\RoleInputs\UpdateRoleInputRequest;
 use App\Http\Resources\MasterInputsCollection;
 use App\Http\Resources\RoleInputsCollection;
@@ -106,7 +106,7 @@ class RoleInputController extends Controller
         return redirect()->route('master.role-inputs')->with('success', 'Role Input updated successfully');
     }
 
-    public function destroy(DeleteRoleInputRequest $request, RoleInputs $roleInput)
+    public function destroy(CommonDeleteRequest $request, RoleInputs $roleInput)
     {
         $roleInput->delete();
 

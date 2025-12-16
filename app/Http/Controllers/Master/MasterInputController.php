@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Master\CommonDeleteRequest;
 use App\Http\Requests\Master\Inputs\CreateInputRequest;
-use App\Http\Requests\Master\Inputs\DeleteInputRequest;
 use App\Http\Requests\Master\Inputs\UpdateInputRequest;
 use App\Http\Resources\MasterInputsCollection;
 use App\Http\Resources\MasterInputsResource;
@@ -72,7 +72,7 @@ class MasterInputController extends Controller
         return redirect()->route('master.inputs')->with('success', 'Input updated successfully');
     }
 
-    public function destroy(DeleteInputRequest $request, MasterInputs $input)
+    public function destroy(CommonDeleteRequest $request, MasterInputs $input)
     {
         $input->delete();
 

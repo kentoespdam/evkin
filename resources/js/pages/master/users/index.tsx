@@ -11,8 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useGlobalDeleteHook } from "@/hooks/use-global-delete-hook";
 import { usePaginationHandler } from "@/hooks/use-pagination";
-import { useUserHook } from "@/hooks/use-user-hook";
 import AppLayout from "@/layouts/app-layout";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
@@ -44,10 +44,10 @@ export interface UsersIndexProps {
 export default function UsersIndex({ page }: UsersIndexProps) {
   const { params, handleSelectChange } = usePaginationHandler(page);
 
-  const { userId, setUserId, showDeleteDialog, setShowDeleteDialog } =
-    useUserHook();
+  const { id, setId, showDeleteDialog, setShowDeleteDialog } =
+    useGlobalDeleteHook();
 
-  const deleteUrl = useMemo(() => master.users.destroy(userId).url, [userId]);
+  const deleteUrl = useMemo(() => master.users.destroy(id).url, [id]);
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -78,7 +78,7 @@ export default function UsersIndex({ page }: UsersIndexProps) {
             </TableShowTotalText>
             <UserTable
               page={page}
-              setUserId={setUserId}
+              setId={setId}
               setShowDeleteDialog={setShowDeleteDialog}
             />
             <PaginationNav page={page} />

@@ -30,7 +30,7 @@ import { memo, useCallback, useMemo, useState } from "react";
 
 interface RoleTableProps {
   page: Pagination<Role>;
-  setRoleId: (id: string) => void;
+  setId: (id: string) => void;
   setShowDeleteDialog: (show: boolean) => void;
 }
 
@@ -47,7 +47,7 @@ export const RoleTableHeader = memo(() => {
 RoleTableHeader.displayName = "RoleTableHeader";
 
 export const RoleTableBody = memo(
-  ({ page, setRoleId, setShowDeleteDialog }: RoleTableProps) => {
+  ({ page, setId, setShowDeleteDialog }: RoleTableProps) => {
     const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
 
     const rows = useMemo(() => {
@@ -74,7 +74,7 @@ export const RoleTableBody = memo(
               <div className="flex items-center gap-3">
                 <TableAction
                   row={item}
-                  setRoleId={setRoleId}
+                  setId={setId}
                   setShowDeleteDialog={setShowDeleteDialog}
                   isSelected={selectedRowId === item.id}
                 />
@@ -96,17 +96,17 @@ RoleTableBody.displayName = "RoleTableBody";
 
 interface TableActionProps {
   row: Role;
-  setRoleId: (id: string) => void;
+  setId: (id: string) => void;
   setShowDeleteDialog: (show: boolean) => void;
   isSelected: boolean;
 }
 
 const TableAction = memo(
-  ({ row, setRoleId, setShowDeleteDialog, isSelected }: TableActionProps) => {
+  ({ row, setId, setShowDeleteDialog, isSelected }: TableActionProps) => {
     const handleDelete = useCallback(() => {
-      setRoleId(row.id);
+      setId(row.id);
       setShowDeleteDialog(true);
-    }, [row.id, setRoleId, setShowDeleteDialog]);
+    }, [row.id, setId, setShowDeleteDialog]);
 
     return (
       <DropdownMenu>
@@ -146,7 +146,7 @@ const TableAction = memo(
 TableAction.displayName = "TableAction";
 
 const RoleTable = memo(
-  ({ page, setRoleId, setShowDeleteDialog }: RoleTableProps) => {
+  ({ page, setId, setShowDeleteDialog }: RoleTableProps) => {
     if (page.meta.total === 0) {
       return <TableEmpty tableName="Role" />;
     }
@@ -157,7 +157,7 @@ const RoleTable = memo(
           <RoleTableHeader />
           <RoleTableBody
             page={page}
-            setRoleId={setRoleId}
+            setId={setId}
             setShowDeleteDialog={setShowDeleteDialog}
           />
         </Table>

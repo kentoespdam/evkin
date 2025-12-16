@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Master\CommonDeleteRequest;
 use App\Http\Requests\Master\Users\CreateUserRequest;
-use App\Http\Requests\Master\Users\DeleteUserRequest;
 use App\Http\Requests\Master\Users\UpdateUserRequest;
 use App\Http\Resources\RolesResource;
 use App\Http\Resources\UserResource;
@@ -87,7 +87,7 @@ class UsersController extends Controller
             ->with('success', 'User updated successfully');
     }
 
-    public function destroy(DeleteUserRequest $request, User $user): RedirectResponse
+    public function destroy(CommonDeleteRequest $request, User $user): RedirectResponse
     {
         $user->delete();
 

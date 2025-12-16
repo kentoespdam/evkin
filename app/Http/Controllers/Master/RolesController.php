@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Master\CommonDeleteRequest;
 use App\Http\Requests\Master\Roles\CreateRoleRequest;
-use App\Http\Requests\Master\Roles\DeleteRoleRequest;
 use App\Http\Requests\Master\Roles\UpdateRoleRequest;
 use App\Http\Resources\RolesCollection;
 use App\Http\Resources\RolesResource;
@@ -65,7 +65,7 @@ class RolesController extends Controller
         return redirect()->route('master.roles')->with('success', 'Role updated successfully');
     }
 
-    public function destroy(DeleteRoleRequest $request, Roles $role): RedirectResponse
+    public function destroy(CommonDeleteRequest $request, Roles $role): RedirectResponse
     {
         $role->delete();
 

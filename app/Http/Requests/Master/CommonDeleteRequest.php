@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Master\RoleInputs;
+namespace App\Http\Requests\Master;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DeleteRoleInputRequest extends FormRequest
+class CommonDeleteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

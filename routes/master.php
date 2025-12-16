@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Master\MasterInputController;
 use App\Http\Controllers\Master\MasterSourceController;
+use App\Http\Controllers\Master\ReportTypesController;
 use App\Http\Controllers\Master\RoleInputController;
 use App\Http\Controllers\Master\RolesController;
 use App\Http\Controllers\Master\UsersController;
@@ -49,6 +50,14 @@ Route::middleware(['auth', 'role:'.config('master.allowed_roles')])->group(funct
             Route::get('{role}/edit', [RoleInputController::class, 'edit'])->name('master.role-inputs.edit');
             Route::patch('{role}', [RoleInputController::class, 'update'])->name('master.role-inputs.update');
             Route::delete('{roleInput}', [RoleInputController::class, 'destroy'])->name('master.role-inputs.destroy');
+        });
+        Route::group(['prefix' => 'report-types'], function () {
+            Route::get('', [ReportTypesController::class, 'index'])->name('master.report-types');
+            Route::get('add', [ReportTypesController::class, 'add'])->name('master.report-types.add');
+            Route::post('', [ReportTypesController::class, 'store'])->name('master.report-types.store');
+            Route::get('{reportType}/edit', [ReportTypesController::class, 'edit'])->name('master.report-types.edit');
+            Route::patch('{reportType}', [ReportTypesController::class, 'update'])->name('master.report-types.update');
+            Route::delete('{reportType}', [ReportTypesController::class, 'destroy'])->name('master.report-types.destroy');
         });
     });
 });

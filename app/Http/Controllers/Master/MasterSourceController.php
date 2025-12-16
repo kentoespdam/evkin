@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Master\CommonDeleteRequest;
 use App\Http\Requests\Master\Sources\CreateSourceRequest;
-use App\Http\Requests\Master\Sources\DeleteSourceRequest;
 use App\Http\Requests\Master\Sources\UpdateSourceRequest;
 use App\Http\Resources\MasterSourcesCollection;
 use App\Http\Resources\MasterSourcesResource;
@@ -64,7 +64,7 @@ class MasterSourceController extends Controller
         return redirect()->route('master.sources')->with('success', 'Master Source updated successfully');
     }
 
-    public function destroy(DeleteSourceRequest $request, MasterSources $source)
+    public function destroy(CommonDeleteRequest $request, MasterSources $source)
     {
         try {
             $source->delete();

@@ -11,8 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useGlobalDeleteHook } from "@/hooks/use-global-delete-hook";
 import { usePaginationHandler } from "@/hooks/use-pagination";
-import { useSourcesHook } from "@/hooks/use-sources";
 import AppLayout from "@/layouts/app-layout";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
@@ -43,7 +43,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const SourcesIndex = ({ page }: SourcesIndexProps) => {
   const { params, handleSelectChange } = usePaginationHandler(page);
-  const { id, setId, showDeleteDialog, setShowDeleteDialog } = useSourcesHook();
+  const { id, setId, showDeleteDialog, setShowDeleteDialog } =
+    useGlobalDeleteHook();
   const formAction = useMemo(() => master.sources.destroy(id).url, [id]);
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -53,7 +54,7 @@ const SourcesIndex = ({ page }: SourcesIndexProps) => {
           <CardHeader className="flex-row items-center justify-between space-y-0">
             <div className="space-y-1">
               <CardTitle className="text-xl">Sources Management</CardTitle>
-              <CardDescription>Manage your roles</CardDescription>
+              <CardDescription>Manage your sources</CardDescription>
             </div>
             <Button className="gap-2" asChild>
               <Link href={master.sources.add().url}>
@@ -63,7 +64,7 @@ const SourcesIndex = ({ page }: SourcesIndexProps) => {
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
-            <TableShowTotalText page={page} tableName="roles">
+            <TableShowTotalText page={page} tableName="sources">
               <TableTextSearch
                 params={params}
                 handleSelectChange={handleSelectChange}

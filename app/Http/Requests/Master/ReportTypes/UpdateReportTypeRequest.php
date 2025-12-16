@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Master\Roles;
+namespace App\Http\Requests\Master\ReportTypes;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DeleteRoleRequest extends FormRequest
+class UpdateReportTypeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,20 +22,16 @@ class DeleteRoleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'confirmation' => ['required', 'string', 'in:DELETE'],
+            'name' => ['required', 'string', 'max:255'],
         ];
     }
 
-    /**
-     * Get custom error messages for validator errors.
-     *
-     * @return array<string, string>
-     */
     public function messages(): array
     {
         return [
-            'confirmation.required' => 'Please type DELETE to confirm.',
-            'confirmation.in' => 'You must type DELETE exactly to confirm deletion.',
+            'name.required' => 'Nama harus diisi',
+            'name.string' => 'Nama harus string',
+            'name.max' => 'Nama maksimal 255 karakter',
         ];
     }
 }

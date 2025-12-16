@@ -2,7 +2,7 @@ import DeleteDialog from "@/components/commons/delete-dialog";
 import PaginationNav from "@/components/commons/pagination-nav";
 import TableShowTotalText from "@/components/commons/table-show-total-text";
 import TableTextSearch from "@/components/commons/table-text-search";
-import InputsTable from "@/components/master/inputs/inputs-table";
+import ReportTypesTable from "@/components/master/report-types/report-types-table";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,14 +17,10 @@ import AppLayout from "@/layouts/app-layout";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
 import { BreadcrumbItem, Pagination } from "@/types";
-import { MasterInput } from "@/types/master-input";
+import { ReportType } from "@/types/report-types";
 import { Head, Link } from "@inertiajs/react";
 import { PlusIcon } from "lucide-react";
 import { useMemo } from "react";
-
-export interface InputsIndexProps {
-  page: Pagination<MasterInput>;
-}
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -36,42 +32,47 @@ const breadcrumbs: BreadcrumbItem[] = [
     href: "#",
   },
   {
-    title: "Inputs",
+    title: "Report Types",
     href: "#",
   },
 ];
 
-const InputsIndex = ({ page }: InputsIndexProps) => {
+export interface ReportTypesPageProps {
+  page: Pagination<ReportType>;
+}
+
+const ReportTypesPage = ({ page }: ReportTypesPageProps) => {
   const { params, handleSelectChange } = usePaginationHandler(page);
   const { id, setId, showDeleteDialog, setShowDeleteDialog } =
     useGlobalDeleteHook();
-  const formUrl = useMemo(() => master.inputs.destroy(id).url, [id]);
+  const deleteUrl = useMemo(() => master.reportTypes.destroy(id).url, [id]);
+
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title="Master Inputs" />
+      <Head title="Report Types" />
       <div className="flex flex-col gap-6 p-4">
         <Card>
           <CardHeader className="flex-row items-center justify-between space-y-0">
             <div className="space-y-1">
-              <CardTitle className="text-xl">Inputs Management</CardTitle>
-              <CardDescription>Manage your master inputs</CardDescription>
+              <CardTitle className="text-xl">Report Types Management</CardTitle>
+              <CardDescription>Manage your report types</CardDescription>
             </div>
             <Button className="gap-2" asChild>
-              <Link href={master.inputs.add().url}>
+              <Link href={master.reportTypes.add().url}>
                 <PlusIcon className="h-4 w-4" />
-                Add Master Input
+                Add Report Type
               </Link>
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
-            <TableShowTotalText page={page} tableName="inputs">
+            <TableShowTotalText page={page} tableName="report types">
               <TableTextSearch
                 params={params}
                 handleSelectChange={handleSelectChange}
-                text="Kode / Description"
+                text="Report Type"
               />
             </TableShowTotalText>
-            <InputsTable
+            <ReportTypesTable
               page={page}
               setId={setId}
               setShowDeleteDialog={setShowDeleteDialog}
@@ -81,7 +82,7 @@ const InputsIndex = ({ page }: InputsIndexProps) => {
         </Card>
       </div>
       <DeleteDialog
-        formAction={formUrl}
+        formAction={deleteUrl}
         showDeleteDialog={showDeleteDialog}
         setShowDeleteDialog={setShowDeleteDialog}
       />
@@ -89,4 +90,4 @@ const InputsIndex = ({ page }: InputsIndexProps) => {
   );
 };
 
-export default InputsIndex;
+export default ReportTypesPage;

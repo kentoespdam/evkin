@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export const useInputsHook = () => {
+export const useGlobalDeleteHook = () => {
     const [id, setId] = useState<string>("");
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     return {
