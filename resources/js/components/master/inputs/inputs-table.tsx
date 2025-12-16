@@ -144,7 +144,7 @@ InputTableActions.displayName = "InputTableActions";
 const InputsTable = memo(
   ({ page, setId, setShowDeleteDialog }: InputsTableProps) => {
     if (page.meta.total === 0) {
-      return <TableEmpty tableName="Master Inputs" />;
+      return <TableEmpty tableName="Master Input" />;
     }
     return (
       <div className="overflow-x-auto">

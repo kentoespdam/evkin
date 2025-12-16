@@ -2,7 +2,7 @@ import TooltipBuilder from "@/components/commons/tooltip-builder";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { MasterInput } from "@/types/master-input";
-import { memo, useMemo } from "react";
+import { memo } from "react";
 
 interface AvailableCodeButtonProps {
   availableCode: MasterInput[];
@@ -25,6 +25,7 @@ const AvailableCodeButton = memo(
       formulaRef.current.value = `${formula}${item.kode} `;
       formulaRef.current.focus();
     };
+
     return (
       <div className="grid gap-2">
         <Label>Operator</Label>

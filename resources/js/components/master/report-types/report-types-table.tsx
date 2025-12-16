@@ -108,6 +108,7 @@ const ReportTypesTableBody = memo(
         ...item,
       }));
     }, [page]);
+
     return (
       <TableBody>
         {rows.map((item) => (

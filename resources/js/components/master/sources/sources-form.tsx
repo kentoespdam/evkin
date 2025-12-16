@@ -29,6 +29,11 @@ const SourcesForm = ({ source }: SourcesFormProps) => {
       method: form.method,
     };
   }, [source]);
+
+  const StarRequired = () => {
+    return <span className="text-destructive">*</span>;
+  };
+
   return (
     <Form {...formAction} resetOnSuccess>
       {({ errors, processing }) => (
@@ -47,7 +52,7 @@ const SourcesForm = ({ source }: SourcesFormProps) => {
                 {/* Name Field */}
                 <Field>
                   <FieldLabel htmlFor="name">
-                    Source Name <span className="text-destructive">*</span>
+                    Source Name {StarRequired()}
                   </FieldLabel>
                   <Input
                     id="name"

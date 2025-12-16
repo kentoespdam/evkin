@@ -29,6 +29,7 @@ const ReportTypesForm = memo(({ data }: ReportTypesFormProps) => {
       method: form.method,
     };
   }, [data]);
+
   return (
     <Form {...formAction} resetOnSuccess>
       {({ errors, processing }) => (

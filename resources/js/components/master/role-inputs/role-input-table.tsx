@@ -54,6 +54,7 @@ const RoleInputTableBody = memo(
         ...item,
       }));
     }, [page]);
+
     return (
       <TableBody>
         {rows.map((item) => (

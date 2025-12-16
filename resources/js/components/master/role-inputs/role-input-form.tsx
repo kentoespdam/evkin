@@ -44,6 +44,10 @@ const RoleInputForm = ({ roles, inputs, data }: RoleInputFormProps) => {
     };
   }, [data]);
 
+  const StarRequired = () => {
+    return <span className="text-destructive">*</span>;
+  };
+
   return (
     <Form {...formAction} resetOnSuccess>
       {({ errors, processing }) => (
@@ -62,7 +66,7 @@ const RoleInputForm = ({ roles, inputs, data }: RoleInputFormProps) => {
                 {/* Role Field */}
                 <Field>
                   <FieldLabel htmlFor="role_id">
-                    Role <span className="text-destructive">*</span>
+                    Role {StarRequired()}
                   </FieldLabel>
                   <Select name="role_id" defaultValue={data?.role?.id}>
                     <SelectTrigger>
@@ -84,9 +88,7 @@ const RoleInputForm = ({ roles, inputs, data }: RoleInputFormProps) => {
 
                 {/* Master Input Field - Checkboxes */}
                 <Field>
-                  <FieldLabel>
-                    Indikator <span className="text-destructive">*</span>
-                  </FieldLabel>
+                  <FieldLabel>Indikator {StarRequired()}</FieldLabel>
                   <div
                     className={`border rounded-md p-4 max-h-80 overflow-y-auto space-y-3 ${
                       errors.master_input_ids ? "border-destructive" : ""

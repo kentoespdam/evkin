@@ -128,6 +128,7 @@ const ReportsTableBody = memo(
         ...item,
       }));
     }, [page]);
+
     return (
       <TableBody>
         {rows.map((item) => (

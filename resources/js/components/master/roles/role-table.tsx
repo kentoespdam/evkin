@@ -57,6 +57,12 @@ export const RoleTableBody = memo(
       }));
     }, [page.data, page.meta.from]);
 
+    const Icon = () => (
+      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
+        <ShieldIcon className="h-4 w-4 text-primary" />
+      </div>
+    );
+
     return (
       <TableBody>
         {rows.map((item) => (
@@ -78,9 +84,9 @@ export const RoleTableBody = memo(
                   setShowDeleteDialog={setShowDeleteDialog}
                   isSelected={selectedRowId === item.id}
                 />
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
-                  <ShieldIcon className="h-4 w-4 text-primary" />
-                </div>
+
+                <Icon />
+
                 <div className="flex flex-col">
                   <span className="font-medium capitalize">{item.name}</span>
                 </div>

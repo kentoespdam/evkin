@@ -203,15 +203,6 @@ const UserForm = ({ roles, user }: UserFormProps) => {
                 </Button>
                 <ButtonLoading processing={processing} />
               </div>
-
-              {/* Success Message */}
-              {wasSuccessful && (
-                <div className="p-4 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
-                  <p className="text-sm text-green-800 dark:text-green-200 font-medium">
-                    ✓ User updated successfully!
-                  </p>
-                </div>
-              )}
             </div>
           </CardContent>
         </Card>

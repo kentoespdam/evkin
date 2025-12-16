@@ -184,6 +184,7 @@ const ReportsForm = ({ reportType, availableCode, data }: ReportsFormProps) => {
                   />
                   <FieldError>{errors.formula}</FieldError>
                 </Field>
+
                 <AvailableCodeButton
                   availableCode={availableCode}
                   formulaRef={formulaRef}

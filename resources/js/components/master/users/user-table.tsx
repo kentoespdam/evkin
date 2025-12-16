@@ -112,6 +112,7 @@ const TableAction = memo(
       setId(row.id);
       setShowDeleteDialog(true);
     }, [row.id, setId, setShowDeleteDialog]);
+
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

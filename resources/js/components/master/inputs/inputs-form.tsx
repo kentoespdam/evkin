@@ -37,6 +37,7 @@ const InputsForm = ({ data, sources }: InputsFormProps) => {
       method: form.method,
     };
   }, [data]);
+
   return (
     <Form {...formAction} resetOnSuccess>
       {({ errors, processing }) => (

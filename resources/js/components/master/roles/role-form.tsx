@@ -28,6 +28,10 @@ const RoleForm = memo(({ role }: RoleFormProps) => {
     };
   }, [role]);
 
+  const StarRequired = () => {
+    return <span className="text-destructive">*</span>;
+  };
+
   return (
     <Form {...formAction} resetOnSuccess>
       {({ errors, processing }) => (
@@ -46,7 +50,7 @@ const RoleForm = memo(({ role }: RoleFormProps) => {
                 {/* Name Field */}
                 <Field>
                   <FieldLabel htmlFor="name">
-                    Role Name <span className="text-destructive">*</span>
+                    Role Name {StarRequired()}
                   </FieldLabel>
                   <Input
                     id="name"

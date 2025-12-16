@@ -51,6 +51,7 @@ const SourcesTableBody = memo(
         ...item,
       }));
     }, [page]);
+
     return (
       <TableBody>
         {rows.map((item) => (
