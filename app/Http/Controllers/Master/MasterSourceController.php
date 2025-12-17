@@ -71,7 +71,7 @@ class MasterSourceController extends Controller
 
             return redirect()->route('master.sources')->with('success', 'Master Source deleted successfully');
         } catch (\Exception $e) {
-            return redirect()->back('master.sources')->withErrors(['error' => 'Master Source deleted failed']);
+            return redirect()->route('master.sources')->withErrors(['error' => 'Master Source deleted failed']);
         }
     }
 }

@@ -1,0 +1,45 @@
+services:
+  app:
+    build:
+      context: ../../
+      dockerfile: docker/staging/Dockerfile
+    container_name: evkin-app
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: dev
+      APP_NAME: EvKin
+    working_dir: /var/www/html
+    volumes:
+      # - evkin_storage:/var/www/html/storage
+      # - evkin_bootstrap_cache:/var/www/html/bootstrap/cache
+      - evkin_public:/var/www/html/public
+    networks:
+      - evkin-network
+    env_file:
+      - .env.staging
+
+  nginx:
+    image: nginx:alpine
+    container_name: evkin-nginx
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "8083:80"
+    volumes:
+      - evkin_public:/var/www/html/public
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - evkin-network
+    depends_on:
+      - app
+
+networks:
+  evkin-network:
+    driver: bridge
+
+volumes:
+  # evkin_storage:
+  # evkin_bootstrap_cache:
+  evkin_public:

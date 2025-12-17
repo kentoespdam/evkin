@@ -8,7 +8,6 @@ use App\Http\Requests\Master\Roles\CreateRoleRequest;
 use App\Http\Requests\Master\Roles\UpdateRoleRequest;
 use App\Http\Resources\RolesCollection;
 use App\Http\Resources\RolesResource;
-use App\Http\Resources\UserResource;
 use App\Models\Master\Roles;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -31,7 +30,6 @@ class RolesController extends Controller
 
         return Inertia::render('master/roles/index', [
             'page' => new RolesCollection($roles),
-            'user' => new UserResource($request->user()),
         ]);
     }
 

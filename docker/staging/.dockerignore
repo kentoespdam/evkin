@@ -1,0 +1,78 @@
+# ======================================
+# Git & VCS
+# ======================================
+.git
+.gitignore
+.gitattributes
+
+# ======================================
+# Environment & Secrets
+# ======================================
+.env
+# .env.*
+# !.env.example
+
+# ======================================
+# Logs & Runtime Cache
+# ======================================
+storage/logs
+storage/framework/cache
+storage/framework/sessions
+storage/framework/views
+storage/framework/testing
+
+# ======================================
+# Node / Frontend
+# ======================================
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ======================================
+# Vite / Build Artifacts (rebuilt in image)
+# ======================================
+public/build
+public/hot
+
+# ======================================
+# OS / Editor
+# ======================================
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.bak
+*.tmp
+.vscode
+.idea
+
+# ======================================
+# Tests & Dev Files
+# ======================================
+tests
+phpunit.xml
+phpunit.xml.dist
+coverage
+
+# ======================================
+# Documentation
+# ======================================
+README.md
+CHANGELOG.md
+docs
+
+# ======================================
+# Docker Meta (optional)
+# ======================================
+docker-compose.yml
+docker-compose.*.yml
+Dockerfile
+
+# ======================================
+# CI / Misc
+# ======================================
+.github
+.gitlab
+.envrc
