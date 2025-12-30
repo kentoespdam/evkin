@@ -1,28 +1,12 @@
 # TAHAP 1: Unified Builder (Debian + PHP 8.4 + Node 22)
-FROM dunglas/frankenphp AS builder
+FROM dunglas/frankenphp:php8.4.1-bookworm AS base
 
 # 1. Install system dependencies & Node.js (Metode Debian)
-RUN apt-get update && apt-get install -y \
-    curl \
-    git \
-    unzip \
-    libicu-dev \
-    openssl \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN install-php-extensions pdo_mysql gd zip opcache pcntl intl bcmath
 
-# 2. Install PHP Extensions yang dibutuhkan Wayfinder & Laravel 12 [1]
-RUN install-php-extensions \
-    pdo_mysql \
-    zip \
-    intl \
-    bcmath \
-    pcntl \
-    opcache \
-    sqlite3 \
-    gd
-
+FROM composer:2 AS builder
 # 3. Setup Composer
-COPY --from=composer:2.8 /usr/bin/composer /usr/bin/composer
+# COPY --from=composer:2.8 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
@@ -44,26 +28,13 @@ RUN mkdir -p storage/framework/cache \
 RUN chown -R www-data:www-data storage bootstrap/cache && \
     chmod -R 775 storage bootstrap/cache
 
-# 8. PERBAIKAN WAYFINDER: Jalankan build dengan Database Dummy (SQLite Memory)
-# Wayfinder butuh Laravel boot, jadi kita arahkan ke DB memory agar tidak butuh MySQL saat build
-# RUN APP_KEY=base64:$(openssl rand -base64 32) \
-#     APP_DEBUG=true \
-#     DB_CONNECTION=sqlite \
-#     DB_DATABASE=:memory: 
-# RUN npm run build
-
-# 9. Finalisasi Composer Autoload
-# RUN rm -rf vendor
-# RUN composer install --no-dev --no-scripts --ignore-platform-reqs
 RUN composer dump-autoload --optimize --ignore-platform-reqs
 
 
 # TAHAP 2: Final Production Runner (Tanpa Node.js)
-FROM dunglas/frankenphp AS runner
+FROM base AS runner
 
 # Install ekstensi runtime saja
-RUN install-php-extensions pdo_mysql gd zip opcache pcntl intl bcmath
-
 WORKDIR /app
 
 # Salin seluruh folder aplikasi dari builder
