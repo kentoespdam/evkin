@@ -68,6 +68,7 @@ WORKDIR /app
 
 # Salin seluruh folder aplikasi dari builder
 COPY --from=builder /app /app
+COPY docker/franken/.env.staging .env
 
 # Atur Environment & Permission [3]
 ENV APP_ENV=production
