@@ -56,8 +56,6 @@ RUN php artisan optimize:clear
 RUN php artisan route:cache
 RUN php artisan event:cache
 RUN php artisan view:cache
-RUN php artisan octane:frankenphp
-
 
 # ============================================================
 # SCRIPT PEMBERSIHAN FILE PRODUKSI
