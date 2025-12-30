@@ -20,3 +20,14 @@ logs:
 	docker compose -f docker/staging/docker-compose.yaml logs -f
 shell:
 	docker exec -it evkin-app sh
+
+setup-franken:
+	@make build-franken
+	@make up-franken 
+
+build-franken:
+	docker compose -f docker/franken/docker-compose.yaml build
+up-franken:
+	docker compose -f docker/franken/docker-compose.yaml up -d
+down-franken:
+	docker compose -f docker/franken/docker-compose.yaml down

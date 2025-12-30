@@ -1,0 +1,10 @@
+services:
+  app:
+    build:
+      context: ../../
+      dockerfile: docker/franken/Dockerfile
+    container_name: evkin-app-franken
+    ports:
+      - "8084:80"
+    env_file:
+      - .env
