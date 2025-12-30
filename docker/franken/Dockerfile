@@ -56,6 +56,7 @@ RUN php artisan optimize:clear
 RUN php artisan route:cache
 RUN php artisan event:cache
 RUN php artisan view:cache
+RUN php artisan octane:frankenphp
 
 
 # ============================================================
@@ -69,4 +70,4 @@ RUN rm -rf node_modules resources/js tests /root/.npm /root/.composer \
 
 EXPOSE 80
 
-ENTRYPOINT ["php", "artisan", "octane:frankenphp", "--host=0.0.0.0", "--port=80"]
+ENTRYPOINT ["php", "artisan", "octane:frankenphp"]

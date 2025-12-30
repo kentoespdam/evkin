@@ -30,3 +30,5 @@ docker/franken/.env.staging
 
 **/caddy
 frankenphp
+
+frankenphp-worker.php
