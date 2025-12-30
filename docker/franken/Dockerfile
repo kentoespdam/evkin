@@ -19,7 +19,9 @@ RUN install-php-extensions \
     intl \
     bcmath \
     pcntl \
-    opcache
+    opcache \
+    php-sqlite3 \
+    gd
 
 # 3. Setup Composer
 COPY --from=composer:2.8 /usr/bin/composer /usr/bin/composer
