@@ -42,19 +42,20 @@ RUN mkdir -p storage/framework/cache \
     storage/framework/views \
     storage/framework/testing \
     bootstrap/cache
-RUN chmod -R 775 storage bootstrap/cache
+RUN chown -R www-data:www-data storage bootstrap/cache && \
+    chmod -R 775 storage bootstrap/cache
 
 # 8. PERBAIKAN WAYFINDER: Jalankan build dengan Database Dummy (SQLite Memory)
 # Wayfinder butuh Laravel boot, jadi kita arahkan ke DB memory agar tidak butuh MySQL saat build
 RUN APP_KEY=base64:$(openssl rand -base64 32) \
     APP_DEBUG=true \
     DB_CONNECTION=sqlite \
-    DB_DATABASE=:memory: \
-    npm run build
+    DB_DATABASE=:memory: 
+RUN npm run build -- --verbose
 
 # 9. Finalisasi Composer Autoload
 RUN rm -rf vendor
-RUN composer install --no-dev --no-scripts --no-autoloader --ignore-platform-reqs
+RUN composer install --no-dev --no-scripts --ignore-platform-reqs
 RUN composer dump-autoload --optimize --ignore-platform-reqs
 
 
