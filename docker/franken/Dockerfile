@@ -51,7 +51,7 @@ RUN APP_KEY=base64:$(openssl rand -base64 32) \
     APP_DEBUG=true \
     DB_CONNECTION=sqlite \
     DB_DATABASE=:memory: 
-RUN npm run build -- --verbose
+RUN npm run build
 
 # 9. Finalisasi Composer Autoload
 RUN rm -rf vendor
