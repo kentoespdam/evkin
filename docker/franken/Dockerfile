@@ -20,7 +20,7 @@ RUN install-php-extensions \
     bcmath \
     pcntl \
     opcache \
-    php-sqlite3 \
+    sqlite3 \
     gd
 
 # 3. Setup Composer
