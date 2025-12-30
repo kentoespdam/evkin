@@ -70,7 +70,6 @@ COPY --from=builder /app /app
 # Atur Environment & Permission [3]
 ENV APP_ENV=production
 ENV APP_DEBUG=false
-# ENV FRANKENPHP_CONFIG="worker./public/index.php"
 
 RUN mv Caddyfile /etc/caddy/Caddyfile
 RUN frankenphp fmt --overwrite /etc/caddy/Caddyfile
@@ -88,37 +87,11 @@ RUN php artisan view:cache
 # ============================================================
 # SCRIPT PEMBERSIHAN FILE PRODUKSI
 # ============================================================
-RUN rm -rf \
-    # File konfigurasi dependensi
-    composer.json \
-    composer.lock \
-    package.json \
-    package-lock.json \
-    vite.config.js \
-    tailwind.config.js \
-    tsconfig.json \
-    eslint.config.js \
-    vite.config.ts \
-    boost.json \
-    # Folder kode sumber & development
-    node_modules \
-    resources/js \
-    resources/css \
-    tests \
-    # File hidden & sampah build
-    .git \
-    .github \
-    .dockerignore \
-    Dockerfile \
-    docker-compose.yml \
-    .editorconfig \
-    .phpunit.result.cache \
-    # Cache manager
-    /root/.npm \
-    /root/.composer \
-    GEMINI.md \
-    Makefile
-# ============================================================
+# Hapus file mentah untuk menghemat ukuran image
+RUN rm -rf node_modules resources/js tests /root/.npm /root/.composer \
+    .github .git .vscode docker .dockerignore .editorconfig .env.example \
+    .prettierrc ..prettierignore components.json eslint.config.js Makefile boost.json package.json package-lock.json \
+    tsconfig.json vite.config.ts
 
 EXPOSE 80
 
