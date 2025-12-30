@@ -1,5 +1,5 @@
 # TAHAP 1: Unified Builder (Debian + PHP 8.4 + Node 22)
-FROM dunglas/frankenphp:1.4-php8.4 AS builder
+FROM dunglas/frankenphp AS builder
 
 # 1. Install system dependencies & Node.js (Metode Debian)
 RUN apt-get update && apt-get install -y \
@@ -8,8 +8,6 @@ RUN apt-get update && apt-get install -y \
     unzip \
     libicu-dev \
     openssl \
-    && curl -sL https://deb.nodesource.com/setup_22.x | bash - \
-    && apt-get install -y nodejs \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # 2. Install PHP Extensions yang dibutuhkan Wayfinder & Laravel 12 [1]
@@ -32,8 +30,7 @@ WORKDIR /app
 COPY composer.json composer.lock package.json package-lock.json ./
 
 # 5. Install dependensi (PENTING: gunakan --ignore-platform-reqs agar tidak error versi) [2]
-RUN composer install --no-scripts --no-autoloader --ignore-platform-reqs
-RUN npm ci
+RUN composer install --no-dev --no-scripts --ignore-platform-reqs
 
 # 6. Salin seluruh kode program
 COPY . .
@@ -49,15 +46,15 @@ RUN chown -R www-data:www-data storage bootstrap/cache && \
 
 # 8. PERBAIKAN WAYFINDER: Jalankan build dengan Database Dummy (SQLite Memory)
 # Wayfinder butuh Laravel boot, jadi kita arahkan ke DB memory agar tidak butuh MySQL saat build
-RUN APP_KEY=base64:$(openssl rand -base64 32) \
-    APP_DEBUG=true \
-    DB_CONNECTION=sqlite \
-    DB_DATABASE=:memory: 
-RUN npm run build
+# RUN APP_KEY=base64:$(openssl rand -base64 32) \
+#     APP_DEBUG=true \
+#     DB_CONNECTION=sqlite \
+#     DB_DATABASE=:memory: 
+# RUN npm run build
 
 # 9. Finalisasi Composer Autoload
-RUN rm -rf vendor
-RUN composer install --no-dev --no-scripts --ignore-platform-reqs
+# RUN rm -rf vendor
+# RUN composer install --no-dev --no-scripts --ignore-platform-reqs
 RUN composer dump-autoload --optimize --ignore-platform-reqs
 
 

@@ -33,7 +33,6 @@ pnpm-debug.log*
 # ======================================
 # Vite / Build Artifacts (rebuilt in image)
 # ======================================
-public/build
 public/hot
 
 # ======================================
@@ -66,7 +65,7 @@ docs
 # ======================================
 # Docker Meta (optional)
 # ======================================
-./docker
+# ./docker
 docker-compose.yml
 docker-compose.*.yml
 Dockerfile
