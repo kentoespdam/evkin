@@ -1,5 +1,5 @@
 # TAHAP 1: Unified Builder (Debian + PHP 8.4 + Node 22)
-FROM dunglas/frankenphp AS builder
+FROM dunglas/frankenphp:1.4-php8.4 AS builder
 
 # 1. Install system dependencies & Node.js (Metode Debian)
 RUN apt-get update && apt-get install -y \
@@ -30,7 +30,7 @@ WORKDIR /app
 COPY composer.json composer.lock package.json package-lock.json ./
 
 # 5. Install dependensi (PENTING: gunakan --ignore-platform-reqs agar tidak error versi) [2]
-RUN composer install --no-scripts --no-autoloader
+RUN composer install --no-scripts --no-autoloader --ignore-platform-reqs
 RUN npm ci
 
 # 6. Salin seluruh kode program
