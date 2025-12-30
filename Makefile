@@ -26,7 +26,7 @@ setup-franken:
 	@make up-franken 
 
 build-franken:
-	docker compose --progress -f docker/franken/docker-compose.yaml build
+	docker compose -f docker/franken/docker-compose.yaml build --progress=plain
 up-franken:
 	docker compose -f docker/franken/docker-compose.yaml up -d
 down-franken:
