@@ -46,6 +46,7 @@ RUN mkdir -p storage/framework/cache \
 # 8. PERBAIKAN WAYFINDER: Jalankan build dengan Database Dummy (SQLite Memory)
 # Wayfinder butuh Laravel boot, jadi kita arahkan ke DB memory agar tidak butuh MySQL saat build
 RUN APP_KEY=base64:$(openssl rand -base64 32) \
+    APP_DEBUG=true \
     DB_CONNECTION=sqlite \
     DB_DATABASE=:memory: \
     npm run build

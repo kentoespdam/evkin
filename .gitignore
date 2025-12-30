@@ -26,7 +26,8 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
-docker/stagging/.env.stagging
+docker/staging/.env.staging
+docker/franken/.env.staging
 
 **/caddy
 frankenphp
