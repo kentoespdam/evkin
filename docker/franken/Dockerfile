@@ -42,6 +42,7 @@ RUN mkdir -p storage/framework/cache \
     storage/framework/views \
     storage/framework/testing \
     bootstrap/cache
+RUN chmod -R 775 storage bootstrap/cache
 
 # 8. PERBAIKAN WAYFINDER: Jalankan build dengan Database Dummy (SQLite Memory)
 # Wayfinder butuh Laravel boot, jadi kita arahkan ke DB memory agar tidak butuh MySQL saat build
