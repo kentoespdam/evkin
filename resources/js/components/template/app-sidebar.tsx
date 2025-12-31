@@ -11,18 +11,61 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
-import { type NavItem } from '@/types';
+import { NavGroup, type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
+import { BookOpen, FileTextIcon, FileTypeIcon, Folder, GitPullRequestArrow, KeyIcon, LayoutGrid, Network, TextCursorInputIcon, Users2 } from 'lucide-react';
 import AppLogo from './app-logo';
+import master from '@/routes/master';
+import NavMaster from './nav-master';
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
+        title: "Dashboard",
         href: dashboard(),
         icon: LayoutGrid,
     },
 ];
+
+const masterGroupItems: NavGroup = {
+    title: "Master Data",
+    items: [
+        {
+            title: "Roles",
+            href: master.roles().url,
+            icon: Network,
+        },
+        {
+            title: "Users",
+            href: master.users().url,
+            icon: Users2,
+        },
+        {
+            title: "Sources",
+            href: master.sources().url,
+            icon: GitPullRequestArrow,
+        },
+        {
+            title: "Master Inputs",
+            href: master.inputs().url,
+            icon: TextCursorInputIcon,
+        },
+        {
+            title: "Role Inputs",
+            href: master.roleInputs().url,
+            icon: KeyIcon,
+        },
+        {
+            title: "Report Types",
+            href: master.reportTypes().url,
+            icon: FileTypeIcon,
+        },
+        {
+            title: "Reports",
+            href: master.reports().url,
+            icon: FileTextIcon,
+        },
+    ],
+};
 
 const footerNavItems: NavItem[] = [
     {
@@ -54,6 +97,7 @@ export function AppSidebar() {
 
             <SidebarContent>
                 <NavMain items={mainNavItems} />
+                <NavMaster group={masterGroupItems} />
             </SidebarContent>
 
             <SidebarFooter>

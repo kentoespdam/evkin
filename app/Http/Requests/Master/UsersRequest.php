@@ -56,7 +56,7 @@ class UsersRequest extends FormRequest
             'name.max' => 'Nama may not be greater than 255 characters.',
             'email.required' => 'Email harus diisi',
             'email.email' => 'Please provide a valid email address.',
-            'email.unique' => 'This email is already taken.',
+            // 'email.unique' => 'This email is already taken.',
             'role_id.required' => 'Please select a role.',
             'role_id.exists' => 'The selected role is invalid.',
             'password.min' => 'Password must be at least 8 characters.',
