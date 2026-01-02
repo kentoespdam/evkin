@@ -1,12 +1,14 @@
-import { ReportType } from './report-types';
+import type { Aspect } from "./aspect";
+import type { ReportType } from "./report-types";
 
 export interface Report {
-    id: string;
-    urut: number;
-    reportType: ReportType;
-    descIndicator: string;
-    descFormula: string;
-    unit: string;
-    weight: number;
-    formula: string;
+	id: string;
+	urut: number;
+	reportType: ReportType;
+	aspect: Aspect;
+	descIndicator: string;
+	descFormula: string;
+	unit: string;
+	weight: number;
+	formula: string;
 }

@@ -14,71 +14,32 @@ import {
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import master from "@/routes/master";
 import type { Pagination } from "@/types";
-import type { MasterSource } from "@/types/master-source";
+import type { Aspect } from "@/types/aspect";
 
-interface SourcesTableProps {
-	page: Pagination<MasterSource>;
+interface AspectsTableProps {
+	page: Pagination<Aspect>;
 	setId: (id: string) => void;
 	setShowDeleteDialog: (show: boolean) => void;
 }
-
-const SourcesTableHeader = memo(() => {
+const AspectsTableHeader = memo(() => {
 	return (
 		<TableHeader>
 			<TableRow>
 				<TableHead className="w-16 text-center">#</TableHead>
-				<TableHead>Source Name</TableHead>
+				<TableHead>Name</TableHead>
 			</TableRow>
 		</TableHeader>
 	);
 });
-SourcesTableHeader.displayName = "SourcesTableHeader";
+AspectsTableHeader.displayName = "AspectsTableHeader";
 
-const SourcesTableBody = memo(({ page, setId, setShowDeleteDialog }: SourcesTableProps) => {
-	const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
-
-	const rows = useMemo(() => {
-		const firstNumber = page.meta.from;
-		return page.data.map((item, index) => ({
-			urut: firstNumber + index,
-			...item,
-		}));
-	}, [page]);
-
-	return (
-		<TableBody>
-			{rows.map((item) => (
-				<TableRow
-					key={item.id}
-					className="group"
-					onClick={() => setSelectedRowId(selectedRowId === item.id ? null : item.id)}
-				>
-					<TableHead className="w-16 text-center">{item.urut}</TableHead>
-					<TableHead>
-						<div className="flex items-center gap-3">
-							<SourcesTableAction
-								row={item}
-								setId={setId}
-								setShowDeleteDialog={setShowDeleteDialog}
-								isSelected={selectedRowId === item.id}
-							/>
-							<div className="flex flex-col">{item.name}</div>
-						</div>
-					</TableHead>
-				</TableRow>
-			))}
-		</TableBody>
-	);
-});
-SourcesTableBody.displayName = "SourcesTableBody";
-
-interface SourcesTableActionProps {
-	row: MasterSource;
+interface AspectsTableActionProps {
+	row: Aspect;
+	isSelected: boolean;
 	setId: (id: string) => void;
 	setShowDeleteDialog: (show: boolean) => void;
-	isSelected: boolean;
 }
-const SourcesTableAction = memo(({ row, setId, setShowDeleteDialog, isSelected }: SourcesTableActionProps) => {
+const AspectsTableActions = memo(({ row, isSelected, setId, setShowDeleteDialog }: AspectsTableActionProps) => {
 	const handleDelete = useCallback(() => {
 		setId(row.id);
 		setShowDeleteDialog(true);
@@ -99,7 +60,7 @@ const SourcesTableAction = memo(({ row, setId, setShowDeleteDialog, isSelected }
 				<DropdownMenuLabel>Actions</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				<DropdownMenuItem asChild className="text-blue-500 font-bold">
-					<Link href={master.sources.edit.url(row.id)} className="flex items-center gap-2">
+					<Link href={master.aspects.edit.url(row.id)} className="flex items-center gap-2">
 						<PencilIcon className="size-4 text-blue-500" />
 						Edit
 					</Link>
@@ -115,23 +76,58 @@ const SourcesTableAction = memo(({ row, setId, setShowDeleteDialog, isSelected }
 		</DropdownMenu>
 	);
 });
-SourcesTableAction.displayName = "SourcesTableAction";
+AspectsTableActions.displayName = "AspectsTableActions";
 
-const SourcesTable = memo(({ page, setId, setShowDeleteDialog }: SourcesTableProps) => {
+const AspectsTableBody = memo(({ page, setId, setShowDeleteDialog }: AspectsTableProps) => {
+	const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
+
+	const rows = useMemo(() => {
+		const firstNumber = page.meta.from;
+		return page.data.map((item, index) => ({
+			hash: firstNumber + index,
+			...item,
+		}));
+	}, [page]);
+
+	return (
+		<TableBody>
+			{rows.map((item) => (
+				<TableRow
+					key={item.id}
+					className="group hover:bg-muted"
+					onMouseEnter={() => setSelectedRowId(item.id)}
+					onMouseLeave={() => setSelectedRowId(null)}
+				>
+					<td className="w-16 text-center font-medium">{item.hash}</td>
+					<td className="flex items-center gap-2">
+						<AspectsTableActions
+							row={item}
+							isSelected={selectedRowId === item.id}
+							setId={setId}
+							setShowDeleteDialog={setShowDeleteDialog}
+						/>
+						{item.name}
+					</td>
+				</TableRow>
+			))}
+		</TableBody>
+	);
+});
+AspectsTableBody.displayName = "AspectsTableBody";
+
+const AspectsTable = ({ page, setId, setShowDeleteDialog }: AspectsTableProps) => {
 	if (page.meta.total === 0) {
-		return <TableEmpty tableName="Master Sources" />;
+		return <TableEmpty tableName="Aspects" />;
 	}
 
 	return (
 		<div className="overflow-x-auto">
 			<Table>
-				<SourcesTableHeader />
-				<SourcesTableBody page={page} setId={setId} setShowDeleteDialog={setShowDeleteDialog} />
+				<AspectsTableHeader />
+				<AspectsTableBody page={page} setId={setId} setShowDeleteDialog={setShowDeleteDialog} />
 			</Table>
 		</div>
 	);
-});
+};
 
-SourcesTable.displayName = "SourcesTable";
-
-export default SourcesTable;
+export default AspectsTable;

@@ -1,17 +1,12 @@
+import { Head } from "@inertiajs/react";
+import { TextCursorInputIcon } from "lucide-react";
 import InputsForm from "@/components/master/form/inputs";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AppLayout from "@/layouts/app-layout";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
-import { BreadcrumbItem } from "@/types";
-import { MasterSource } from "@/types/master-source";
-import { Head } from "@inertiajs/react";
-import { TextCursorInputIcon } from "lucide-react";
+import type { BreadcrumbItem } from "@/types";
+import type { MasterSource } from "@/types/master-source";
 
 interface MasterInputAddProps {
   sources: MasterSource[];
@@ -50,9 +45,7 @@ const MasterInputAdd = ({ sources }: MasterInputAddProps) => {
               </div>
               <div>
                 <CardTitle className="text-2xl">Add Master Input</CardTitle>
-                <CardDescription>
-                  Add new Master Input information
-                </CardDescription>
+                <CardDescription>Add new Master Input information</CardDescription>
               </div>
             </div>
           </CardHeader>

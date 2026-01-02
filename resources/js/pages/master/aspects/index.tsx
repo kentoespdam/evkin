@@ -31,11 +31,11 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-interface MasterAspectsProps {
+interface AspectsProps {
     page: Pagination<Aspect>;
 }
 
-const MasterAspects = ({ page }: MasterAspectsProps) => {
+const Aspects = ({ page }: AspectsProps) => {
     const { params, handleSelectChange } = usePaginationHandler(page);
     const { id, setId, showDeleteDialog, setShowDeleteDialog } = useGlobalDeleteHook();
     const formUrl = useMemo(() => master.aspects.destroy(id).url, [id]);
@@ -75,4 +75,4 @@ const MasterAspects = ({ page }: MasterAspectsProps) => {
     );
 };
 
-export default MasterAspects;
+export default Aspects;

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Master;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\CommonDeleteRequest;
 use App\Http\Requests\Master\ReportsRequest;
-use App\Http\Resources\MasterAspectsCollection;
+use App\Http\Resources\AspectsCollection;
 use Illuminate\Http\Request;
 use App\Models\Master\MasterReports;
 use Inertia\Inertia;
@@ -51,7 +51,7 @@ class MasterReportsController extends Controller
 
         return Inertia::render('master/reports/add', [
             'reportTypes' => new ReportTypesCollection($reportTypes),
-            'aspects' => new MasterAspectsCollection($aspects),
+            'aspects' => new AspectsCollection($aspects),
             'availableCode' => $availableCode,
         ]);
     }
@@ -81,7 +81,7 @@ class MasterReportsController extends Controller
 
         return Inertia::render('master/reports/edit', [
             'reportTypes' => new ReportTypesCollection($reportTypes),
-            'aspects' => new MasterAspectsCollection($aspects),
+            'aspects' => new AspectsCollection($aspects),
             'availableCode' => $availableCode,
             'data' => new MasterReportsResource($report),
         ]);

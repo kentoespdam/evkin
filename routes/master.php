@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Master\AspectsController;
 use App\Http\Controllers\Master\MasterInputsController;
 use App\Http\Controllers\Master\MasterReportsController;
 use App\Http\Controllers\Master\MasterSourcesController;
@@ -59,6 +60,14 @@ Route::middleware(['auth', 'role:' . config('master.allowed_roles')])->group(fun
             Route::get('{reportType}/edit', [ReportTypesController::class, 'edit'])->name('master.report-types.edit');
             Route::patch('{reportType}', [ReportTypesController::class, 'update'])->name('master.report-types.update');
             Route::delete('{reportType}', [ReportTypesController::class, 'destroy'])->name('master.report-types.destroy');
+        });
+        Route::group(['prefix' => 'aspects'], function () {
+            Route::get('', [AspectsController::class, 'index'])->name('master.aspects');
+            Route::get('add', [AspectsController::class, 'add'])->name('master.aspects.add');
+            Route::post('', [AspectsController::class, 'store'])->name('master.aspects.store');
+            Route::get('{aspect}/edit', [AspectsController::class, 'edit'])->name('master.aspects.edit');
+            Route::patch('{aspect}', [AspectsController::class, 'update'])->name('master.aspects.update');
+            Route::delete('{aspect}', [AspectsController::class, 'destroy'])->name('master.aspects.destroy');
         });
         Route::group(['prefix' => 'reports'], function () {
             Route::get('', [MasterReportsController::class, 'index'])->name('master.reports');

@@ -18,7 +18,7 @@ class MasterReportsResource extends JsonResource
             'id' => $this->sqid,
             'urut' => $this->urut,
             'reportType' => new ReportTypesResource($this->reportType),
-            'aspect' => new MasterAspectsResource($this->aspects),
+            'aspect' => new AspectsResource($this->aspects),
             'descIndicator' => $this->descIndicator,
             'descFormula' => $this->descFormula,
             'unit' => $this->unit,

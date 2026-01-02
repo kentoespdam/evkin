@@ -1,19 +1,14 @@
+import { Head } from "@inertiajs/react";
+import { FileTextIcon } from "lucide-react";
 import ReportsForm from "@/components/master/form/reports";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AppLayout from "@/layouts/app-layout";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
-import { BreadcrumbItem } from "@/types";
-import { MasterInput } from "@/types/master-input";
-import { ReportType } from "@/types/report-types";
-import { Report } from "@/types/reports";
-import { Head } from "@inertiajs/react";
-import { FileTextIcon } from "lucide-react";
+import type { BreadcrumbItem } from "@/types";
+import type { Aspect } from "@/types/aspect";
+import type { MasterInput } from "@/types/master-input";
+import type { ReportType } from "@/types/report-types";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -37,12 +32,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 interface MasterReportAddProps {
   reportTypes: ReportType[];
   availableCode: MasterInput[];
+  aspects: Aspect[];
 }
 
-const MasterReportAdd = ({
-  reportTypes,
-  availableCode,
-}: MasterReportAddProps) => {
+const MasterReportAdd = ({ reportTypes, availableCode, aspects }: MasterReportAddProps) => {
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title={`Add Master Report`} />
@@ -56,15 +49,13 @@ const MasterReportAdd = ({
               </div>
               <div>
                 <CardTitle className="text-2xl">Add Master Report</CardTitle>
-                <CardDescription>
-                  Add new Master Report information
-                </CardDescription>
+                <CardDescription>Add new Master Report information</CardDescription>
               </div>
             </div>
           </CardHeader>
         </Card>
 
-        <ReportsForm reportTypes={reportTypes} availableCode={availableCode} />
+        <ReportsForm reportTypes={reportTypes} availableCode={availableCode} aspects={aspects} />
       </div>
     </AppLayout>
   );

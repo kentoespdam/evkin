@@ -1,16 +1,11 @@
+import { Head } from "@inertiajs/react";
+import { UserIcon } from "lucide-react";
 import RoleForm from "@/components/master/form/roles";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AppLayout from "@/layouts/app-layout";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
-import { BreadcrumbItem } from "@/types";
-import { Head } from "@inertiajs/react";
-import { UserIcon } from "lucide-react";
+import type { BreadcrumbItem } from "@/types";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {

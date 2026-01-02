@@ -12,7 +12,16 @@ class MasterReports extends Model
 
     protected $table = 'master_reports';
 
-    protected $fillable = ['urut', 'report_type_id', 'descIndicator', 'descFormula', 'unit', 'weight', 'formula'];
+    protected $fillable = [
+        'urut',
+        'report_type_id',
+        'aspect_id',
+        'descIndicator',
+        'descFormula',
+        'unit',
+        'weight',
+        'formula'
+    ];
 
     protected $hidden = ['created_at', 'updated_at'];
 
