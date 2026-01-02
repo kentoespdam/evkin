@@ -40,7 +40,7 @@ const masterGroupItems: NavGroup = {
             icon: Users2,
         },
         {
-            title: "Sources",
+            title: "Sumber Data",
             href: master.sources().url,
             icon: GitPullRequestArrow,
         },

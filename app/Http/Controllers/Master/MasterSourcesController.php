@@ -50,7 +50,7 @@ class MasterSourcesController extends Controller
     public function edit(MasterSources $source): Response
     {
         return Inertia::render('master/sources/edit', [
-            'source' => new MasterSourcesResource($source),
+            'data' => new MasterSourcesResource($source),
         ]);
     }
 

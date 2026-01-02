@@ -4,6 +4,7 @@ namespace App\Http\Requests\Master;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Master\ReportTypes;
+use App\Models\Master\Aspects;
 
 class ReportsRequest extends FormRequest
 {
@@ -23,6 +24,13 @@ class ReportsRequest extends FormRequest
                 $this->merge(['report_type_id' => $reportTypeId->id]);
             }
         }
+
+        if ($this->has('aspect_id') && !is_numeric($this->aspect_id)) {
+            $aspectId = Aspects::whereSqid($this->aspect_id)->first();
+            if ($aspectId) {
+                $this->merge(['aspect_id' => $aspectId->id]);
+            }
+        }
     }
 
     /**
@@ -35,6 +43,7 @@ class ReportsRequest extends FormRequest
         return [
             'urut' => ['numeric', 'min:0'],
             'report_type_id' => ['required', 'exists:report_types,id'],
+            'aspect_id' => ['required', 'exists:aspects,id'],
             'descIndicator' => ['required', 'string'],
             'descFormula' => ['required', 'string'],
             'unit' => ['required', 'string'],

@@ -73,7 +73,7 @@ const InputsForm = ({ data, sources }: InputsFormProps) => {
                                 {/* Description Field */}
                                 <Field>
                                     <FieldLabel htmlFor="description">
-                                        Input Description{" "}
+                                        Input Indikator{" "}
                                         <span className="text-destructive">*</span>
                                     </FieldLabel>
                                     <Textarea
@@ -87,10 +87,27 @@ const InputsForm = ({ data, sources }: InputsFormProps) => {
                                     <FieldError>{errors.description}</FieldError>
                                 </Field>
 
+                                {/* Satuan Field */}
+                                <Field>
+                                    <FieldLabel htmlFor="description">
+                                        Input Satuan{" "}
+                                        <span className="text-destructive">*</span>
+                                    </FieldLabel>
+                                    <Input
+                                        id="satuan"
+                                        name="satuan"
+                                        // defaultValue={data?.satuan}
+                                        placeholder="Enter input satuan"
+                                        className={errors.satuan ? "border-destructive" : ""}
+                                        required
+                                    />
+                                    <FieldError>{errors.satuan}</FieldError>
+                                </Field>
+
                                 {/* Master Source Field */}
                                 <Field>
                                     <FieldLabel htmlFor="master_source_id">
-                                        Master Source <span className="text-destructive">*</span>
+                                        Sumber Data <span className="text-destructive">*</span>
                                     </FieldLabel>
                                     <Select
                                         name="master_source_id"

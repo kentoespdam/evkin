@@ -36,8 +36,9 @@ const InputsTableHeader = memo(() => {
             <TableRow>
                 <TableHead className="w-16 text-center">#</TableHead>
                 <TableHead>Kode</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Source</TableHead>
+                <TableHead>Indikator</TableHead>
+                <TableHead>Satuan</TableHead>
+                <TableHead>Sumber Data</TableHead>
             </TableRow>
         </TableHeader>
     );
@@ -78,6 +79,7 @@ const InputsTableBody = memo(
                             </div>
                         </TableCell>
                         <TableCell>{item.description}</TableCell>
+                        <TableCell>{" "}</TableCell>
                         <TableCell>
                             <Badge variant="secondary" className="capitalize">
                                 {item.masterSource.name}

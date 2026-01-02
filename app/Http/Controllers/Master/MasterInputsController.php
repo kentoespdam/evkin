@@ -25,7 +25,7 @@ class MasterInputsController extends Controller
         }
         $masterInputs = $query->paginate($perPage);
 
-        return Inertia::render('master/inputs/index', [
+        return Inertia::render('master/master-inputs/index', [
             'page' => new MasterInputsCollection($masterInputs),
         ]);
     }
@@ -34,7 +34,7 @@ class MasterInputsController extends Controller
     {
         $sources = MasterSources::all();
 
-        return Inertia::render('master/inputs/add', [
+        return Inertia::render('master/master-inputs/add', [
             'sources' => new MasterSourcesCollection($sources),
         ]);
     }
@@ -57,7 +57,7 @@ class MasterInputsController extends Controller
     {
         $sources = MasterSources::all();
 
-        return Inertia::render('master/inputs/edit', [
+        return Inertia::render('master/master-inputs/edit', [
             'data' => new MasterInputsResource($input),
             'sources' => new MasterSourcesCollection($sources),
         ]);

@@ -68,7 +68,7 @@ class UsersController extends Controller
         ]);
     }
 
-    public function update(UsersUpdateRequest $request, User $user): RedirectResponse
+    public function update(UsersUpdateRequest $request, User $user)
     {
         $data = $request->validated();
 
@@ -80,7 +80,7 @@ class UsersController extends Controller
         // Remove password_confirmation from data
         unset($data['password_confirmation']);
 
-        $user->update($request->all());
+        $user->update($data);
 
         return redirect()
             ->route('master.users')

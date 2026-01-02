@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use App\Helpers\RoleHelper;
+use Illuminate\Http\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckRole
@@ -14,12 +15,12 @@ class CheckRole
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, string $roles): Response
+    public function handle(Request $request, Closure $next, string $roles): RedirectResponse|Response
     {
         $roleIds = array_map('intval', explode(',', $roles));
 
         if (!RoleHelper::hasRole($roleIds)) {
-            abort(403, 'Unauthorized access.');
+            return redirect()->route('dashboard');
         }
 
         return $next($request);

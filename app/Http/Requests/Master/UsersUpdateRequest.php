@@ -4,6 +4,8 @@ namespace App\Http\Requests\Master;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Master\Roles;
+use App\Models\User;
+use Illuminate\Validation\Rule;
 
 class UsersUpdateRequest extends FormRequest
 {
@@ -36,11 +38,13 @@ class UsersUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $userId = $this->route('user')?->id;
+
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $this->email],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $userId],
             'role_id' => ['required', 'integer', 'exists:roles,id'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
         ];
     }
 
@@ -56,6 +60,7 @@ class UsersUpdateRequest extends FormRequest
             'name.max' => 'Nama may not be greater than 255 characters.',
             'email.required' => 'Email harus diisi',
             'email.email' => 'Please provide a valid email address.',
+            'email.unique' => 'The email has already been taken.' . $this->user->id,
             'role_id.required' => 'Please select a role.',
             'role_id.exists' => 'The selected role is invalid.',
             'password.min' => 'Password must be at least 8 characters.',

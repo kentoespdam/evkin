@@ -22,4 +22,9 @@ class MasterReports extends Model
     {
         return $this->belongsTo(ReportTypes::class);
     }
+
+    public function aspects()
+    {
+        return $this->belongsTo(Aspects::class, 'aspect_id');
+    }
 }

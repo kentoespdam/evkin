@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Master;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\CommonDeleteRequest;
 use App\Http\Requests\Master\ReportsRequest;
+use App\Http\Resources\MasterAspectsCollection;
 use Illuminate\Http\Request;
 use App\Models\Master\MasterReports;
 use Inertia\Inertia;
@@ -14,6 +15,7 @@ use App\Models\Master\MasterInputs;
 use App\Http\Resources\MasterInputsResource;
 use App\Http\Resources\MasterReportsResource;
 use App\Http\Resources\ReportTypesCollection;
+use App\Models\Master\Aspects;
 
 class MasterReportsController extends Controller
 {
@@ -35,6 +37,7 @@ class MasterReportsController extends Controller
     public function add()
     {
         $reportTypes = ReportTypes::all();
+        $aspects = Aspects::all();
         $availableCode = MasterInputs::all()
             ->map(function (MasterInputs $input) {
                 $result = new MasterInputsResource($input);
@@ -48,6 +51,7 @@ class MasterReportsController extends Controller
 
         return Inertia::render('master/reports/add', [
             'reportTypes' => new ReportTypesCollection($reportTypes),
+            'aspects' => new MasterAspectsCollection($aspects),
             'availableCode' => $availableCode,
         ]);
     }
@@ -63,6 +67,7 @@ class MasterReportsController extends Controller
     public function edit(MasterReports $report)
     {
         $reportTypes = ReportTypes::all();
+        $aspects = Aspects::all();
         $availableCode = MasterInputs::all()
             ->map(function (MasterInputs $input) {
                 $result = new MasterInputsResource($input);
@@ -76,6 +81,7 @@ class MasterReportsController extends Controller
 
         return Inertia::render('master/reports/edit', [
             'reportTypes' => new ReportTypesCollection($reportTypes),
+            'aspects' => new MasterAspectsCollection($aspects),
             'availableCode' => $availableCode,
             'data' => new MasterReportsResource($report),
         ]);

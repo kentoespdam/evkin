@@ -21,12 +21,12 @@ import { MasterInput } from "@/types/master-input";
 import AvailableCodeButton from "@/components/commons/available-code-button";
 
 interface ReportsFormProps {
-    reportType: ReportType[];
+    reportTypes: ReportType[];
     availableCode: MasterInput[];
     data?: Report;
 }
 
-const ReportsForm = ({ reportType, availableCode, data }: ReportsFormProps) => {
+const ReportsForm = ({ reportTypes, availableCode, data }: ReportsFormProps) => {
     const formAction = useMemo(() => {
         if (data?.id) {
             const form = master.reports.update(data.id);
@@ -90,7 +90,7 @@ const ReportsForm = ({ reportType, availableCode, data }: ReportsFormProps) => {
                                             <SelectValue placeholder="Select Report Type" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {reportType.map((item) => (
+                                            {reportTypes.map((item) => (
                                                 <SelectItem key={item.id} value={item.id}>
                                                     {item.name}
                                                 </SelectItem>
