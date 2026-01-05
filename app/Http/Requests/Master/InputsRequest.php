@@ -41,6 +41,7 @@ class InputsRequest extends FormRequest
         return [
             'kode' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:255'],
+            'satuan' => ['required', 'string', 'max:255'],
             'master_source_id' => ['required', 'integer', 'exists:master_sources,id'],
         ];
     }

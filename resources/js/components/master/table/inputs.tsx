@@ -69,7 +69,7 @@ const InputsTableBody = memo(({ page, setId, setShowDeleteDialog }: InputsTableP
 						</div>
 					</TableCell>
 					<TableCell>{item.description}</TableCell>
-					<TableCell> </TableCell>
+					<TableCell>{item.satuan}</TableCell>
 					<TableCell>
 						<Badge variant="secondary" className="capitalize">
 							{item.masterSource.name}

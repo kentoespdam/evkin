@@ -1,6 +1,6 @@
-import { Form, Link } from "@inertiajs/react";
+import { Form, Link, router } from "@inertiajs/react";
 import { ArrowLeftIcon, KeyIcon } from "lucide-react";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import ButtonLoading from "@/components/commons/button-loading";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -42,6 +42,10 @@ const RoleInputForm = ({ roles, inputs, data }: RoleInputFormProps) => {
 		return <span className="text-destructive">*</span>;
 	};
 
+	const goto = useCallback((value: string) => {
+		router.visit(master.roleInputs.edit(value).url);
+	}, []);
+
 	return (
 		<Form {...formAction} resetOnSuccess>
 			{({ errors, processing }) => (
@@ -60,7 +64,7 @@ const RoleInputForm = ({ roles, inputs, data }: RoleInputFormProps) => {
 								{/* Role Field */}
 								<Field>
 									<FieldLabel htmlFor="role_id">Role {StarRequired()}</FieldLabel>
-									<Select name="role_id" defaultValue={data?.role?.id}>
+									<Select name="role_id" defaultValue={data?.role?.id} onValueChange={goto}>
 										<SelectTrigger>
 											<SelectValue placeholder="Select role" className={errors.role_id ? "border-destructive" : ""} />
 										</SelectTrigger>

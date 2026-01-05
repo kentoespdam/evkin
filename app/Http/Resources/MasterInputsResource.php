@@ -18,6 +18,7 @@ class MasterInputsResource extends JsonResource
             'id' => $this->sqid,
             'kode' => $this->kode,
             'description' => $this->description,
+            'satuan' => $this->satuan,
             'masterSource' => new MasterSourcesResource($this->masterSource),
         ];
     }
