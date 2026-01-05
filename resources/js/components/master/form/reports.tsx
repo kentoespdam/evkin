@@ -96,7 +96,7 @@ const ReportsForm = ({ reportTypes, availableCode, aspects, data }: ReportsFormP
 								{/* Aspect Field */}
 								<Field>
 									<FieldLabel htmlFor="aspect_id">
-										Aspect <span className="text-destructive">*</span>
+										Aspek <span className="text-destructive">*</span>
 									</FieldLabel>
 									<Select name="aspect_id" defaultValue={data?.aspect?.id}>
 										<SelectTrigger>
@@ -116,7 +116,7 @@ const ReportsForm = ({ reportTypes, availableCode, aspects, data }: ReportsFormP
 								{/* Description Indicator Field */}
 								<Field>
 									<FieldLabel htmlFor="descIndicator">
-										Description Indicator <span className="text-destructive">*</span>
+										Indikator <span className="text-destructive">*</span>
 									</FieldLabel>
 									<Input
 										id="descIndicator"
@@ -133,7 +133,7 @@ const ReportsForm = ({ reportTypes, availableCode, aspects, data }: ReportsFormP
 								{/* Description Formula Field */}
 								<Field>
 									<FieldLabel htmlFor="descFormula">
-										Description Formula <span className="text-destructive">*</span>
+										Rumus <span className="text-destructive">*</span>
 									</FieldLabel>
 									<Textarea
 										id="descFormula"

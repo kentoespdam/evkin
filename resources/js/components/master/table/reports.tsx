@@ -32,7 +32,7 @@ const ReportsTableHeader = memo(() => {
 				<TableHead>Jenis Laporan</TableHead>
 				<TableHead>Aspek</TableHead>
 				<TableHead>Indikator</TableHead>
-				<TableHead>Deskripsi Formula</TableHead>
+				<TableHead>Rumus</TableHead>
 				<TableHead>Satuan</TableHead>
 				<TableHead>Bobot</TableHead>
 				<TableHead>Formula</TableHead>

@@ -1,6 +1,6 @@
 import { Form, Link, router } from "@inertiajs/react";
-import { ArrowLeftIcon, KeyIcon } from "lucide-react";
-import { useCallback, useMemo } from "react";
+import { ArrowLeftIcon, KeyIcon, SearchIcon, XIcon } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 import ButtonLoading from "@/components/commons/button-loading";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,8 @@ interface RoleInputFormProps {
 }
 
 const RoleInputForm = ({ roles, inputs, data }: RoleInputFormProps) => {
+	const [searchQuery, setSearchQuery] = useState("");
+
 	const formAction = useMemo(() => {
 		if (data?.id) {
 			const form = master.roleInputs.update(data.id);
@@ -45,6 +47,16 @@ const RoleInputForm = ({ roles, inputs, data }: RoleInputFormProps) => {
 	const goto = useCallback((value: string) => {
 		router.visit(master.roleInputs.edit(value).url);
 	}, []);
+
+	const filteredInputs = useMemo(() => {
+		if (!searchQuery.trim()) return inputs;
+
+		const query = searchQuery.toLowerCase();
+		return inputs.filter((item: MasterInput) =>
+			item.description.toLowerCase().includes(query) ||
+			item.kode.toLowerCase().includes(query)
+		);
+	}, [inputs, searchQuery]);
 
 	return (
 		<Form {...formAction} resetOnSuccess>
@@ -82,32 +94,58 @@ const RoleInputForm = ({ roles, inputs, data }: RoleInputFormProps) => {
 								{/* Master Input Field - Checkboxes */}
 								<Field>
 									<FieldLabel>Indikator {StarRequired()}</FieldLabel>
+
+									{/* Search Input */}
+									<div className="relative mb-3">
+										<SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+										<input
+											type="text"
+											placeholder="Cari indikator..."
+											value={searchQuery}
+											onChange={(e) => setSearchQuery(e.target.value)}
+											className="w-full pl-10 pr-10 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+										/>
+										{searchQuery && (
+											<button
+												type="button"
+												onClick={() => setSearchQuery("")}
+												className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+											>
+												<XIcon className="h-4 w-4" />
+											</button>
+										)}
+									</div>
+
 									<div
-										className={`border rounded-md p-4 max-h-80 overflow-y-auto space-y-3 ${errors.master_input_ids ? "border-destructive" : ""
+										className={`border rounded-md p-4 max-h-120 overflow-y-auto space-y-3 ${errors.master_input_ids ? "border-destructive" : ""
 											}`}
 									>
-										{inputs.length === 0 ? (
-											<p className="text-sm text-muted-foreground text-center py-4">No inputs available</p>
+										{filteredInputs.length === 0 ? (
+											<p className="text-sm text-muted-foreground text-center py-4">
+												{searchQuery ? "Tidak ada indikator yang cocok" : "No inputs available"}
+											</p>
 										) : (
-											inputs.map((item: MasterInput) => (
+											filteredInputs.map((item: MasterInput) => (
 												<label
 													key={item.id}
-													className="flex items-start gap-3 p-3 rounded-md hover:bg-accent/50 cursor-pointer transition-colors group"
+													className="flex items-center gap-3 p-3 rounded-md hover:bg-accent/50 cursor-pointer transition-colors group"
 												>
-													<input
-														type="checkbox"
-														name="master_input_ids[]"
-														value={item.id}
-														defaultChecked={data?.existingInputIds?.includes(item.id)}
-														className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-													/>
-													<div className="flex-1 min-w-0">
+													<div>
+														<input
+															type="checkbox"
+															name="master_input_ids[]"
+															value={item.id}
+															defaultChecked={data?.existingInputIds?.includes(item.id)}
+															className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+														/>
+													</div>
+													<div className="flex-1 grid gap-2 min-w-0">
+														<div className="text-sm mt-1 text-muted-foreground">{item.description}</div>
 														<div className="flex items-center gap-2">
 															<Badge variant="outline" color="secondary">
 																{item.kode}
 															</Badge>
 														</div>
-														<p className="text-sm mt-1 text-muted-foreground">{item.description}</p>
 													</div>
 												</label>
 											))

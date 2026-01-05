@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Master;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\CommonDeleteRequest;
 use App\Http\Requests\Master\InputsRequest;
+use App\Http\Requests\Master\InputsUpdateRequest;
 use Illuminate\Http\Request;
 use App\Models\Master\MasterInputs;
 use Inertia\Inertia;
@@ -63,7 +64,7 @@ class MasterInputsController extends Controller
         ]);
     }
 
-    public function update(InputsRequest $request, MasterInputs $input)
+    public function update(InputsUpdateRequest $request, MasterInputs $input)
     {
         $requestData = $request->validated();
         $input->update($requestData);

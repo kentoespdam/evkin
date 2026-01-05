@@ -89,7 +89,7 @@ const InputsForm = ({ data, sources }: InputsFormProps) => {
 									<Input
 										id="satuan"
 										name="satuan"
-										// defaultValue={data?.satuan}
+										defaultValue={data?.satuan}
 										placeholder="Enter input satuan"
 										className={errors.satuan ? "border-destructive" : ""}
 										required
