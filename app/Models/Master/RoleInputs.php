@@ -2,6 +2,7 @@
 
 namespace App\Models\Master;
 
+use App\Models\Transaksi\TransaksiInputs;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use RedExplosion\Sqids\Concerns\HasSqids;
@@ -26,5 +27,10 @@ class RoleInputs extends Model
     public function masterInput()
     {
         return $this->belongsTo(MasterInputs::class);
+    }
+
+    public function transaksiInputs()
+    {
+        return $this->hasMany(TransaksiInputs::class, 'master_input_id', 'master_input_id');
     }
 }

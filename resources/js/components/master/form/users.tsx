@@ -16,7 +16,7 @@ interface UserFormProps {
 	user?: UserWithRole;
 }
 const UserForm = ({ roles, user }: UserFormProps) => {
-	const [showPassword, setShowPassword] = useState(!user ? true : false);
+	const [showPassword, setShowPassword] = useState(!user);
 
 	const formAction = useMemo(() => {
 		if (user?.id) {

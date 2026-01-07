@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Models\Transaksi;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use RedExplosion\Sqids\Concerns\HasSqids;
+use App\Models\Master\MasterInputs;
+
+class TransaksiInputs extends Model
+{
+    use HasFactory, HasSqids;
+
+    protected $table = "transaksi_inputs";
+    protected string $sqidPrefix = 'ti';
+    protected $fillable = [
+        'year',
+        'month',
+        'master_input_id',
+        'nilai',
+    ];
+    protected $hidden = ['created_at', 'updated_at'];
+
+    public function masterInput()
+    {
+        return $this->belongsTo(MasterInputs::class);
+    }
+}

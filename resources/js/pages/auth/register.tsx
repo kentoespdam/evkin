@@ -1,25 +1,23 @@
-import { login } from '@/routes';
-import { store } from '@/routes/register';
-import { Form, Head } from '@inertiajs/react';
+/** biome-ignore-all lint/a11y/noPositiveTabindex: ignore Tab Index */
 
-import InputError from '@/components/commons/input-error';
-import TextLink from '@/components/commons/text-link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
-import AuthLayout from '@/layouts/auth-layout';
+import { Form, Head } from "@inertiajs/react";
+import InputError from "@/components/commons/input-error";
+import TextLink from "@/components/commons/text-link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
+import AuthLayout from "@/layouts/auth-layout";
+import { login } from "@/routes";
+import { store } from "@/routes/register";
 
 export default function Register() {
     return (
-        <AuthLayout
-            title="Create an account"
-            description="Enter your details below to create your account"
-        >
+        <AuthLayout title="Create an account" description="Enter your details below to create your account">
             <Head title="Register" />
             <Form
                 {...store.form()}
-                resetOnSuccess={['password', 'password_confirmation']}
+                resetOnSuccess={["password", "password_confirmation"]}
                 disableWhileProcessing
                 className="flex flex-col gap-6"
             >
@@ -38,10 +36,7 @@ export default function Register() {
                                     name="name"
                                     placeholder="Full name"
                                 />
-                                <InputError
-                                    message={errors.name}
-                                    className="mt-2"
-                                />
+                                <InputError message={errors.name} className="mt-2" />
                             </div>
 
                             <div className="grid gap-2">
@@ -73,9 +68,7 @@ export default function Register() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="password_confirmation">
-                                    Confirm password
-                                </Label>
+                                <Label htmlFor="password_confirmation">Confirm password</Label>
                                 <Input
                                     id="password_confirmation"
                                     type="password"
@@ -85,24 +78,17 @@ export default function Register() {
                                     name="password_confirmation"
                                     placeholder="Confirm password"
                                 />
-                                <InputError
-                                    message={errors.password_confirmation}
-                                />
+                                <InputError message={errors.password_confirmation} />
                             </div>
 
-                            <Button
-                                type="submit"
-                                className="mt-2 w-full"
-                                tabIndex={5}
-                                data-test="register-user-button"
-                            >
+                            <Button type="submit" className="mt-2 w-full" tabIndex={5} data-test="register-user-button">
                                 {processing && <Spinner />}
                                 Create account
                             </Button>
                         </div>
 
                         <div className="text-center text-sm text-muted-foreground">
-                            Already have an account?{' '}
+                            Already have an account?{" "}
                             <TextLink href={login()} tabIndex={6}>
                                 Log in
                             </TextLink>

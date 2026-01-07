@@ -5,7 +5,9 @@ import ButtonLoading from "@/components/commons/button-loading";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from "@/components/ui/item";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import master from "@/routes/master";
 import type { MasterInput } from "@/types/master-input";
@@ -52,9 +54,8 @@ const RoleInputForm = ({ roles, inputs, data }: RoleInputFormProps) => {
 		if (!searchQuery.trim()) return inputs;
 
 		const query = searchQuery.toLowerCase();
-		return inputs.filter((item: MasterInput) =>
-			item.description.toLowerCase().includes(query) ||
-			item.kode.toLowerCase().includes(query)
+		return inputs.filter(
+			(item: MasterInput) => item.description.toLowerCase().includes(query) || item.kode.toLowerCase().includes(query),
 		);
 	}, [inputs, searchQuery]);
 
@@ -126,28 +127,46 @@ const RoleInputForm = ({ roles, inputs, data }: RoleInputFormProps) => {
 											</p>
 										) : (
 											filteredInputs.map((item: MasterInput) => (
-												<label
-													key={item.id}
-													className="flex items-center gap-3 p-3 rounded-md hover:bg-accent/50 cursor-pointer transition-colors group"
-												>
-													<div>
-														<input
-															type="checkbox"
+												<Item key={item.id} variant="outline">
+													<ItemMedia>
+														<Checkbox
 															name="master_input_ids[]"
 															value={item.id}
 															defaultChecked={data?.existingInputIds?.includes(item.id)}
-															className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+															className="mt-1"
 														/>
-													</div>
-													<div className="flex-1 grid gap-2 min-w-0">
-														<div className="text-sm mt-1 text-muted-foreground">{item.description}</div>
-														<div className="flex items-center gap-2">
+													</ItemMedia>
+													<ItemContent>
+														<ItemTitle>{item.description}</ItemTitle>
+														<ItemDescription>
 															<Badge variant="outline" color="secondary">
 																{item.kode}
 															</Badge>
-														</div>
-													</div>
-												</label>
+														</ItemDescription>
+													</ItemContent>
+												</Item>
+												// <label
+												// 	key={item.id}
+												// 	className="flex items-center gap-3 p-3 rounded-md hover:bg-accent/50 cursor-pointer transition-colors group"
+												// >
+												// 	<div>
+												// 		<input
+												// 			type="checkbox"
+												// 			name="master_input_ids[]"
+												// 			value={item.id}
+												// 			defaultChecked={data?.existingInputIds?.includes(item.id)}
+												// 			className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+												// 		/>
+												// 	</div>
+												// 	<div className="flex-1 grid gap-2 min-w-0">
+												// 		<div className="text-sm mt-1 text-muted-foreground">{item.description}</div>
+												// 		<div className="flex items-center gap-2">
+												// 			<Badge variant="outline" color="secondary">
+												// 				{item.kode}
+												// 			</Badge>
+												// 		</div>
+												// 	</div>
+												// </label>
 											))
 										)}
 									</div>

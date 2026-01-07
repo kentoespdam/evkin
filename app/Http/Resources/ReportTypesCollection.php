@@ -14,7 +14,9 @@ class ReportTypesCollection extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return $this->collection->map(function ($item) {
+            return new ReportTypesResource($item);
+        })->toArray();
     }
 
     public function paginationInformation($request, $paginated, $default): array

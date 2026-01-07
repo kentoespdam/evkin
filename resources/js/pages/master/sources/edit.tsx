@@ -8,8 +8,8 @@ import {
 import AppLayout from "@/layouts/app-layout";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
-import { BreadcrumbItem } from "@/types";
-import { MasterSource } from "@/types/master-source";
+import type { BreadcrumbItem } from "@/types";
+import type { MasterSource } from "@/types/master-source";
 import { Head } from "@inertiajs/react";
 import { GitPullRequestArrow } from "lucide-react";
 

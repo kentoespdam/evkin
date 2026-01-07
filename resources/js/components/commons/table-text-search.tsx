@@ -3,7 +3,7 @@ import { type ChangeEvent, memo, useRef } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { HandleSelectChangeProps } from "@/lib/utils";
+import { cn, type HandleSelectChangeProps } from "@/lib/utils";
 
 export interface TableTextSearchProps {
 	params: {
@@ -11,9 +11,10 @@ export interface TableTextSearchProps {
 	};
 	handleSelectChange: (value: HandleSelectChangeProps) => void;
 	text?: string;
+	className?: string;
 }
 
-const TableTextSearch = memo(({ params, handleSelectChange, text = "" }: TableTextSearchProps) => {
+const TableTextSearch = memo(({ params, handleSelectChange, text = "", className = "" }: TableTextSearchProps) => {
 	const search = params.search ?? "";
 	const inputRef = useRef<HTMLInputElement>(null);
 
@@ -26,7 +27,7 @@ const TableTextSearch = memo(({ params, handleSelectChange, text = "" }: TableTe
 	};
 
 	return (
-		<div className="relative w-full sm:max-w-xs">
+		<div className={cn("relative w-full sm:max-w-xs", className)}>
 			<SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 			<Input
 				ref={inputRef}

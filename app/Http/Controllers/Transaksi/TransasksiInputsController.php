@@ -1,0 +1,73 @@
+<?php
+
+namespace App\Http\Controllers\Transaksi;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Transaksi\TransaksiInputsRequest;
+use App\Http\Resources\RoleInputsCollection;
+use App\Http\Resources\TransaksiInputsCollection;
+use App\Models\Master\RoleInputs;
+use App\Models\Transaksi\TransaksiInputs;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+
+class TransasksiInputsController extends Controller
+{
+    public function index(Request $request)
+    {
+        $perPage = $request->per_page ?? 10;
+        $year = $request->year ?? date("Y");
+        $month = $request->month ?? date("m");
+        $query = TransaksiInputs::with("masterInput")
+            ->where('year', $year)
+            ->where('month', $month);
+
+        $query_page = RoleInputs::with('masterInput')
+            ->where('role_id', $request->user()->role_id);
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->whereHas('masterInput', function ($q) use ($search) {
+                $q->where('name', 'like', "%$search%");
+            });
+            $query_page->whereHas('masterInput', function ($q) use ($search) {
+                $q->where('name', 'like', "%$search%");
+            });
+        }
+
+        $page = $query_page->paginate($perPage);
+        $data = $query->whereIn('master_input_id', $page->pluck('master_input_id'))->get();
+
+        return Inertia::render("transaksi/inputs/index", [
+            "page" => new RoleInputsCollection($page),
+            "data" => new TransaksiInputsCollection($data ?? []),
+            "filters" => [
+                "year" => $year,
+                "month" => (string) ($month + 0),
+                "search" => $request->search ?? "",
+            ],
+        ]);
+    }
+
+    public function store(TransaksiInputsRequest $request)
+    {
+        $data = $request->validated();
+        $arrData = [];
+        for ($i = 0; $i < count($data['master_input_ids']); $i++) {
+            $new_data = [
+                'year' => $data['year'],
+                'month' => $data['month'],
+                'master_input_id' => $data['master_input_ids'][$i],
+                'nilai' => $data['nilais'][$i],
+            ];
+            $arrData[] = $new_data;
+        }
+
+        TransaksiInputs::upsert(
+            $arrData,
+            ['year', 'month', 'master_input_id'],
+            ['nilai']
+        );
+
+        return redirect()->route('transaksi.inputs')->with('success', 'Transaksi Input saved sucessfully');
+    }
+}

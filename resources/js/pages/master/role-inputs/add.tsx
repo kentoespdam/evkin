@@ -8,9 +8,9 @@ import {
 import AppLayout from "@/layouts/app-layout";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
-import { BreadcrumbItem } from "@/types";
-import { MasterInput } from "@/types/master-input";
-import { Role } from "@/types/role";
+import type { BreadcrumbItem } from "@/types";
+import type { MasterInput } from "@/types/master-input";
+import type { Role } from "@/types/role";
 import { Head } from "@inertiajs/react";
 import { KeyIcon } from "lucide-react";
 

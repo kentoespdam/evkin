@@ -24,7 +24,7 @@ class RoleHelper
             return in_array($user->role_id, $roleIds);
         }
 
-        return $user->role_id == $roleIds;
+        return $user->role->id == $roleIds;
     }
 
     /**

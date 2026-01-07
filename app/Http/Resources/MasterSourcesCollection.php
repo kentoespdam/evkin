@@ -14,7 +14,9 @@ class MasterSourcesCollection extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return $this->collection->map(function ($item) {
+            return new MasterSourcesResource($item);
+        })->toArray();
     }
 
     public function paginationInformation($request, $paginated, $default): array

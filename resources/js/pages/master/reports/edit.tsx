@@ -8,10 +8,10 @@ import {
 import AppLayout from "@/layouts/app-layout";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
-import { BreadcrumbItem } from "@/types";
-import { MasterInput } from "@/types/master-input";
-import { ReportType } from "@/types/report-types";
-import { Report } from "@/types/reports";
+import type { BreadcrumbItem } from "@/types";
+import type { MasterInput } from "@/types/master-input";
+import type { ReportType } from "@/types/report-types";
+import type { Report } from "@/types/reports";
 import { Head } from "@inertiajs/react";
 import { FileTextIcon } from "lucide-react";
 

@@ -1,5 +1,6 @@
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import {
+	FileInputIcon,
 	FileTextIcon,
 	FileTypeIcon,
 	GitPullRequestArrow,
@@ -23,7 +24,8 @@ import {
 } from "@/components/ui/sidebar";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
-import type { NavGroup, NavItem } from "@/types";
+import transaksi from "@/routes/transaksi";
+import type { NavGroup, NavItem, SharedData } from "@/types";
 import AppLogo from "./app-logo";
 import NavMaster from "./nav-master";
 
@@ -32,6 +34,11 @@ const mainNavItems: NavItem[] = [
 		title: "Dashboard",
 		href: dashboard(),
 		icon: LayoutGrid,
+	},
+	{
+		title: "Input Transaksi",
+		href: transaksi.inputs().url,
+		icon: FileInputIcon,
 	},
 ];
 
@@ -95,6 +102,11 @@ const masterGroupItems: NavGroup = {
 // ];
 
 export function AppSidebar() {
+	const { auth } = usePage<SharedData>().props;
+	const masterAllowedRoles = import.meta.env.VITE_MASTER_ALLOWED_ROLES
+		? import.meta.env.VITE_MASTER_ALLOWED_ROLES.split(",").map((role: string) => role.trim())
+		: [];
+	const allowedMaster = masterAllowedRoles.includes(auth.user.role.id);
 	return (
 		<Sidebar collapsible="icon" variant="inset">
 			<SidebarHeader>
@@ -111,7 +123,9 @@ export function AppSidebar() {
 
 			<SidebarContent>
 				<NavMain items={mainNavItems} />
-				<NavMaster group={masterGroupItems} />
+				{allowedMaster &&
+					<NavMaster group={masterGroupItems} />
+				}
 			</SidebarContent>
 
 			<SidebarFooter>

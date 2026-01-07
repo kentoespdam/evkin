@@ -8,7 +8,7 @@ import {
 import AppLayout from "@/layouts/app-layout";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
-import { BreadcrumbItem } from "@/types";
+import type { BreadcrumbItem } from "@/types";
 import { Head } from "@inertiajs/react";
 import { GitPullRequestArrow } from "lucide-react";
 

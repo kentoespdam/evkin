@@ -1,26 +1,20 @@
+import { Head, Link } from "@inertiajs/react";
+import { PlusIcon } from "lucide-react";
+import { useMemo } from "react";
 import DeleteDialog from "@/components/commons/delete-dialog";
 import PaginationNav from "@/components/commons/pagination-nav";
 import TableShowTotalText from "@/components/commons/table-show-total-text";
 import TableTextSearch from "@/components/commons/table-text-search";
 import ReportTypesTable from "@/components/master/table/report-types";
 import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGlobalDeleteHook } from "@/hooks/use-global-delete-hook";
 import { usePaginationHandler } from "@/hooks/use-pagination";
 import AppLayout from "@/layouts/app-layout";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
-import { BreadcrumbItem, Pagination } from "@/types";
-import { ReportType } from "@/types/report-types";
-import { Head, Link } from "@inertiajs/react";
-import { PlusIcon } from "lucide-react";
-import { useMemo } from "react";
+import type { BreadcrumbItem, Pagination } from "@/types";
+import type { ReportType } from "@/types/report-types";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -43,8 +37,7 @@ export interface ReportTypesPageProps {
 
 const ReportTypesPage = ({ page }: ReportTypesPageProps) => {
     const { params, handleSelectChange } = usePaginationHandler(page);
-    const { id, setId, showDeleteDialog, setShowDeleteDialog } =
-        useGlobalDeleteHook();
+    const { id, setId, showDeleteDialog, setShowDeleteDialog } = useGlobalDeleteHook();
     const deleteUrl = useMemo(() => master.reportTypes.destroy(id).url, [id]);
 
     return (
@@ -66,17 +59,9 @@ const ReportTypesPage = ({ page }: ReportTypesPageProps) => {
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <TableShowTotalText page={page} tableName="Report Types">
-                            <TableTextSearch
-                                params={params}
-                                handleSelectChange={handleSelectChange}
-                                text="Report Type"
-                            />
+                            <TableTextSearch params={params} handleSelectChange={handleSelectChange} text="Report Type" />
                         </TableShowTotalText>
-                        <ReportTypesTable
-                            page={page}
-                            setId={setId}
-                            setShowDeleteDialog={setShowDeleteDialog}
-                        />
+                        <ReportTypesTable page={page} setId={setId} setShowDeleteDialog={setShowDeleteDialog} />
                         <PaginationNav page={page} />
                     </CardContent>
                 </Card>

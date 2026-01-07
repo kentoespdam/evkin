@@ -1,9 +1,9 @@
-import { Role } from './role';
+import type { Role } from "./role";
 
 export interface UserWithRole {
-    id: string; // sqid encoded ID (e.g., "usr_A3EyoEb2TO")
-    name: string;
-    email: string;
-    avatar?: string;
-    role: Role;
+	id: string; // sqid encoded ID (e.g., "usr_A3EyoEb2TO")
+	name: string;
+	email: string;
+	avatar?: string;
+	role: Role;
 }

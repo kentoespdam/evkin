@@ -1,26 +1,20 @@
+import { Head, Link } from "@inertiajs/react";
+import { PlusIcon } from "lucide-react";
+import { useMemo } from "react";
 import DeleteDialog from "@/components/commons/delete-dialog";
 import PaginationNav from "@/components/commons/pagination-nav";
 import TableShowTotalText from "@/components/commons/table-show-total-text";
 import TableTextSearch from "@/components/commons/table-text-search";
 import InputsTable from "@/components/master/table/inputs";
 import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGlobalDeleteHook } from "@/hooks/use-global-delete-hook";
 import { usePaginationHandler } from "@/hooks/use-pagination";
 import AppLayout from "@/layouts/app-layout";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
-import { BreadcrumbItem, Pagination } from "@/types";
-import { MasterInput } from "@/types/master-input";
-import { Head, Link } from "@inertiajs/react";
-import { PlusIcon } from "lucide-react";
-import { useMemo } from "react";
+import type { BreadcrumbItem, Pagination } from "@/types";
+import type { MasterInput } from "@/types/master-input";
 
 export interface InputsIndexProps {
     page: Pagination<MasterInput>;
@@ -43,8 +37,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const InputsIndex = ({ page }: InputsIndexProps) => {
     const { params, handleSelectChange } = usePaginationHandler(page);
-    const { id, setId, showDeleteDialog, setShowDeleteDialog } =
-        useGlobalDeleteHook();
+    const { id, setId, showDeleteDialog, setShowDeleteDialog } = useGlobalDeleteHook();
     const formUrl = useMemo(() => master.inputs.destroy(id).url, [id]);
 
     return (
@@ -66,17 +59,9 @@ const InputsIndex = ({ page }: InputsIndexProps) => {
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <TableShowTotalText page={page} tableName="inputs">
-                            <TableTextSearch
-                                params={params}
-                                handleSelectChange={handleSelectChange}
-                                text="Kode / Description"
-                            />
+                            <TableTextSearch params={params} handleSelectChange={handleSelectChange} text="Kode / Description" />
                         </TableShowTotalText>
-                        <InputsTable
-                            page={page}
-                            setId={setId}
-                            setShowDeleteDialog={setShowDeleteDialog}
-                        />
+                        <InputsTable page={page} setId={setId} setShowDeleteDialog={setShowDeleteDialog} />
                         <PaginationNav page={page} />
                     </CardContent>
                 </Card>

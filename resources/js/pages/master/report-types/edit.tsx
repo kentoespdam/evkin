@@ -1,16 +1,11 @@
+import { Head } from "@inertiajs/react";
 import ReportTypesForm from "@/components/master/form/report-types";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AppLayout from "@/layouts/app-layout";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
-import { BreadcrumbItem } from "@/types";
-import { ReportType } from "@/types/report-types";
-import { Head } from "@inertiajs/react";
+import type { BreadcrumbItem } from "@/types";
+import type { ReportType } from "@/types/report-types";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {

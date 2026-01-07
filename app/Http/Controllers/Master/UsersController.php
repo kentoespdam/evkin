@@ -40,7 +40,7 @@ class UsersController extends Controller
     {
         $roles = Roles::all();
 
-        return Inertia::render('master/users/input', [
+        return Inertia::render('master/users/add', [
             'roles' => RolesResource::collection($roles),
         ]);
     }

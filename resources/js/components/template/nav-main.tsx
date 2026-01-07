@@ -28,7 +28,8 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
 							</Link>
 						</SidebarMenuButton>
 					</SidebarMenuItem>
-				))}
+				)
+				)}
 			</SidebarMenu>
 		</SidebarGroup>
 	);

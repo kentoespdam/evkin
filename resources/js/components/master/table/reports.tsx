@@ -121,7 +121,9 @@ const ReportsTableBody = memo(({ page, setId, setShowDeleteDialog }: ReportsTabl
 					onClick={() => setSelectedRowId(selectedRowId === item.id ? null : item.id)}
 				>
 					<TableCell className="w-16 text-center">{item.hash}</TableCell>
-					<TableCell className="w-16 text-center">{item.urut}</TableCell>
+					<TableCell className="w-16 text-center">
+						<Badge>{item.urut}</Badge>
+					</TableCell>
 					<TableCell>
 						<div className="flex items-center gap-3">
 							<ReportsTableActions
