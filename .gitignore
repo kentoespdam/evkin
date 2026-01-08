@@ -1,32 +1,72 @@
-/.phpunit.cache
-/bootstrap/ssr
-/node_modules
-/public/build
-/public/hot
-/public/storage
-/resources/js/actions
-/resources/js/routes
-/resources/js/wayfinder
-/storage/*.key
-/storage/pail
+# Laravel
 /vendor
-.DS_Store
+/node_modules
+/bootstrap/ssr
+/.phpunit.cache
+.phpunit.result.cache
+auth.json
+
+# Environment & Configuration
 .env
 .env.backup
 .env.production
-.phpactor.json
-.phpunit.result.cache
-Homestead.json
-Homestead.yaml
-npm-debug.log
-yarn-error.log
-/auth.json
+.env.*.local
+
+# Build Artifacts
+/public/build
+/public/hot
+/public/storage
+
+# Storage & Cache
+/storage/*.key
+/storage/pail
+/storage/logs/*.log
+
+# Wayfinder Generated Files
+/resources/js/actions
+/resources/js/routes
+/resources/js/wayfinder
+
+# FrankenPHP & Octane
+/frankenphp
+/frankenphp-worker.php
+**/caddy/instance.uuid
+**/caddy/last_clean.json
+**/caddy/locks
+**/caddy/autosave.json
+/data/caddy
+/config/caddy/autosave.json
+
+# Docker & Compose
+/data/composer
+
+# Testing & Coverage
+/coverage
+/.phpunit.result.cache
+/.phpunit.cache
+
+# IDE & Editor
 /.fleet
 /.idea
 /.nova
 /.vscode
 /.zed
+.phpactor.json
+*.swp
+*.swo
+*~
 
-**/caddy
-frankenphp
-frankenphp-worker.php
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs & Debugging
+npm-debug.log*
+yarn-error.log
+yarn-debug.log*
+pnpm-debug.log*
+
+# Legacy Laravel Tools
+Homestead.json
+Homestead.yaml

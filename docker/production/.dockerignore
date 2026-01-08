@@ -1,0 +1,64 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDEs and editors
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Node
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Tests
+tests
+phpunit.xml
+.phpunit.result.cache
+
+# Documentation
+*.md
+!README.md
+docs
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+
+# Docker
+docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Development files
+.env.example
+.env.local
+.env.testing
+.editorconfig
+.php-cs-fixer.php
+phpstan.neon
+pint.json
+
+# Storage (will be created at runtime)
+storage/app/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/testing/*
+storage/framework/views/*
+storage/logs/*
+
+# Build artifacts
+public/hot
+public/storage
+public/build
+
+# Misc
+*.log
+.DS_Store
+Thumbs.db
