@@ -90,7 +90,7 @@ RUN rm -rf /var/www/html/resources/js
 COPY --from=builder /app/vendor /var/www/html/vendor
 
 # Bring in built frontend assets (produced by composer scripts if configured)
-# COPY --from=builder /app/public/build /var/www/html/public/build
+COPY --from=builder /app/public/build /var/www/html/public/build
 
 # PHP runtime ini (CLI/SAPI)
 COPY docker/production/php.ini /usr/local/etc/php/conf.d/99-custom.ini
