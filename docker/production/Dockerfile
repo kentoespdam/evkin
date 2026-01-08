@@ -40,12 +40,11 @@ RUN [ -f .env ] || cp .env.example .env || true
 
 # Install PHP dependencies; npm-related steps (if any) run via composer scripts
 RUN composer install \
+    --no-scripts \
     --no-dev \
     --prefer-dist \
     --no-interaction \
-    --no-autoloader \
     --ignore-platform-reqs \
-    --prefer-dist \
     # --no-progress \
     # --optimize-autoloader \
     # --classmap-authoritative \
