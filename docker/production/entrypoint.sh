@@ -10,11 +10,12 @@ chmod -R 775 storage bootstrap/cache || true
 
 # Warm caches only when app key is present (typical in production)
 if [ -n "$APP_KEY" ]; then
-  php artisan config:cache || true
+  php artisan optimize:clear || true
+  # php artisan config:cache || true
   php artisan route:cache || true
   php artisan view:cache || true
-  php artisan event:cache || true
-  php artisan storage:link || true
+  # php artisan event:cache || true
+  # php artisan storage:link || true
 fi
 
 frankenphp fmt --overwrite /etc/caddy/Caddyfile
