@@ -40,23 +40,18 @@ RUN [ -f .env ] || cp .env.example .env || true
 
 # Install PHP dependencies; npm-related steps (if any) run via composer scripts
 RUN composer install \
-    --no-scripts \
     --no-dev \
     --prefer-dist \
     --no-interaction \
-    --ignore-platform-reqs \
-    # --no-progress \
-    # --optimize-autoloader \
-    # --classmap-authoritative \
-    && php artisan key:generate \
-    # && php artisan migrate --force \
-    && npm ci
-RUN npm run build
-RUN composer dump-autoload --optimize --no-dev
-# RUN composer clear-cache \
-#     && rm -rf /root/.composer/cache \
-#     && find . -type d -name '.git' -exec rm -rf {} + 2>/dev/null || true \
-#     && rm -rf node_modules/.cache
+    --no-progress \
+    --optimize-autoloader \
+    --classmap-authoritative \
+    php artisan key:generate
+RUN npm ci && npm run build || true
+RUN composer clear-cache \
+    && rm -rf /root/.composer/cache \
+    && find . -type d -name '.git' -exec rm -rf {} + 2>/dev/null || true \
+    && rm -rf node_modules/.cache
 
 ############################
 # Stage 3: Runtime (FrankenPHP + Octane)
@@ -93,7 +88,7 @@ RUN rm -rf /var/www/html/resources/js
 COPY --from=builder /app/vendor /var/www/html/vendor
 
 # Bring in built frontend assets (produced by composer scripts if configured)
-COPY --from=builder /app/public/build /var/www/html/public/build
+# COPY --from=builder /app/public/build /var/www/html/public/build
 
 # PHP runtime ini (CLI/SAPI)
 COPY docker/production/php.ini /usr/local/etc/php/conf.d/99-custom.ini

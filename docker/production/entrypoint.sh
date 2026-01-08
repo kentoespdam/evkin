@@ -14,8 +14,8 @@ if [ -n "$APP_KEY" ]; then
   # php artisan config:cache || true
   php artisan route:cache || true
   php artisan view:cache || true
-  # php artisan event:cache || true
-  # php artisan storage:link || true
+  php artisan event:cache || true
+  php artisan storage:link || true
 fi
 
 frankenphp fmt --overwrite /etc/caddy/Caddyfile
