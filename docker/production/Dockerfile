@@ -46,7 +46,8 @@ RUN composer install \
     --no-progress \
     --optimize-autoloader \
     --classmap-authoritative \
-    && composer clear-cache \
+    && composer setup
+RUN composer clear-cache \
     && rm -rf /root/.composer/cache \
     && find . -type d -name '.git' -exec rm -rf {} + 2>/dev/null || true \
     && rm -rf node_modules/.cache
@@ -86,7 +87,7 @@ RUN rm -rf /var/www/html/resources/js
 COPY --from=builder /app/vendor /var/www/html/vendor
 
 # Bring in built frontend assets (produced by composer scripts if configured)
-COPY --from=builder /app/public/build /var/www/html/public/build
+# COPY --from=builder /app/public/build /var/www/html/public/build
 
 # PHP runtime ini (CLI/SAPI)
 COPY docker/production/php.ini /usr/local/etc/php/conf.d/99-custom.ini
