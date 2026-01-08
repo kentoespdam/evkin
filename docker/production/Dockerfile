@@ -43,17 +43,21 @@ RUN composer install \
     --no-dev \
     --prefer-dist \
     --no-interaction \
-    --no-progress \
-    --optimize-autoloader \
-    --classmap-authoritative \
+    --no-autoloader \
+    --ignore-platform-reqs \
+    --prefer-dist \
+    # --no-progress \
+    # --optimize-autoloader \
+    # --classmap-authoritative \
     && php artisan key:generate \
     # && php artisan migrate --force \
     && npm ci
 RUN npm run build
-RUN composer clear-cache \
-    && rm -rf /root/.composer/cache \
-    && find . -type d -name '.git' -exec rm -rf {} + 2>/dev/null || true \
-    && rm -rf node_modules/.cache
+RUN composer dump-autoload --optimize --no-dev
+# RUN composer clear-cache \
+#     && rm -rf /root/.composer/cache \
+#     && find . -type d -name '.git' -exec rm -rf {} + 2>/dev/null || true \
+#     && rm -rf node_modules/.cache
 
 ############################
 # Stage 3: Runtime (FrankenPHP + Octane)
