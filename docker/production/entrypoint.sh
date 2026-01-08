@@ -17,5 +17,6 @@ if [ -n "$APP_KEY" ]; then
   php artisan storage:link || true
 fi
 
+frankenphp fmt --overwrite /etc/caddy/Caddyfile
 # Start FrankenPHP via Octane (bind to port 80)
 exec php artisan octane:frankenphp --host=0.0.0.0 --port=${PORT:-80} --workers=${WORKERS:-auto} --max-requests=${MAX_REQUESTS:-500}
