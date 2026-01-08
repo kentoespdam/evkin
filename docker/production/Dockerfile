@@ -36,19 +36,20 @@ RUN curl -sLS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/
 COPY . .
 
 # Ensure a minimal .env exists if not provided
-# RUN [ -f .env ] || cp .env.example .env || true
+RUN [ -f .env ] || cp .env.example .env || true
 
 # Install PHP dependencies; npm-related steps (if any) run via composer scripts
-# RUN composer install \
-#     --no-dev \
-#     --prefer-dist \
-#     --no-interaction \
-#     --no-progress \
-#     --optimize-autoloader \
-#     --classmap-authoritative \
-#     && composer setup
-RUN composer setup
-
+RUN composer install \
+    --no-dev \
+    --prefer-dist \
+    --no-interaction \
+    --no-progress \
+    --optimize-autoloader \
+    --classmap-authoritative \
+    && php artisan key:generate \
+    # && php artisan migrate --force \
+    && npm ci
+RUN npm run build
 RUN composer clear-cache \
     && rm -rf /root/.composer/cache \
     && find . -type d -name '.git' -exec rm -rf {} + 2>/dev/null || true \
