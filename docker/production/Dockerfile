@@ -46,7 +46,7 @@ RUN composer install \
     --no-progress \
     --optimize-autoloader \
     --classmap-authoritative \
-    php artisan key:generate
+    && php artisan key:generate
 RUN npm ci && npm run build || true
 RUN composer clear-cache \
     && rm -rf /root/.composer/cache \
