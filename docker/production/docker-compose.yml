@@ -4,6 +4,7 @@ services:
       context: ../..
       dockerfile: docker/production/Dockerfile
     image: evkin-builder:production
+    entrypoint: php artisan octane:frankenphp --port=80 --host=0.0.0.0
     depends_on:
       - redis
     ports:
@@ -37,8 +38,8 @@ services:
 
   redis:
     image: 'redis:alpine'
-    ports:
-      - '${FORWARD_REDIS_PORT:-6379}:6379'
+    # ports:
+    #   - '${FORWARD_REDIS_PORT:-6379}:6379'
     volumes:
       - 'evkin_redis:/data'
     network_mode: bridge
