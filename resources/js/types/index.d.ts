@@ -34,6 +34,7 @@ export interface SharedData {
 		masterGroupItems: NavGroup;
 	};
 	sidebarOpen: boolean;
+	isAdmin: boolean;
 	[key: string]: unknown;
 }
 

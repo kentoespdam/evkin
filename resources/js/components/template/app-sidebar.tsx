@@ -102,11 +102,7 @@ const masterGroupItems: NavGroup = {
 // ];
 
 export function AppSidebar() {
-	const { auth } = usePage<SharedData>().props;
-	const masterAllowedRoles = import.meta.env.VITE_MASTER_ALLOWED_ROLES
-		? import.meta.env.VITE_MASTER_ALLOWED_ROLES.split(",").map((role: string) => role.trim())
-		: [];
-	const allowedMaster = masterAllowedRoles.includes(auth.user.role.id);
+	const { isAdmin } = usePage<SharedData>().props;
 	return (
 		<Sidebar collapsible="icon" variant="inset">
 			<SidebarHeader>
@@ -123,7 +119,7 @@ export function AppSidebar() {
 
 			<SidebarContent>
 				<NavMain items={mainNavItems} />
-				{allowedMaster &&
+				{isAdmin &&
 					<NavMaster group={masterGroupItems} />
 				}
 			</SidebarContent>
