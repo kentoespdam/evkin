@@ -4,7 +4,7 @@ services:
       context: ../..
       dockerfile: docker/production/Dockerfile
     image: evkin-builder:production
-    entrypoint: php artisan octane:frankenphp --port=80 --host=0.0.0.0
+    # entrypoint: php artisan octane:frankenphp --port=80 --host=0.0.0.0
     depends_on:
       - redis
     ports:
@@ -20,7 +20,7 @@ services:
       retries: 5
       start_period: 10s
     volumes:
-      - evkin_storage:/var/www/html/storage
+      - evkin_storage:/var/www/html
 
   worker:
     image: evkin-builder:production
@@ -34,7 +34,7 @@ services:
       APP_ENV: production
       APP_DEBUG: "false"
     volumes:
-      - evkin_storage:/var/www/html/storage
+      - evkin_storage:/var/www/html
 
   redis:
     image: 'redis:alpine'
