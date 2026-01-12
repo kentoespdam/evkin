@@ -54,6 +54,7 @@ class TransasksiInputsController extends Controller
         $arrData = [];
         for ($i = 0; $i < count($data['master_input_ids']); $i++) {
             $new_data = [
+                'periode' => sprintf('%04d-%02d-01', $data['year'], $data['month']),
                 'year' => $data['year'],
                 'month' => $data['month'],
                 'master_input_id' => $data['master_input_ids'][$i],
@@ -68,6 +69,10 @@ class TransasksiInputsController extends Controller
             ['nilai']
         );
 
-        return redirect()->route('transaksi.inputs')->with('success', 'Transaksi Input saved sucessfully');
+        return redirect()->route('transaksi.inputs', [
+            'year' => $data['year'],
+            'month' => $data['month'],
+        ])
+            ->with('success', 'Transaksi Input saved sucessfully');
     }
 }

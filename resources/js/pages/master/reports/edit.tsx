@@ -1,19 +1,15 @@
+import { Head } from "@inertiajs/react";
+import { FileTextIcon } from "lucide-react";
 import ReportsForm from "@/components/master/form/reports";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AppLayout from "@/layouts/app-layout";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
 import type { BreadcrumbItem } from "@/types";
+import type { Aspect } from "@/types/aspect";
 import type { MasterInput } from "@/types/master-input";
 import type { ReportType } from "@/types/report-types";
 import type { Report } from "@/types/reports";
-import { Head } from "@inertiajs/react";
-import { FileTextIcon } from "lucide-react";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -38,13 +34,10 @@ interface MasterReportAddProps {
   reportTypes: ReportType[];
   availableCode: MasterInput[];
   data: Report;
+  aspects: Aspect[];
 }
 
-const MasterReportEdit = ({
-  reportTypes,
-  availableCode,
-  data,
-}: MasterReportAddProps) => {
+const MasterReportEdit = ({ reportTypes, availableCode, data, aspects }: MasterReportAddProps) => {
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title={`Edit Master Report`} />
@@ -58,19 +51,13 @@ const MasterReportEdit = ({
               </div>
               <div>
                 <CardTitle className="text-2xl">Edit Master Report</CardTitle>
-                <CardDescription>
-                  Edit Master Report information
-                </CardDescription>
+                <CardDescription>Edit Master Report information</CardDescription>
               </div>
             </div>
           </CardHeader>
         </Card>
 
-        <ReportsForm
-          data={data}
-          reportTypes={reportTypes}
-          availableCode={availableCode}
-        />
+        <ReportsForm data={data} reportTypes={reportTypes} availableCode={availableCode} aspects={aspects} />
       </div>
     </AppLayout>
   );

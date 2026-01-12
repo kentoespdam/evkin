@@ -59,6 +59,32 @@ const RoleInputForm = ({ roles, inputs, data }: RoleInputFormProps) => {
 		);
 	}, [inputs, searchQuery]);
 
+	const [checkedItems, setCheckedItems] = useState<string[]>([])
+
+	// Mengecek apakah semua item sudah terpilih
+	const isAllChecked = useMemo(
+		() => checkedItems.length === filteredInputs.length,
+		[checkedItems, filteredInputs]
+	)
+
+	const handleItemChange = (id: string) => {
+		setCheckedItems((prev) =>
+			prev.includes(id)
+				? prev.filter((item) => item !== id)
+				: [...prev, id]
+		)
+	}
+
+	const handleToggleAll = () => {
+		if (isAllChecked) {
+			// Jika semua sudah centang, maka kosongkan (Uncheck All)
+			setCheckedItems([])
+		} else {
+			// Jika belum semua, maka masukkan semua ID (Check All)
+			setCheckedItems(filteredInputs.map((item) => item.id))
+		}
+	}
+
 	return (
 		<Form {...formAction} resetOnSuccess>
 			{({ errors, processing }) => (
@@ -117,6 +143,13 @@ const RoleInputForm = ({ roles, inputs, data }: RoleInputFormProps) => {
 										)}
 									</div>
 
+									<Button
+										type="button"
+										size="sm"
+										onClick={handleToggleAll}
+									>
+										{isAllChecked ? "Uncheck All" : "Check All"}
+									</Button>
 									<div
 										className={`border rounded-md p-4 max-h-120 overflow-y-auto space-y-3 ${errors.master_input_ids ? "border-destructive" : ""
 											}`}
@@ -131,9 +164,12 @@ const RoleInputForm = ({ roles, inputs, data }: RoleInputFormProps) => {
 													<ItemMedia>
 														<Checkbox
 															name="master_input_ids[]"
+															id={`input-${item.id}`}
 															value={item.id}
 															defaultChecked={data?.existingInputIds?.includes(item.id)}
 															className="mt-1"
+															checked={checkedItems.includes(item.id)}
+															onCheckedChange={() => handleItemChange(item.id)}
 														/>
 													</ItemMedia>
 													<ItemContent>
@@ -145,28 +181,6 @@ const RoleInputForm = ({ roles, inputs, data }: RoleInputFormProps) => {
 														</ItemDescription>
 													</ItemContent>
 												</Item>
-												// <label
-												// 	key={item.id}
-												// 	className="flex items-center gap-3 p-3 rounded-md hover:bg-accent/50 cursor-pointer transition-colors group"
-												// >
-												// 	<div>
-												// 		<input
-												// 			type="checkbox"
-												// 			name="master_input_ids[]"
-												// 			value={item.id}
-												// 			defaultChecked={data?.existingInputIds?.includes(item.id)}
-												// 			className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-												// 		/>
-												// 	</div>
-												// 	<div className="flex-1 grid gap-2 min-w-0">
-												// 		<div className="text-sm mt-1 text-muted-foreground">{item.description}</div>
-												// 		<div className="flex items-center gap-2">
-												// 			<Badge variant="outline" color="secondary">
-												// 				{item.kode}
-												// 			</Badge>
-												// 		</div>
-												// 	</div>
-												// </label>
 											))
 										)}
 									</div>

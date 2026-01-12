@@ -14,6 +14,7 @@ class TransaksiInputs extends Model
     protected $table = "transaksi_inputs";
     protected string $sqidPrefix = 'ti';
     protected $fillable = [
+        'periode',
         'year',
         'month',
         'master_input_id',

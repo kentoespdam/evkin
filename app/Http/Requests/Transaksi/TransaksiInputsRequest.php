@@ -23,7 +23,7 @@ class TransaksiInputsRequest extends FormRequest
         $this->merge(['month' => (int) $this->input('month')]);
         $this->merge([
             'nilais' => array_map(function ($value) {
-                return (int) $value;
+                return (float) $value;
             }, $this->input('nilais', []))
         ]);
     }
