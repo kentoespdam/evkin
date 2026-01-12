@@ -41,7 +41,7 @@ class ReportsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'urut' => ['numeric', 'min:0'],
+            'urut' => ['string'],
             'report_type_id' => ['required', 'exists:report_types,id'],
             'aspect_id' => ['required', 'exists:aspects,id'],
             'descIndicator' => ['required', 'string'],
