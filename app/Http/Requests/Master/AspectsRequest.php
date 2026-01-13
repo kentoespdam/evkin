@@ -33,8 +33,20 @@ class AspectsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255', 'unique:report_types,name'],
-            'report_type_id' => ['required', 'numeric', 'exists:report_types,id'],
+            'report_type_id' => ['required', 'exists:report_types,id'],
+            'name' => ['required', 'string', 'max:255'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'report_type_id.required' => 'Report type is required',
+            'report_type_id.exists' => 'Report type is invalid',
+            'name.required' => 'Name is required',
+            'name.string' => 'Name must be a string',
+            'name.max' => 'Name must not exceed 255 characters',
+            'name.unique' => 'Name has already been taken',
         ];
     }
 }

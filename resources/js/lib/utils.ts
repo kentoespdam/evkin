@@ -54,3 +54,7 @@ export const formatNumber = (value: number, decimals = 0): string => {
 		value,
 	);
 };
+
+export const randomUUID = (): string => {
+	return crypto.randomUUID();
+};

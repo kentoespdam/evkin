@@ -42,11 +42,8 @@ class AspectsController extends Controller
 
     public function store(AspectsRequest $request)
     {
-        // check if aspect already exists
-        if (Aspects::where('name', $request->name)->exists()) {
-            return redirect()->route('master.aspects')->with('error', 'Aspect already exists');
-        }
-        Aspects::create($request->all());
+        $input = $request->validated();
+        Aspects::create($input);
 
         return redirect()->route('master.aspects')->with('success', 'Aspect created successfully');
     }

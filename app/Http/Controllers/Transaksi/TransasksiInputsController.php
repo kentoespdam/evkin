@@ -34,8 +34,8 @@ class TransasksiInputsController extends Controller
             });
         }
 
-        $page = $query_page->paginate($perPage);
-        $data = $query->whereIn('master_input_id', $page->pluck('master_input_id'))->get();
+        $page = $query_page->get()->all();
+        $data = $query->whereIn('master_input_id', collect($page)->pluck('master_input_id'))->get();
 
         return Inertia::render("transaksi/inputs/index", [
             "page" => new RoleInputsCollection($page),

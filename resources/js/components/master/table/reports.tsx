@@ -12,7 +12,11 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Item, ItemActions, ItemContent, ItemHeader, ItemMedia, ItemTitle } from "@/components/ui/item";
+import { Separator } from "@/components/ui/separator";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { randomUUID } from "@/lib/utils";
 import master from "@/routes/master";
 import type { Pagination } from "@/types";
 import type { Report } from "@/types/reports";
@@ -23,32 +27,12 @@ interface ReportsTableProps {
 	setShowDeleteDialog: (show: boolean) => void;
 }
 
-const ReportsTableHeader = memo(() => {
-	return (
-		<TableHeader>
-			<TableRow>
-				<TableHead className="w-16 text-center">#</TableHead>
-				<TableHead>Urut</TableHead>
-				<TableHead>Jenis Laporan</TableHead>
-				<TableHead>Aspek</TableHead>
-				<TableHead>Indikator</TableHead>
-				<TableHead>Rumus</TableHead>
-				<TableHead>Satuan</TableHead>
-				<TableHead>Bobot</TableHead>
-				<TableHead>Formula</TableHead>
-			</TableRow>
-		</TableHeader>
-	);
-});
-ReportsTableHeader.displayName = "ReportsTableHeader";
-
 interface ReportsTableActionsProps {
 	row: Report;
-	isSelected: boolean;
 	setId: (id: string) => void;
 	setShowDeleteDialog: (show: boolean) => void;
 }
-const ReportsTableActions = memo(({ row, isSelected, setId, setShowDeleteDialog }: ReportsTableActionsProps) => {
+const ReportsTableActions = memo(({ row, setId, setShowDeleteDialog }: ReportsTableActionsProps) => {
 	const handleDelete = useCallback(() => {
 		setId(row.id);
 		setShowDeleteDialog(true);
@@ -56,15 +40,16 @@ const ReportsTableActions = memo(({ row, isSelected, setId, setShowDeleteDialog 
 
 	return (
 		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
-				<Button
-					variant="ghost"
-					size="icon"
-					className={`size-8 transition-opacity md:opacity-0 md:group-hover:opacity-100 ${isSelected ? "opacity-100" : "opacity-0"}`}
-				>
-					<MoreHorizontal className="size-4" />
-				</Button>
-			</DropdownMenuTrigger>
+			<Tooltip>
+				<TooltipTrigger asChild>
+					<DropdownMenuTrigger asChild>
+						<Button className="p-0">
+							<MoreHorizontal className="size-4" />
+						</Button>
+					</DropdownMenuTrigger>
+				</TooltipTrigger>
+				<TooltipContent>More actions</TooltipContent>
+			</Tooltip>
 			<DropdownMenuContent align="end" className="w-40">
 				<DropdownMenuLabel>Actions</DropdownMenuLabel>
 				<DropdownMenuSeparator />
@@ -87,19 +72,52 @@ const ReportsTableActions = memo(({ row, isSelected, setId, setShowDeleteDialog 
 });
 ReportsTableActions.displayName = "ReportsTableActions";
 
-const FormulaBadge = memo(({ formula }: { formula: string }) => {
-	const listFormula = formula.split(" ");
+const RumusBadge = memo(({ rumus }: { rumus: string }) => {
 	return (
-		<div className="flex gap-1">
-			{listFormula.map((item) => (
-				<Badge key={item} variant="outline">
-					{item}
-				</Badge>
-			))}
+		<div className="flex gap-2">
+			<Badge>Rumus</Badge>
+			<Badge variant={"secondary"}>{rumus}</Badge>
+		</div>
+	);
+});
+RumusBadge.displayName = "RumusBadge";
+
+const FormulaBadge = memo(({ formula }: { formula: string }) => {
+	return (
+		<div className="flex gap-2">
+			<Badge>Formula</Badge>
+			<Badge variant={"secondary"}>{formula}</Badge>
 		</div>
 	);
 });
 FormulaBadge.displayName = "FormulaBadge";
+
+const RulesBadge = memo(({ rules }: { rules: string | null }) => {
+	const listRules = useMemo(
+		() =>
+			rules?.split("\n").map((row) => ({
+				hash: randomUUID(),
+				item: row,
+			})),
+		[rules],
+	);
+
+	return listRules ? (
+		<div className="flex gap-2">
+			<Badge className="h-fit">Rules</Badge>
+			<div className="grid gap-1">
+				{listRules.map((item) => (
+					<Badge key={item.hash} variant="outline">
+						{item.item}
+					</Badge>
+				))}
+			</div>
+		</div>
+	) : (
+		<span className="text-muted-foreground italic">No Rules</span>
+	);
+});
+RulesBadge.displayName = "RulesBadge";
 
 const ReportsTableBody = memo(({ page, setId, setShowDeleteDialog }: ReportsTableProps) => {
 	const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
@@ -117,33 +135,32 @@ const ReportsTableBody = memo(({ page, setId, setShowDeleteDialog }: ReportsTabl
 			{rows.map((item) => (
 				<TableRow
 					key={item.id}
-					className="group"
+					className="group border-none"
 					onClick={() => setSelectedRowId(selectedRowId === item.id ? null : item.id)}
 				>
-					<TableCell className="w-16 text-center">{item.hash}</TableCell>
-					<TableCell className="w-16 text-center">
-						<Badge>{item.urut}</Badge>
-					</TableCell>
-					<TableCell>
-						<div className="flex items-center gap-3">
-							<ReportsTableActions
-								row={item}
-								isSelected={item.id === selectedRowId}
-								setId={setId}
-								setShowDeleteDialog={setShowDeleteDialog}
-							/>
-							<Badge variant="outline">{item.reportType.name}</Badge>
-						</div>
-					</TableCell>
-					<TableCell>
-						<Badge variant="outline">{item.aspect.name}</Badge>
-					</TableCell>
-					<TableCell>{item.descIndicator}</TableCell>
-					<TableCell>{item.descFormula}</TableCell>
-					<TableCell>{item.unit}</TableCell>
-					<TableCell>{item.weight}</TableCell>
-					<TableCell>
-						<FormulaBadge formula={item.formula} />
+					<TableCell className="p-0">
+						<Item variant={"outline"} className="mb-2">
+							<ItemHeader>
+								<ItemMedia>
+									<Badge variant={"outline"}>{item.hash}</Badge>
+								</ItemMedia>
+								<div>
+									{item.reportType.name} - {item.aspect.name}
+								</div>
+							</ItemHeader>
+							<Separator />
+							<ItemContent className="pl-6">
+								<ItemTitle>
+									<Badge>{item.urut}</Badge> {item.descIndicator} {item.unit ? <>({item.unit})</> : null}
+								</ItemTitle>
+								<RumusBadge rumus={item.descFormula} />
+								<FormulaBadge formula={item.formula} />
+								{item.withRules && <RulesBadge rules={item.rules} />}
+							</ItemContent>
+							<ItemActions>
+								<ReportsTableActions row={item} setId={setId} setShowDeleteDialog={setShowDeleteDialog} />
+							</ItemActions>
+						</Item>
 					</TableCell>
 				</TableRow>
 			))}
@@ -157,12 +174,9 @@ const ReportsTable = ({ page, setId, setShowDeleteDialog }: ReportsTableProps) =
 	}
 
 	return (
-		<div className="overflow-x-auto">
-			<Table>
-				<ReportsTableHeader />
-				<ReportsTableBody page={page} setId={setId} setShowDeleteDialog={setShowDeleteDialog} />
-			</Table>
-		</div>
+		<Table>
+			<ReportsTableBody page={page} setId={setId} setShowDeleteDialog={setShowDeleteDialog} />
+		</Table>
 	);
 };
 

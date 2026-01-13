@@ -1,14 +1,17 @@
 import { Form, Link } from "@inertiajs/react";
 import { ArrowLeftIcon, FileTextIcon } from "lucide-react";
-import { useMemo, useRef } from "react";
-import AvailableCodeButton from "@/components/commons/available-code-button";
+import { memo, useCallback, useMemo, useState } from "react";
 import ButtonLoading from "@/components/commons/button-loading";
+import AspectSelect from "@/components/commons/form/aspect";
+import FormulaTextArea from "@/components/commons/form/formula";
+import InputFormFieldBuilder from "@/components/commons/form/input-field-builder";
+import ReportTypeSelect from "@/components/commons/form/report-type";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 import master from "@/routes/master";
 import type { Aspect } from "@/types/aspect";
 import type { MasterInput } from "@/types/master-input";
@@ -22,197 +25,197 @@ interface ReportsFormProps {
 	data?: Report;
 }
 
-const ReportsForm = ({ reportTypes, availableCode, aspects, data }: ReportsFormProps) => {
-	console.log({ data });
-	const formAction = useMemo(() => {
-		if (data?.id) {
-			const form = master.reports.update(data.id);
+// Rules field yang kondisional dengan animasi yang lebih smooth
+const ConditionalRulesField = memo(
+	({ withRules, defaultValue, error }: { withRules: boolean; defaultValue?: string | null; error?: string }) => (
+		<div
+			className={cn(
+				"transition-all duration-300 ease-in-out overflow-hidden",
+				withRules ? "max-h-48 opacity-100 mt-4" : "max-h-0 opacity-0 mt-0",
+			)}
+		>
+			<InputFormFieldBuilder
+				id="rules"
+				name="rules"
+				label="Rules"
+				required={withRules}
+				defaultValue={defaultValue ?? ""}
+				error={error}
+				placeholder="Enter input rules"
+				type="textarea"
+			/>
+		</div>
+	),
+);
 
-			return {
-				action: form.url,
-				method: form.method,
-			};
-		}
-		const form = master.reports.store();
+ConditionalRulesField.displayName = "ConditionalRulesField";
+
+// Header section yang dipisah untuk reusability
+const FormHeader = memo(() => (
+	<div className="flex items-center gap-2 pb-4 border-b mb-6">
+		<FileTextIcon className="h-5 w-5 text-muted-foreground" />
+		<h3 className="font-semibold text-base uppercase tracking-wide text-muted-foreground">Master Report Information</h3>
+	</div>
+));
+
+FormHeader.displayName = "FormHeader";
+
+const ReportsForm = ({ reportTypes, availableCode, aspects, data }: ReportsFormProps) => {
+	const [reportTypeId, setReportTypeId] = useState<string | undefined>(data?.reportType?.id);
+	const [withRules, setWithRules] = useState<boolean>(data?.withRules ?? false);
+
+	const formAction = useMemo(() => {
+		const form = data?.id ? master.reports.update(data.id) : master.reports.store();
+
 		return {
 			action: form.url,
 			method: form.method,
 		};
-	}, [data]);
+	}, [data?.id]);
 
-	const formulaRef = useRef<HTMLTextAreaElement>(null);
+	const handleReportTypeChange = useCallback((value: string) => {
+		setReportTypeId(value);
+	}, []);
+
+	const handleWithRulesChange = useCallback((checked: boolean) => {
+		setWithRules(checked);
+	}, []);
 
 	return (
-		<Form {...formAction} resetOnSuccess>
+		<Form {...formAction} className="space-y-6">
 			{({ errors, processing }) => (
 				<Card>
 					<CardContent className="pt-6">
+						<FormHeader />
+
 						<div className="space-y-6">
-							{/* Master Input Information Section */}
-							<div className="space-y-4">
-								<div className="flex items-center gap-2 pb-2 border-b">
-									<FileTextIcon className="h-4 w-4 text-muted-foreground" />
-									<h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">
-										Master Report Information
-									</h3>
+							{/* Urut Field */}
+							<InputFormFieldBuilder
+								id="urut"
+								name="urut"
+								label="Urut"
+								required
+								defaultValue={data?.urut?.toString() ?? "1"}
+								placeholder="Enter urut"
+								error={errors.urut}
+								type="number"
+								className="w-32"
+							/>
+
+							{/* Report Type Field */}
+							<ReportTypeSelect
+								value={data?.reportType?.id}
+								reportTypes={reportTypes}
+								errors={errors}
+								onValueChange={handleReportTypeChange}
+							/>
+
+							{/* Aspect Field */}
+							{reportTypeId && (
+								<AspectSelect value={data?.aspect?.id} aspects={aspects} errors={errors} reportTypeId={reportTypeId} />
+							)}
+
+							{/* Description Indicator Field */}
+							<InputFormFieldBuilder
+								id="descIndicator"
+								name="descIndicator"
+								label="Indikator"
+								required
+								defaultValue={data?.descIndicator}
+								placeholder="Enter input indicator"
+								error={errors.descIndicator}
+								type="textarea"
+							/>
+
+							{/* Description Formula Field */}
+							<InputFormFieldBuilder
+								id="descFormula"
+								name="descFormula"
+								label="Rumus"
+								required
+								defaultValue={data?.descFormula}
+								placeholder="Enter input formula"
+								error={errors.descFormula}
+								type="textarea"
+							/>
+
+							{/* Satuan Field */}
+							<InputFormFieldBuilder
+								id="unit"
+								name="unit"
+								label="Satuan"
+								required
+								defaultValue={data?.unit}
+								placeholder="Enter unit"
+								error={errors.unit}
+							/>
+
+							{/* Bobot Field */}
+							<InputFormFieldBuilder
+								id="weight"
+								name="weight"
+								label="Bobot"
+								required
+								defaultValue={data?.weight}
+								placeholder="Enter weight"
+								error={errors.weight}
+								type="number"
+								step="0.01"
+								className="w-32"
+							/>
+
+							{/* With Rules Switch */}
+							<Field>
+								<div className="flex items-center justify-between">
+									<FieldLabel htmlFor="with_rules">
+										Gunakan Rule Spesifik <span className="text-destructive">*</span>
+									</FieldLabel>
+									<div className="flex items-center gap-3">
+										<Input type="hidden" name="with_rules" value={withRules ? "1" : "0"} />
+										<Switch
+											id="with_rules_switch"
+											checked={withRules}
+											onCheckedChange={handleWithRulesChange}
+											aria-label="Toggle specific rules"
+										/>
+										<span className="text-sm text-muted-foreground">{withRules ? "Aktif" : "Nonaktif"}</span>
+									</div>
 								</div>
+								<p className="text-sm text-muted-foreground mt-2">
+									Aktifkan jika laporan ini memerlukan rule spesifik untuk perhitungan
+								</p>
+							</Field>
 
-								{/* Urut Field */}
-								<Field>
-									<FieldLabel htmlFor="urut">
-										Urut <span className="text-destructive">*</span>
-									</FieldLabel>
-									<Input
-										id="urut"
-										name="urut"
-										defaultValue={data?.urut ?? "1"}
-										placeholder="Enter urut"
-										className={errors.urut ? "border-destructive" : ""}
-										required
-									/>
-									<FieldError>{errors.urut}</FieldError>
-								</Field>
+							{/* Conditional Rules Field */}
+							<ConditionalRulesField withRules={withRules} defaultValue={data?.rules} error={errors.rules} />
 
-								{/* Report Type Field */}
-								<Field>
-									<FieldLabel htmlFor="report_type_id">
-										Report Type <span className="text-destructive">*</span>
-									</FieldLabel>
-									<Select name="report_type_id" defaultValue={data?.reportType?.id}>
-										<SelectTrigger>
-											<SelectValue placeholder="Select Report Type" />
-										</SelectTrigger>
-										<SelectContent>
-											{reportTypes.map((item) => (
-												<SelectItem key={item.id} value={item.id}>
-													{item.name}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-									<FieldError>{errors.report_type_id}</FieldError>
-								</Field>
-
-								{/* Aspect Field */}
-								<Field>
-									<FieldLabel htmlFor="aspect_id">
-										Aspek <span className="text-destructive">*</span>
-									</FieldLabel>
-									<Select name="aspect_id" defaultValue={data?.aspect?.id}>
-										<SelectTrigger>
-											<SelectValue placeholder="Select Aspect" />
-										</SelectTrigger>
-										<SelectContent>
-											{aspects.map((item) => (
-												<SelectItem key={item.id} value={item.id}>
-													{item.name}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-									<FieldError>{errors.report_type_id}</FieldError>
-								</Field>
-
-								{/* Description Indicator Field */}
-								<Field>
-									<FieldLabel htmlFor="descIndicator">
-										Indikator <span className="text-destructive">*</span>
-									</FieldLabel>
-									<Input
-										id="descIndicator"
-										name="descIndicator"
-										type="text"
-										defaultValue={data?.descIndicator}
-										placeholder="Enter input indicator"
-										className={errors.descIndicator ? "border-destructive" : ""}
-										required
-									/>
-									<FieldError>{errors.descIndicator}</FieldError>
-								</Field>
-
-								{/* Description Formula Field */}
-								<Field>
-									<FieldLabel htmlFor="descFormula">
-										Rumus <span className="text-destructive">*</span>
-									</FieldLabel>
-									<Textarea
-										id="descFormula"
-										name="descFormula"
-										defaultValue={data?.descFormula}
-										placeholder="Enter input formula"
-										className={errors.descFormula ? "border-destructive" : ""}
-										required
-									/>
-									<FieldError>{errors.descFormula}</FieldError>
-								</Field>
-
-								{/* Satuan Field */}
-								<Field>
-									<FieldLabel htmlFor="unit">
-										Satuan <span className="text-destructive">*</span>
-									</FieldLabel>
-									<Input
-										id="unit"
-										name="unit"
-										type="text"
-										defaultValue={data?.unit}
-										placeholder="Enter unit"
-										className={errors.unit ? "border-destructive" : ""}
-										required
-									/>
-									<FieldError>{errors.unit}</FieldError>
-								</Field>
-
-								{/* Bobot Field */}
-								<Field>
-									<FieldLabel htmlFor="weight">
-										Bobot <span className="text-destructive">*</span>
-									</FieldLabel>
-									<Input
-										id="weight"
-										name="weight"
-										type="text"
-										defaultValue={data?.weight}
-										placeholder="Enter weight"
-										className={errors.weight ? "border-destructive" : ""}
-										required
-									/>
-									<FieldError>{errors.weight}</FieldError>
-								</Field>
-
-								{/* Formula Field */}
-								<Field>
-									<FieldLabel htmlFor="formula">
-										Formula <span className="text-destructive">*</span>
-									</FieldLabel>
-									<Textarea
-										id="formula"
-										name="formula"
-										defaultValue={data?.formula}
-										placeholder="Enter input formula"
-										className={errors.formula ? "border-destructive" : ""}
-										ref={formulaRef}
-									/>
-									<FieldError>{errors.formula}</FieldError>
-								</Field>
-
-								<AvailableCodeButton
-									availableCode={availableCode}
-									formulaRef={formulaRef}
-									currentCode={data?.formula}
-								/>
-							</div>
+							{/* Formula Text Area */}
+							<FormulaTextArea availableCode={availableCode} errors={errors} value={data?.formula} />
 						</div>
 
 						{/* Form Actions */}
-						<div className="flex items-center justify-between pt-4">
-							<Button type="button" variant="ghost" asChild>
-								<Link href={master.reports().url} className="gap-2">
+						<div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 mt-8 border-t">
+							<Button type="button" variant="outline" asChild className="gap-2 w-full sm:w-auto">
+								<Link href={master.reports().url}>
 									<ArrowLeftIcon className="h-4 w-4" />
-									Cancel
+									Kembali ke Daftar
 								</Link>
 							</Button>
-							<ButtonLoading processing={processing} />
+
+							<div className="flex gap-3 w-full sm:w-auto">
+								<Button
+									type="button"
+									variant="secondary"
+									onClick={() => {
+										const form = document.querySelector("form");
+										form?.reset();
+									}}
+									className="w-full sm:w-auto"
+								>
+									Reset Form
+								</Button>
+								<ButtonLoading processing={processing} />
+							</div>
 						</div>
 					</CardContent>
 				</Card>
@@ -221,4 +224,4 @@ const ReportsForm = ({ reportTypes, availableCode, aspects, data }: ReportsFormP
 	);
 };
 
-export default ReportsForm;
+export default memo(ReportsForm);

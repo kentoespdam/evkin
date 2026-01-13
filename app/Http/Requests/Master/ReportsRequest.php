@@ -31,6 +31,14 @@ class ReportsRequest extends FormRequest
                 $this->merge(['aspect_id' => $aspectId->id]);
             }
         }
+
+        if ($this->has('with_rules')) {
+            $withRules = filter_var($this->with_rules, FILTER_VALIDATE_BOOLEAN);
+            $this->merge(['with_rules' => $withRules]);
+            if (!$withRules) {
+                $this->merge(['rules' => ""]);
+            }
+        }
     }
 
     /**
@@ -49,6 +57,8 @@ class ReportsRequest extends FormRequest
             'unit' => ['required', 'string'],
             'weight' => ['required', 'numeric'],
             'formula' => ['required', 'string'],
+            'with_rules' => ['required', 'boolean'],
+            'rules' => ['required_if:with_rules,true', 'string'],
         ];
     }
 
@@ -61,8 +71,10 @@ class ReportsRequest extends FormRequest
             'descIndicator.required' => 'Description indicator is required',
             'descFormula.required' => 'Description formula is required',
             'unit.required' => 'Unit is required',
-            'weight.required' => 'Weight is required',
             'formula.required' => 'Formula is required',
+            'weight.required' => 'Weight is required',
+            'with_rules.required' => 'With rules is required',
+            'rules.required_if' => 'Rules is required when with rules is true',
         ];
     }
 }

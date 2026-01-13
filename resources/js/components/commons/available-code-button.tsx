@@ -26,7 +26,7 @@ const AvailableCodeButton = memo(({ availableCode, formulaRef, currentCode }: Av
 	};
 
 	return (
-		<div className="grid gap-2">
+		<div className="grid gap-2 border p-4 rounded-md">
 			<Label>Operator</Label>
 			<div className="flex gap-2">
 				<TooltipBuilder text="tambah">

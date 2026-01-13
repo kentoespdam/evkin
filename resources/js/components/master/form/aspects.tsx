@@ -47,6 +47,13 @@ const AspectsForm = ({ data, reportTypes }: AspectsFormProps) => {
 									</h3>
 								</div>
 
+								{/* Report Type Field */}
+								<ReportTypeSelect
+									value={data?.reportType?.id}
+									reportTypes={reportTypes}
+									errors={errors}
+								/>
+
 								{/* Name Field */}
 								<Field>
 									<FieldLabel htmlFor="name">
@@ -63,13 +70,6 @@ const AspectsForm = ({ data, reportTypes }: AspectsFormProps) => {
 									/>
 									<FieldError>{errors.name}</FieldError>
 								</Field>
-
-								{/* Report Type Field */}
-								<ReportTypeSelect
-									value={data?.reportType?.id}
-									reportTypes={reportTypes}
-									errors={errors}
-								/>
 							</div>
 						</div>
 						{/* Form Actions */}

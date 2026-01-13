@@ -12,8 +12,8 @@ return new class extends Migration {
     {
         Schema::table("aspects", function (Blueprint $table) {
             $table->foreignId("report_type_id")
-                ->nullable()
                 ->after("name")
+                ->default(1)
                 ->constrained("report_types")
                 ->cascadeOnDelete();
         });

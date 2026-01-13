@@ -2,8 +2,6 @@ import { Head, router } from "@inertiajs/react";
 import { PencilIcon } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import PaginationNav from "@/components/commons/pagination-nav";
-import TableShowTotalText from "@/components/commons/table-show-total-text";
 import TransaksiInputsTable from "@/components/transaksi/table/inputs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,7 +13,7 @@ import AppLayout from "@/layouts/app-layout";
 import { monthsList, yearsList } from "@/lib/utils";
 import { dashboard } from "@/routes";
 import transaksi from "@/routes/transaksi";
-import type { BreadcrumbItem, Pagination } from "@/types";
+import type { BreadcrumbItem } from "@/types";
 import type { RoleInput } from "@/types/role-inputs";
 import type { TransaksiInput, TransaksiInputFilter } from "@/types/transaksi-inputs";
 
@@ -35,7 +33,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 interface TransaksiInputsProps {
-    page: Pagination<RoleInput>;
+    page: RoleInput[];
     data: TransaksiInput[];
     filters: TransaksiInputFilter;
 }
@@ -174,12 +172,9 @@ const TransaksiInputs = ({ page, data, filters }: TransaksiInputsProps) => {
                         <TransaksiInputButton isForm={isForm} setIsForm={setIsForm} />
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <TableShowTotalText page={page} tableName="inputs">
-                            <TransaksiInputsFilter filters={filters} />
-                        </TableShowTotalText>
+                        <TransaksiInputsFilter filters={filters} />
                         <Separator />
                         <TransaksiInputsTable page={page} data={data} filters={filters} setIsForm={setIsForm} isForm={isForm} />
-                        <PaginationNav page={page} />
                     </CardContent>
                 </Card>
             </div>

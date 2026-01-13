@@ -10,7 +10,9 @@ interface TableShowTotalTextProps {
 }
 const TableShowTotalText = memo(({ page, tableName, children, className = "" }: TableShowTotalTextProps) => {
 	return (
-		<div className={cn("flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between", className)}>
+		<div className={cn(
+			"flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between",
+			className)}>
 			{children}
 			<div className="text-sm text-muted-foreground">
 				Showing {page.meta.from ?? 0} - {page.meta.to ?? 0} of {page.meta.total} {tableName}

@@ -27,8 +27,8 @@ const AspectsTableHeader = memo(() => {
 		<TableHeader>
 			<TableRow>
 				<TableHead className="w-16 text-center">#</TableHead>
-				<TableHead>Name</TableHead>
 				<TableHead>ReportType</TableHead>
+				<TableHead>Name</TableHead>
 			</TableRow>
 		</TableHeader>
 	);
@@ -101,16 +101,18 @@ const AspectsTableBody = memo(({ page, setId, setShowDeleteDialog }: AspectsTabl
 					onMouseLeave={() => setSelectedRowId(null)}
 				>
 					<TableCell className="w-16 text-center font-medium">{item.hash}</TableCell>
-					<TableCell className="flex items-center gap-2">
+					<TableCell>
 						<AspectsTableActions
 							row={item}
 							isSelected={selectedRowId === item.id}
 							setId={setId}
 							setShowDeleteDialog={setShowDeleteDialog}
 						/>
+						{item.reportType ? <Badge>{item.reportType.name}</Badge> : null}
+					</TableCell>
+					<TableCell className="flex items-center gap-2">
 						{item.name}
 					</TableCell>
-					<TableCell>{item.reportType ? <Badge>{item.reportType.name}</Badge> : null}</TableCell>
 				</TableRow>
 			))}
 		</TableBody>

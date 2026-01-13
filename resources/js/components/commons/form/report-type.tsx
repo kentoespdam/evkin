@@ -6,14 +6,15 @@ interface ReportTypeSelectProps {
     value: string | undefined;
     reportTypes: ReportType[];
     errors: Record<string, string>;
+    onValueChange?: (value: string) => void;
 }
-const ReportTypeSelect = ({ value, reportTypes, errors }: ReportTypeSelectProps) => {
+const ReportTypeSelect = ({ value, reportTypes, errors, onValueChange }: ReportTypeSelectProps) => {
     return (
         <Field>
             <FieldLabel htmlFor="report_type_id">
                 Report Type <span className="text-destructive">*</span>
             </FieldLabel>
-            <Select name="report_type_id" defaultValue={value}>
+            <Select name="report_type_id" defaultValue={value} onValueChange={onValueChange}>
                 <SelectTrigger>
                     <SelectValue placeholder="Select Report Type" />
                 </SelectTrigger>

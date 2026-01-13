@@ -24,6 +24,8 @@ class MasterReportsResource extends JsonResource
             'unit' => $this->unit,
             'weight' => $this->weight,
             'formula' => $this->formula,
+            'withRules' => $this->with_rules,
+            'rules' => $this->rules,
         ];
     }
 }

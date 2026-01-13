@@ -20,12 +20,21 @@ class MasterReports extends Model
         'descFormula',
         'unit',
         'weight',
-        'formula'
+        'formula',
+        'with_rules',
+        'rules'
     ];
 
     protected $hidden = ['created_at', 'updated_at'];
 
     protected string $sqidPrefix = 'mr';
+
+    protected function casts(): array
+    {
+        return [
+            'with_rules' => 'boolean',
+        ];
+    }
 
     public function reportType()
     {

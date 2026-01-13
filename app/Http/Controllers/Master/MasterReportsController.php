@@ -27,10 +27,35 @@ class MasterReportsController extends Controller
             $query->where('descIndicator', 'like', "%{$request->get('search')}%")
                 ->orWhere('descFormula', 'like', "%{$request->get('search')}%");
         }
+        if ($request->has("reportTypeId")) {
+            $reportTypeId = $request->get("reportTypeId");
+            if (!is_numeric($reportTypeId)) {
+                $reportType = ReportTypes::whereSqid($reportTypeId)->first();
+                if ($reportType) {
+                    $reportTypeId = $reportType->id;
+                }
+            }
+            $query->where('report_type_id', $reportTypeId);
+        }
+        if ($request->has("aspectId")) {
+            $aspectId = $request->get("aspectId");
+            if (!is_numeric($aspectId)) {
+                $aspect = Aspects::whereSqid($aspectId)->first();
+                if ($aspect) {
+                    $aspectId = $aspect->id;
+                }
+            }
+            $query->where('aspect_id', $aspectId);
+        }
         $masterReports = $query->paginate($perPage);
 
+        $reportTypes = ReportTypes::all();
+        $aspects = Aspects::all();
         return Inertia::render('master/reports/index', [
             'page' => new MasterReportsCollection($masterReports),
+            'reportTypes' => new ReportTypesCollection($reportTypes),
+            'aspects' => new AspectsCollection($aspects),
+            'filters' => $request->only(['search', 'reportTypeId', 'aspectId']),
         ]);
     }
 
