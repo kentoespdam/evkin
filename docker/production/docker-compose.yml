@@ -21,6 +21,11 @@ services:
       start_period: 10s
     volumes:
       - evkin_storage:/var/www/html
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 128M
 
   worker:
     image: evkin-builder:production
@@ -35,6 +40,11 @@ services:
       APP_DEBUG: "false"
     volumes:
       - evkin_storage:/var/www/html
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 64M
 
   redis:
     image: 'redis:alpine'
