@@ -2,12 +2,12 @@ import { Form } from "@inertiajs/react";
 import type React from "react";
 import { memo, useMemo } from "react";
 import { toast } from "sonner";
+import { v4 as uuidv4 } from "uuid";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Item, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { randomUUID } from "@/lib/utils";
 import transaksi from "@/routes/transaksi";
 import type { RoleInput } from "@/types/role-inputs";
 import type { TransaksiInput, TransaksiInputFilter } from "@/types/transaksi-inputs";
@@ -47,7 +47,9 @@ const TransaksiInputsTableBody = memo(
             const descs = description.split("\n");
             return (
                 <div className="grid gap-1">
-                    {descs.map((desc) => <div key={randomUUID()}>{desc}</div>)}
+                    {descs.map((desc) => (
+                        <div key={uuidv4()}>{desc}</div>
+                    ))}
                 </div>
             );
         };

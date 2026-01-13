@@ -1,6 +1,7 @@
 import { Form, Head } from "@inertiajs/react";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { useMemo, useRef, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import InputError from "@/components/commons/input-error";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,11 +42,7 @@ export default function TwoFactorChallenge() {
 
     const slotKeysRef = useRef<string[]>([]);
     if (slotKeysRef.current.length !== OTP_MAX_LENGTH) {
-        slotKeysRef.current = Array.from({ length: OTP_MAX_LENGTH }, () =>
-            typeof crypto !== "undefined" && "randomUUID" in crypto
-                ? crypto.randomUUID()
-                : Math.random().toString(36).slice(2),
-        );
+        slotKeysRef.current = Array.from({ length: OTP_MAX_LENGTH }, () => uuidv4() ?? Math.random().toString(36).slice(2));
     }
 
     return (

@@ -1,6 +1,7 @@
 import { Link } from "@inertiajs/react";
 import { MoreHorizontal, PencilIcon, TrashIcon } from "lucide-react";
 import { memo, useCallback, useMemo, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import TableEmpty from "@/components/commons/table-empty";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,7 +17,6 @@ import { Item, ItemActions, ItemContent, ItemHeader, ItemMedia, ItemTitle } from
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { randomUUID } from "@/lib/utils";
 import master from "@/routes/master";
 import type { Pagination } from "@/types";
 import type { Report } from "@/types/reports";
@@ -96,7 +96,7 @@ const RulesBadge = memo(({ rules }: { rules: string | null }) => {
 	const listRules = useMemo(
 		() =>
 			rules?.split("\n").map((row) => ({
-				hash: randomUUID(),
+				hash: uuidv4(),
 				item: row,
 			})),
 		[rules],
