@@ -7,5 +7,6 @@
     ],
     "guidelines": [
         "laravel/fortify"
-    ]
+    ],
+    "sail": true
 }

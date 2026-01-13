@@ -46,7 +46,7 @@ export const monthsList = (): { value: number; label: string }[] => {
 };
 
 export const formatCurrency = (amount: number, locale = "id-ID", currency = "IDR"): string => {
-	return new Intl.NumberFormat(locale, { style: "currency", currency }).format(amount);
+	return new Intl.NumberFormat(locale, { style: "currency", currency }).format(amount).replace("IDR", "Rp.");
 };
 
 export const formatNumber = (value: number, decimals = 0): string => {
