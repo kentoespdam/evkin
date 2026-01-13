@@ -24,8 +24,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.50'
-          memory: 128M
+          memory: 256M
 
   worker:
     image: evkin-builder:production
@@ -43,8 +42,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.25'
-          memory: 64M
+          memory: 128M
 
   redis:
     image: 'redis:alpine'
