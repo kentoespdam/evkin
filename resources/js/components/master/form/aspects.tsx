@@ -2,17 +2,20 @@ import { Form, Link } from "@inertiajs/react";
 import { ArrowLeftIcon, TextCursorInputIcon } from "lucide-react";
 import { useMemo } from "react";
 import ButtonLoading from "@/components/commons/button-loading";
+import ReportTypeSelect from "@/components/commons/form/report-type";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import master from "@/routes/master";
 import type { Aspect } from "@/types/aspect";
+import type { ReportType } from "@/types/report-types";
 
 interface AspectsFormProps {
+	reportTypes: ReportType[];
 	data?: Aspect;
 }
-const AspectsForm = ({ data }: AspectsFormProps) => {
+const AspectsForm = ({ data, reportTypes }: AspectsFormProps) => {
 	const formAction = useMemo(() => {
 		if (data?.id) {
 			const form = master.aspects.update(data.id);
@@ -60,6 +63,13 @@ const AspectsForm = ({ data }: AspectsFormProps) => {
 									/>
 									<FieldError>{errors.name}</FieldError>
 								</Field>
+
+								{/* Report Type Field */}
+								<ReportTypeSelect
+									value={data?.reportType?.id}
+									reportTypes={reportTypes}
+									errors={errors}
+								/>
 							</div>
 						</div>
 						{/* Form Actions */}

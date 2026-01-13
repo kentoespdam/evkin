@@ -6,6 +6,11 @@ import AppLayout from "@/layouts/app-layout";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
 import type { BreadcrumbItem } from "@/types";
+import type { ReportType } from "@/types/report-types";
+
+interface AspectsAddProps {
+    reportTypes: ReportType[];
+}
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -26,7 +31,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-const AspectsAdd = () => {
+const AspectsAdd = ({ reportTypes }: AspectsAddProps) => {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Add Master Aspect`} />
@@ -46,7 +51,7 @@ const AspectsAdd = () => {
                     </CardHeader>
                 </Card>
 
-                <AspectsForm />
+                <AspectsForm reportTypes={reportTypes} />
             </div>
         </AppLayout>
     );

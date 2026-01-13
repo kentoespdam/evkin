@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Master;
 
+use App\Models\Master\ReportTypes;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AspectsRequest extends FormRequest
@@ -14,6 +15,16 @@ class AspectsRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('report_type_id') && !is_numeric($this->report_type_id)) {
+            $reportTypeId = ReportTypes::whereSqid($this->report_type_id)->first();
+            if ($reportTypeId) {
+                $this->merge(['report_type_id' => $reportTypeId->id]);
+            }
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -22,7 +33,8 @@ class AspectsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255', 'unique:report_types,name']
+            'name' => ['required', 'string', 'max:255', 'unique:report_types,name'],
+            'report_type_id' => ['required', 'numeric', 'exists:report_types,id'],
         ];
     }
 }

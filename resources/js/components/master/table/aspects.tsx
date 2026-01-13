@@ -2,6 +2,7 @@ import { Link } from "@inertiajs/react";
 import { MoreHorizontal, PencilIcon, TrashIcon } from "lucide-react";
 import { memo, useCallback, useMemo, useState } from "react";
 import TableEmpty from "@/components/commons/table-empty";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -11,7 +12,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import master from "@/routes/master";
 import type { Pagination } from "@/types";
 import type { Aspect } from "@/types/aspect";
@@ -27,6 +28,7 @@ const AspectsTableHeader = memo(() => {
 			<TableRow>
 				<TableHead className="w-16 text-center">#</TableHead>
 				<TableHead>Name</TableHead>
+				<TableHead>ReportType</TableHead>
 			</TableRow>
 		</TableHeader>
 	);
@@ -98,8 +100,8 @@ const AspectsTableBody = memo(({ page, setId, setShowDeleteDialog }: AspectsTabl
 					onMouseEnter={() => setSelectedRowId(item.id)}
 					onMouseLeave={() => setSelectedRowId(null)}
 				>
-					<td className="w-16 text-center font-medium">{item.hash}</td>
-					<td className="flex items-center gap-2">
+					<TableCell className="w-16 text-center font-medium">{item.hash}</TableCell>
+					<TableCell className="flex items-center gap-2">
 						<AspectsTableActions
 							row={item}
 							isSelected={selectedRowId === item.id}
@@ -107,7 +109,8 @@ const AspectsTableBody = memo(({ page, setId, setShowDeleteDialog }: AspectsTabl
 							setShowDeleteDialog={setShowDeleteDialog}
 						/>
 						{item.name}
-					</td>
+					</TableCell>
+					<TableCell>{item.reportType ? <Badge>{item.reportType.name}</Badge> : null}</TableCell>
 				</TableRow>
 			))}
 		</TableBody>

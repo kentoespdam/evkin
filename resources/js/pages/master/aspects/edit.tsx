@@ -7,8 +7,10 @@ import { dashboard } from "@/routes";
 import master from "@/routes/master";
 import type { BreadcrumbItem } from "@/types";
 import type { Aspect } from "@/types/aspect";
+import type { ReportType } from "@/types/report-types";
 
 interface AspectEditProps {
+    reportTypes: ReportType[];
     aspect: Aspect;
 }
 
@@ -31,10 +33,10 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-const AspectsAdd = ({ aspect }: AspectEditProps) => {
+const AspectsEdit = ({ reportTypes, aspect }: AspectEditProps) => {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Add Master Aspect`} />
+            <Head title={`Edit Master Aspect`} />
             <div className="flex flex-col gap-6 p-4">
                 {/* Header Card */}
                 <Card className="border-primary/20">
@@ -44,17 +46,17 @@ const AspectsAdd = ({ aspect }: AspectEditProps) => {
                                 <TextCursorInputIcon className="h-6 w-6 text-primary" />
                             </div>
                             <div>
-                                <CardTitle className="text-2xl">Add Master Aspect</CardTitle>
-                                <CardDescription>Add new Master Aspect information</CardDescription>
+                                <CardTitle className="text-2xl">Edit Master Aspect</CardTitle>
+                                <CardDescription>Edit existing Master Aspect information</CardDescription>
                             </div>
                         </div>
                     </CardHeader>
                 </Card>
 
-                <AspectsForm data={aspect} />
+                <AspectsForm data={aspect} reportTypes={reportTypes} />
             </div>
         </AppLayout>
     );
 };
 
-export default AspectsAdd;
+export default AspectsEdit;
