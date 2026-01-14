@@ -42,7 +42,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 128M
+          memory: 256M
 
   redis:
     image: 'redis:alpine'
