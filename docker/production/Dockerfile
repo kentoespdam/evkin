@@ -73,6 +73,7 @@ RUN cp .env.example .env
 #     --classmap-authoritative
 # RUN npm install && npm run build || true
 RUN composer setup
+RUN rm -rf vendor && composer install --no-dev
 RUN composer clear-cache \
     && rm -rf /root/.composer/cache \
     && find . -type d -name '.git' -exec rm -rf {} + 2>/dev/null || true \

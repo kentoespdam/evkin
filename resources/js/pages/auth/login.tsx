@@ -1,6 +1,7 @@
 /** biome-ignore-all lint/a11y/noPositiveTabindex: ignore tab index positive */
 
 import { Form, Head } from "@inertiajs/react";
+import { useMemo } from "react";
 import InputError from "@/components/commons/input-error";
 import TextLink from "@/components/commons/text-link";
 import { Button } from "@/components/ui/button";
@@ -19,11 +20,18 @@ interface LoginProps {
 }
 
 export default function Login({ status, canResetPassword }: LoginProps) {
+    const formAction = useMemo(() => {
+        const form = store.form();
+        return {
+            action: form.action,
+            method: form.method,
+        };
+    }, []);
     return (
         <AuthLayout title="Log in to your account" description="Enter your email and password below to log in">
             <Head title="Log in" />
 
-            <Form {...store.form()} resetOnSuccess={["password"]} className="flex flex-col gap-6">
+            <Form {...formAction} resetOnSuccess={["password"]} className="flex flex-col gap-6">
                 {({ processing, errors }) => (
                     <>
                         <div className="grid gap-6">
