@@ -31,6 +31,16 @@ class PerhitunganReportsController extends Controller
 
         $reports = PerhitunganReports::with('masterReport')
             ->where('year', $year)
+            ->orWhere(function ($q) use ($year) {
+                $q->where('year', $year - 1)
+                    ->where('month', 12);
+            })
+            ->whereHas('masterReport', fn($query) => $query->where('report_type_id', $reportTypeId))
+            ->when($request->filled('search'), fn($query) => $this->applyMasterReportSearch($query, $request->search))
+            ->get();
+        $reports_desember_last_year = PerhitunganReports::with('masterReport')
+            ->where('year', $year - 1)
+            ->where('month', 12)
             ->whereHas('masterReport', fn($query) => $query->where('report_type_id', $reportTypeId))
             ->when($request->filled('search'), fn($query) => $this->applyMasterReportSearch($query, $request->search))
             ->get();
@@ -40,6 +50,7 @@ class PerhitunganReportsController extends Controller
             'reportTypes' => new ReportTypesCollection(ReportTypes::all()),
             'aspects' => new AspectsCollection(Aspects::all()),
             'reports' => new PerhitunganReportsCollection($reports),
+            'reportsDesemberLastYear' => new PerhitunganReportsCollection($reports_desember_last_year),
             'filters' => [
                 'report_type_id' => $request->report_type_id ?? $defaultReportTypeSqid,
                 'aspect_id' => $request->aspect_id ?? '',

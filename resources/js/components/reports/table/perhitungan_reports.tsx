@@ -20,7 +20,7 @@ NilaiPencapaianHeaderCellBuilder.displayName = "NilaiPencapaianHeaderCellBuilder
 
 // 3. Ekstrak fungsi utilitas untuk styling yang sering digunakan
 const getMonthCellClassName = (monthValue: number) =>
-    cn("text-center border", monthValue % 2 === 0 ? "bg-yellow-100" : "");
+    cn("text-center border", monthValue % 2 === 1 ? "bg-yellow-100" : "");
 
 const PerhitunganReportsTableHeader = memo(({ year, months }: { year: number; months: MonthOption[] }) => {
     // 4. Hindari inline functions dalam render
@@ -37,7 +37,7 @@ const PerhitunganReportsTableHeader = memo(({ year, months }: { year: number; mo
     const renderNilaiHeaders = useCallback(
         () =>
             months.map((month) => (
-                <NilaiPencapaianHeaderCellBuilder key={month.value} className={month.value % 2 === 0 ? "bg-yellow-100" : ""} />
+                <NilaiPencapaianHeaderCellBuilder key={month.value} className={month.value % 2 === 1 ? "bg-yellow-100" : ""} />
             )),
         [months],
     );
@@ -58,8 +58,14 @@ const PerhitunganReportsTableHeader = memo(({ year, months }: { year: number; mo
                     BOBOT
                 </TableHead>
                 {renderMonthHeaders()}
+                <TableHead className="border text-center bg-yellow-100" colSpan={2}>
+                    Desember {year - 1}
+                </TableHead>
             </TableRow>
-            <TableRow>{renderNilaiHeaders()}</TableRow>
+            <TableRow>
+                {renderNilaiHeaders()}
+                <NilaiPencapaianHeaderCellBuilder className="bg-yellow-100" />
+            </TableRow>
         </TableHeader>
     );
 });
@@ -69,7 +75,7 @@ PerhitunganReportsTableHeader.displayName = "PerhitunganReportsTableHeader";
 const createReportsMap = (reports: PerhitunganReportDetail[]) => {
     const map = new Map<string, PerhitunganReportDetail>();
     reports.forEach((report) => {
-        const key = `${report.masterReport.id}-${report.month}`;
+        const key = `${report.masterReport.id}-${report.month}-${report.year}`;
         map.set(key, report);
     });
     return map;
@@ -79,15 +85,17 @@ const NilaiPencapaianCellBuilder = memo(
     ({
         className,
         reportsMap,
+        year,
         month,
         masterReportId,
     }: {
         className?: string;
         reportsMap: Map<string, PerhitunganReportDetail>;
+        year: number;
         month: number;
         masterReportId: string;
     }) => {
-        const key = `${masterReportId}-${month}`;
+        const key = `${masterReportId}-${month}-${year}`;
         const report = reportsMap.get(key);
 
         return (
@@ -107,9 +115,10 @@ interface PerhitunganReportsTableBodyProps {
     }[];
     reportsMap: Map<string, PerhitunganReportDetail>;
     months: MonthOption[];
+    year: number;
 }
 
-const PerhitunganReportsTableBody = memo(({ groupedReports, reportsMap, months }: PerhitunganReportsTableBodyProps) => {
+const PerhitunganReportsTableBody = memo(({ groupedReports, reportsMap, months, year }: PerhitunganReportsTableBodyProps & { year: number }) => {
     // 6. Hindari inline functions dalam map dengan useCallback
     const renderRowClassName = useCallback((index: number) => cn(index % 2 === 1 ? "bg-slate-50/50" : ""), []);
 
@@ -119,17 +128,27 @@ const PerhitunganReportsTableBody = memo(({ groupedReports, reportsMap, months }
     );
 
     const renderMonthCells = useCallback(
-        (item: PerhitunganReportProps["masterReports"][number]) =>
-            months.map((month) => (
+        (item: PerhitunganReportProps["masterReports"][number]) => {
+            const withDesember = Array.from({ length: 13 })
+                .map((_, i) => ({
+                    month: i === 12 ? 12 : i + 1,
+                    year: i === 12 ? year - 1 : year,
+                }));
+            return withDesember.map((wd) => (
                 <NilaiPencapaianCellBuilder
-                    key={`${item.id}-${month.value}`}
-                    className={month.value % 2 === 0 ? "bg-yellow-100" : ""}
+                    key={`${item.id}-${wd.month}-${wd.year}`}
+                    className={cn(
+                        wd.month % 2 === 1 && "bg-yellow-100",
+                        wd.month === 12 && wd.year === year - 1 && "bg-yellow-100"
+                    )}
                     reportsMap={reportsMap}
-                    month={month.value}
+                    month={wd.month}
                     masterReportId={item.id}
+                    year={wd.year}
                 />
-            )),
-        [months, reportsMap],
+            ))
+        },
+        [reportsMap, year],
     );
 
     return (
@@ -137,7 +156,7 @@ const PerhitunganReportsTableBody = memo(({ groupedReports, reportsMap, months }
             {groupedReports.map(({ aspect, masterReports }) => (
                 <Fragment key={aspect.id}>
                     <TableRow className="bg-slate-50">
-                        <TableCell className="border font-semibold uppercase" colSpan={4 + months.length * 2}>
+                        <TableCell className="border font-semibold uppercase px-12" colSpan={6 + months.length * 2}>
                             {aspect.name}
                         </TableCell>
                     </TableRow>
@@ -224,7 +243,8 @@ const PerhitunganReportsTable = ({
                 <PerhitunganReportsTableBody
                     groupedReports={groupedReports}
                     reportsMap={reportsMap}
-                    months={months} />
+                    months={months}
+                    year={filters.year} />
             </Table>
         </div>
     );
