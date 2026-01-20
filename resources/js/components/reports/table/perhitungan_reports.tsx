@@ -22,6 +22,40 @@ const PerhitunganReportsTableHeader = memo(() => (
 ));
 PerhitunganReportsTableHeader.displayName = "PerhitunganReportsTableHeader";
 
+const RulesBadge = memo(({ rule }: { rule: string }) => {
+    const rules = rule?.split("\n").filter((item) => item.trim()) || [];
+    return (
+        <div className="mt-2 bg-slate-100 text-slate-900 rounded px-3 py-2 border border-slate-300 font-mono text-xs">
+            <div className="mb-2 font-semibold">Rules:</div>
+            <div>
+                {rules.map((item, index) => {
+                    const isLast = index === rules.length - 1;
+                    const prefix = isLast ? "└── " : "├── ";
+                    return (
+                        <div key={item}>
+                            {prefix}
+                            {item}
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+});
+RulesBadge.displayName = "RulesBadge";
+
+const RumusCell = memo(({ item }: { item: PerhitunganReportDetail }) => {
+    return (
+        <TableCell>
+            <div className="whitespace-nowrap">
+                {item.formula}
+                {item.masterReport.withRules && <RulesBadge rule={item.masterReport.rules || ""} />}
+            </div>
+        </TableCell>
+    );
+});
+RumusCell.displayName = "RumusCell";
+
 const PerhitunganReportsTableBody = memo(({ page }: { page: Pagination<PerhitunganReportDetail> }) => {
     const rows = useMemo(() => {
         const firstNumber = page.meta.from;
@@ -37,7 +71,7 @@ const PerhitunganReportsTableBody = memo(({ page }: { page: Pagination<Perhitung
                     <TableCell>{row.urut}</TableCell>
                     <TableCell>{`${row.year}-${row.month}`}</TableCell>
                     <TableCell>{row.descIndicator}</TableCell>
-                    <TableCell>{row.formula}</TableCell>
+                    <RumusCell item={row} />
                     <TableCell>{row.formulaValue}</TableCell>
                     <TableCell>{row.masterReport?.unit}</TableCell>
                     <TableCell>{row.nilai}</TableCell>
@@ -60,38 +94,6 @@ const PerhitunganReportsTable = ({ page }: PerhitunganReportsTableProps) => {
             <Table>
                 <PerhitunganReportsTableHeader />
                 <PerhitunganReportsTableBody page={page} />
-                {/* {rows.map((row, idx) => (
-                <Item key={row.id} variant="outline" className="w-full">
-                    <ItemHeader>
-                        <div className="flex items-center gap-2">
-                            <Badge variant="secondary">#{page.meta.from + idx}</Badge>
-                            {row.masterReport?.reportType?.name && <Badge>{row.masterReport.reportType.name}</Badge>}
-                            {row.masterReport?.aspects?.name && <Badge variant="secondary">{row.masterReport.aspects.name}</Badge>}
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Badge variant="outline">Year {row.year}</Badge>
-                            <Badge variant="outline">Month {row.month}</Badge>
-                        </div>
-                    </ItemHeader>
-
-                    <ItemSeparator />
-
-                    <ItemContent>
-                        <ItemTitle>{row.descIndicator}</ItemTitle>
-                        <div className="space-y-1 text-sm">
-                            <div>
-                                <span className="font-medium">Formula:</span> {row.formula}
-                            </div>
-                            <div>
-                                <span className="font-medium">Value:</span> {row.formulaValue}
-                            </div>
-                            <div>
-                                <span className="font-medium">Nilai:</span> {formatNumber(row.nilai, 2)}
-                            </div>
-                        </div>
-                    </ItemContent>
-                </Item>
-            ))} */}
             </Table>
         </div>
     );
