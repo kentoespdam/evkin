@@ -238,7 +238,7 @@ const MasterReports = ({ page, reportTypes, aspects, filters }: MasterReportsPro
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Master Reports" />
 
-            <div className="container mx-auto py-6 space-y-6">
+            <div className="flex flex-col gap-6 p-4">
                 <Card>
                     <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div className="space-y-1">

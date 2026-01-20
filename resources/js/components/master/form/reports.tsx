@@ -117,8 +117,8 @@ const ReportsForm = ({ reportTypes, availableCode, aspects, data }: ReportsFormP
 
 							{/* Description Indicator Field */}
 							<InputFormFieldBuilder
-								id="descIndicator"
-								name="descIndicator"
+								id="desc_indicator"
+								name="desc_indicator"
 								label="Indikator"
 								required
 								defaultValue={data?.descIndicator}
@@ -129,8 +129,8 @@ const ReportsForm = ({ reportTypes, availableCode, aspects, data }: ReportsFormP
 
 							{/* Description Formula Field */}
 							<InputFormFieldBuilder
-								id="descFormula"
-								name="descFormula"
+								id="desc_formula"
+								name="desc_formula"
 								label="Rumus"
 								required
 								defaultValue={data?.descFormula}

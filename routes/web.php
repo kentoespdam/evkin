@@ -16,6 +16,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 });
 
-require __DIR__ . '/settings.php';
-require __DIR__ . '/master.php';
-require __DIR__ . '/transaksi.php';
+require __DIR__.'/settings.php';
+require __DIR__.'/master.php';
+require __DIR__.'/transaksi.php';
+require __DIR__.'/report.php';

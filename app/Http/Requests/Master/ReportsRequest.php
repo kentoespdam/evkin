@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Master;
 
-use Illuminate\Foundation\Http\FormRequest;
-use App\Models\Master\ReportTypes;
 use App\Models\Master\Aspects;
+use App\Models\Master\ReportTypes;
+use Illuminate\Foundation\Http\FormRequest;
 
 class ReportsRequest extends FormRequest
 {
@@ -18,14 +18,14 @@ class ReportsRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        if ($this->has('report_type_id') && !is_numeric($this->report_type_id)) {
+        if ($this->has('report_type_id') && ! is_numeric($this->report_type_id)) {
             $reportTypeId = ReportTypes::whereSqid($this->report_type_id)->first();
             if ($reportTypeId) {
                 $this->merge(['report_type_id' => $reportTypeId->id]);
             }
         }
 
-        if ($this->has('aspect_id') && !is_numeric($this->aspect_id)) {
+        if ($this->has('aspect_id') && ! is_numeric($this->aspect_id)) {
             $aspectId = Aspects::whereSqid($this->aspect_id)->first();
             if ($aspectId) {
                 $this->merge(['aspect_id' => $aspectId->id]);
@@ -35,8 +35,8 @@ class ReportsRequest extends FormRequest
         if ($this->has('with_rules')) {
             $withRules = filter_var($this->with_rules, FILTER_VALIDATE_BOOLEAN);
             $this->merge(['with_rules' => $withRules]);
-            if (!$withRules) {
-                $this->merge(['rules' => ""]);
+            if (! $withRules) {
+                $this->merge(['rules' => '']);
             }
         }
     }
@@ -52,8 +52,8 @@ class ReportsRequest extends FormRequest
             'urut' => ['string'],
             'report_type_id' => ['required', 'exists:report_types,id'],
             'aspect_id' => ['required', 'exists:aspects,id'],
-            'descIndicator' => ['required', 'string'],
-            'descFormula' => ['required', 'string'],
+            'desc_indicator' => ['required', 'string'],
+            'desc_formula' => ['required', 'string'],
             'unit' => ['required', 'string'],
             'weight' => ['required', 'numeric'],
             'formula' => ['required', 'string'],

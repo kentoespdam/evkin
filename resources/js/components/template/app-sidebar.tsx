@@ -1,6 +1,7 @@
 import { Link, usePage } from "@inertiajs/react";
 import {
 	FileInputIcon,
+	FileSignatureIcon,
 	FileTextIcon,
 	FileTypeIcon,
 	GitPullRequestArrow,
@@ -24,6 +25,7 @@ import {
 } from "@/components/ui/sidebar";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
+import report from "@/routes/report";
 import transaksi from "@/routes/transaksi";
 import type { NavGroup, NavItem, SharedData } from "@/types";
 import AppLogo from "./app-logo";
@@ -88,6 +90,22 @@ const masterGroupItems: NavGroup = {
 	],
 };
 
+const reportGroupItems: NavGroup = {
+	title: "Laporan",
+	items: [
+		{
+			title: "Laporan Perhitungan Detail",
+			href: report.perhitunganReports.detail().url,
+			icon: FileSignatureIcon,
+		},
+		{
+			title: "Laporan Perhitungan",
+			href: report.perhitunganReports().url,
+			icon: FileSignatureIcon,
+		},
+	],
+};
+
 // const footerNavItems: NavItem[] = [
 //     {
 //         title: 'Repository',
@@ -119,9 +137,8 @@ export function AppSidebar() {
 
 			<SidebarContent>
 				<NavMain items={mainNavItems} />
-				{isAdmin &&
-					<NavMaster group={masterGroupItems} />
-				}
+				{isAdmin && <NavMaster group={masterGroupItems} />}
+				<NavMaster group={reportGroupItems} />
 			</SidebarContent>
 
 			<SidebarFooter>

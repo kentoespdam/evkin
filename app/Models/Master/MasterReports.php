@@ -16,13 +16,13 @@ class MasterReports extends Model
         'urut',
         'report_type_id',
         'aspect_id',
-        'descIndicator',
-        'descFormula',
+        'desc_indicator',
+        'desc_formula',
         'unit',
         'weight',
         'formula',
         'with_rules',
-        'rules'
+        'rules',
     ];
 
     protected $hidden = ['created_at', 'updated_at'];

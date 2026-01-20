@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Transaksi\TransaksiInputsRequest;
 use App\Http\Resources\RoleInputsCollection;
 use App\Http\Resources\TransaksiInputsCollection;
+use App\Jobs\HitungJob;
 use App\Models\Master\RoleInputs;
 use App\Models\Transaksi\TransaksiInputs;
 use Illuminate\Http\Request;
@@ -15,10 +16,9 @@ class TransasksiInputsController extends Controller
 {
     public function index(Request $request)
     {
-        $perPage = $request->per_page ?? 10;
-        $year = $request->year ?? date("Y");
-        $month = $request->month ?? date("m");
-        $query = TransaksiInputs::with("masterInput")
+        $year = $request->year ?? date('Y');
+        $month = $request->month ?? date('m');
+        $query = TransaksiInputs::with('masterInput')
             ->where('year', $year)
             ->where('month', $month);
 
@@ -37,13 +37,13 @@ class TransasksiInputsController extends Controller
         $page = $query_page->get()->all();
         $data = $query->whereIn('master_input_id', collect($page)->pluck('master_input_id'))->get();
 
-        return Inertia::render("transaksi/inputs/index", [
-            "page" => new RoleInputsCollection($page),
-            "data" => new TransaksiInputsCollection($data ?? []),
-            "filters" => [
-                "year" => $year,
-                "month" => (string) ($month + 0),
-                "search" => $request->search ?? "",
+        return Inertia::render('transaksi/inputs/index', [
+            'page' => new RoleInputsCollection($page),
+            'data' => new TransaksiInputsCollection($data ?? []),
+            'filters' => [
+                'year' => $year,
+                'month' => (string) ($month + 0),
+                'search' => $request->search ?? '',
             ],
         ]);
     }
@@ -68,6 +68,8 @@ class TransasksiInputsController extends Controller
             ['year', 'month', 'master_input_id'],
             ['nilai']
         );
+
+        HitungJob::dispatch($data['year'], $data['month']);
 
         return redirect()->route('transaksi.inputs', [
             'year' => $data['year'],

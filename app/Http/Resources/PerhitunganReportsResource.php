@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class MasterReportsResource extends JsonResource
+class PerhitunganReportsResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,16 +16,13 @@ class MasterReportsResource extends JsonResource
     {
         return [
             'id' => $this->sqid,
-            'urut' => $this->urut,
-            'reportType' => new ReportTypesResource($this->reportType),
-            'aspect' => new AspectsResource($this->aspects),
+            'masterReport' => new MasterReportsResource($this->masterReport),
+            'year' => $this->year,
+            'month' => $this->month,
             'descIndicator' => $this->desc_indicator,
-            'descFormula' => $this->desc_formula,
-            'unit' => $this->unit,
-            'weight' => $this->weight,
             'formula' => $this->formula,
-            'withRules' => $this->with_rules,
-            'rules' => $this->rules,
+            'formulaValue' => $this->formula_value,
+            'nilai' => $this->nilai,
         ];
     }
 }
