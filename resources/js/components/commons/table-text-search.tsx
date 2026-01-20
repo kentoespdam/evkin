@@ -1,5 +1,5 @@
 import { SearchIcon, XIcon } from "lucide-react";
-import { type ChangeEvent, memo, useRef } from "react";
+import { type ChangeEvent, memo, useCallback, useRef } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,7 @@ export interface TableTextSearchProps {
 	className?: string;
 }
 
-const TableTextSearch = memo(({ params, handleSelectChange, text = "", className = "" }: TableTextSearchProps) => {
+const TableTextSearch = memo(({ params, handleSelectChange, text, className }: TableTextSearchProps) => {
 	const search = params.search ?? "";
 	const inputRef = useRef<HTMLInputElement>(null);
 
@@ -22,22 +22,25 @@ const TableTextSearch = memo(({ params, handleSelectChange, text = "", className
 		handleSelectChange({ search: e.target.value });
 	}, 500);
 
-	const handleClear = () => {
+	const handleClear = useCallback(() => {
+		if (inputRef.current) {
+			inputRef.current.value = "";
+		}
 		handleSelectChange({ search: "" });
-	};
+	}, [handleSelectChange]);
 
 	return (
 		<div className={cn("relative w-full sm:max-w-xs", className)}>
-			<SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+			<SearchIcon className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
 			<Input
 				ref={inputRef}
-				id="search"
 				type="text"
 				name="search"
-				placeholder={`Search ${text}...`}
+				placeholder={text ? `Search ${text}...` : "Search..."}
 				defaultValue={search}
 				className="pl-9 pr-9"
 				onChange={debouncedSearch}
+				aria-label={text ? `Search ${text}` : "Search"}
 			/>
 			{search && (
 				<Button
@@ -45,9 +48,10 @@ const TableTextSearch = memo(({ params, handleSelectChange, text = "", className
 					size="icon"
 					type="button"
 					onClick={handleClear}
-					className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors size-6 rounded-full"
+					className="absolute right-3 top-1/2 size-6 -translate-y-1/2 rounded-full"
+					aria-label="Clear search"
 				>
-					<XIcon className="size-5" />
+					<XIcon className="size-4" />
 				</Button>
 			)}
 		</div>

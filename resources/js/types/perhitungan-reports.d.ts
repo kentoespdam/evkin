@@ -6,7 +6,7 @@ import type { Report } from "./reports";
 export interface PerhitunganReportFilters {
 	report_type_id?: string;
 	aspect_id?: string;
-	year?: number;
+	year: number;
 	month?: number;
 	search?: string;
 	per_page?: string;
@@ -21,6 +21,14 @@ export interface PerhitunganReportDetail {
 	formula: string;
 	formulaValue: string;
 	nilai: number;
+}
+
+export interface PerhitunganReportProps {
+	masterReports: Report[];
+	reportTypes: ReportType[];
+	aspects: Aspect[];
+	reports: PerhitunganReportDetail[];
+	filters: PerhitunganReportFilters;
 }
 
 export interface PerhitunganReportsDetailProps {

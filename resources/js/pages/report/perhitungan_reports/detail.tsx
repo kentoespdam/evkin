@@ -3,7 +3,7 @@ import { RefreshCwIcon } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo } from "react";
 import PaginationNav from "@/components/commons/pagination-nav";
 import TableTextSearch from "@/components/commons/table-text-search";
-import PerhitunganReportsTable from "@/components/reports/table/perhitungan_reports";
+import PerhitunganReportsDetailTable from "@/components/reports/table/perhitungan_reports_detail";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -194,7 +194,7 @@ const PerhitunganReportsDetail = ({ page, reportTypes, aspects, filters }: Perhi
                     <CardContent className="space-y-6">
                         <Filters baseUrl={baseUrl} filters={filters} reportTypes={reportTypes} aspects={aspects} />
 
-                        <PerhitunganReportsTable page={page} />
+                        <PerhitunganReportsDetailTable page={page} />
 
                         <PaginationNav page={page} />
                     </CardContent>

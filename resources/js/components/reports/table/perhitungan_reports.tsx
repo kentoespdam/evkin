@@ -1,101 +1,233 @@
-import { memo, useMemo } from "react";
-import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
-import type { Pagination } from "@/types";
-import type { PerhitunganReportDetail } from "@/types/perhitungan-reports";
+import { router } from "@inertiajs/react";
+import { Fragment, memo, useCallback, useEffect, useMemo } from "react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { cn, monthsList } from "@/lib/utils";
+import { perhitunganReports } from "@/routes/report";
+import type { PerhitunganReportDetail, PerhitunganReportProps } from "@/types/perhitungan-reports";
 
-interface PerhitunganReportsTableProps {
-    page: Pagination<PerhitunganReportDetail>;
-}
+type MonthOption = ReturnType<typeof monthsList>[number];
 
-const PerhitunganReportsTableHeader = memo(() => (
-    <TableHeader>
-        <TableRow>
-            <TableCell>#</TableCell>
-            <TableCell>Periode</TableCell>
-            <TableCell>Indikator</TableCell>
-            <TableCell>Rumus</TableCell>
-            <TableCell>Rumus Value</TableCell>
-            <TableCell>Satuan</TableCell>
-            <TableCell>Nilai</TableCell>
-        </TableRow>
-    </TableHeader>
+// 1. Gunakan useCallback untuk event handler jika ada
+// 2. Optimasi memoization komponen yang benar-benar perlu
+
+const NilaiPencapaianHeaderCellBuilder = memo(({ className }: { className?: string }) => (
+    <>
+        <TableHead className={cn("text-center border whitespace-pre-wrap text-sm", className)}>Nilai Pencapaian</TableHead>
+        <TableHead className={cn("text-center border whitespace-pre-wrap text-sm", className)}>Nilai Indikator</TableHead>
+    </>
 ));
+NilaiPencapaianHeaderCellBuilder.displayName = "NilaiPencapaianHeaderCellBuilder";
+
+// 3. Ekstrak fungsi utilitas untuk styling yang sering digunakan
+const getMonthCellClassName = (monthValue: number) =>
+    cn("text-center border", monthValue % 2 === 0 ? "bg-yellow-100" : "");
+
+const PerhitunganReportsTableHeader = memo(({ year, months }: { year: number; months: MonthOption[] }) => {
+    // 4. Hindari inline functions dalam render
+    const renderMonthHeaders = useCallback(
+        () =>
+            months.map((month) => (
+                <TableHead key={month.value} className={getMonthCellClassName(month.value)} colSpan={2}>
+                    {month.label} {year}
+                </TableHead>
+            )),
+        [months, year],
+    );
+
+    const renderNilaiHeaders = useCallback(
+        () =>
+            months.map((month) => (
+                <NilaiPencapaianHeaderCellBuilder key={month.value} className={month.value % 2 === 0 ? "bg-yellow-100" : ""} />
+            )),
+        [months],
+    );
+
+    return (
+        <TableHeader>
+            <TableRow>
+                <TableHead className="border text-center" rowSpan={2}>
+                    NO
+                </TableHead>
+                <TableHead className="border text-center px-42" rowSpan={2}>
+                    INDIKATOR
+                </TableHead>
+                <TableHead className="border text-center px-42" rowSpan={2}>
+                    RUMUS
+                </TableHead>
+                <TableHead className="border text-center" rowSpan={2}>
+                    BOBOT
+                </TableHead>
+                {renderMonthHeaders()}
+            </TableRow>
+            <TableRow>{renderNilaiHeaders()}</TableRow>
+        </TableHeader>
+    );
+});
 PerhitunganReportsTableHeader.displayName = "PerhitunganReportsTableHeader";
 
-const RulesBadge = memo(({ rule }: { rule: string }) => {
-    const rules = rule?.split("\n").filter((item) => item.trim()) || [];
-    return (
-        <div className="mt-2 bg-slate-100 text-slate-900 rounded px-3 py-2 border border-slate-300 font-mono text-xs">
-            <div className="mb-2 font-semibold">Rules:</div>
-            <div>
-                {rules.map((item, index) => {
-                    const isLast = index === rules.length - 1;
-                    const prefix = isLast ? "└── " : "├── ";
-                    return (
-                        <div key={item}>
-                            {prefix}
-                            {item}
-                        </div>
-                    );
-                })}
-            </div>
-        </div>
-    );
-});
-RulesBadge.displayName = "RulesBadge";
+// 5. Optimasi pencarian report dengan Map
+const createReportsMap = (reports: PerhitunganReportDetail[]) => {
+    const map = new Map<string, PerhitunganReportDetail>();
+    reports.forEach((report) => {
+        const key = `${report.masterReport.id}-${report.month}`;
+        map.set(key, report);
+    });
+    return map;
+};
 
-const RumusCell = memo(({ item }: { item: PerhitunganReportDetail }) => {
-    return (
-        <TableCell>
-            <div className="whitespace-nowrap">
-                {item.formula}
-                {item.masterReport.withRules && <RulesBadge rule={item.masterReport.rules || ""} />}
-            </div>
-        </TableCell>
-    );
-});
-RumusCell.displayName = "RumusCell";
+const NilaiPencapaianCellBuilder = memo(
+    ({
+        className,
+        reportsMap,
+        month,
+        masterReportId,
+    }: {
+        className?: string;
+        reportsMap: Map<string, PerhitunganReportDetail>;
+        month: number;
+        masterReportId: string;
+    }) => {
+        const key = `${masterReportId}-${month}`;
+        const report = reportsMap.get(key);
 
-const PerhitunganReportsTableBody = memo(({ page }: { page: Pagination<PerhitunganReportDetail> }) => {
-    const rows = useMemo(() => {
-        const firstNumber = page.meta.from;
-        return page.data.map((item, index) => ({
-            urut: firstNumber + index,
-            ...item,
-        }));
-    }, [page]);
+        return (
+            <>
+                <TableCell className={cn("border text-center text-xs", className)}>{report?.nilai ?? "-"}</TableCell>
+                <TableCell className={cn("border text-center text-xs", className)}>{"-"}</TableCell>
+            </>
+        );
+    },
+);
+NilaiPencapaianCellBuilder.displayName = "NilaiPencapaianCellBuilder";
+
+interface PerhitunganReportsTableBodyProps {
+    groupedReports: {
+        aspect: PerhitunganReportProps["aspects"][number];
+        masterReports: PerhitunganReportProps["masterReports"][number][];
+    }[];
+    reportsMap: Map<string, PerhitunganReportDetail>;
+    months: MonthOption[];
+}
+
+const PerhitunganReportsTableBody = memo(({ groupedReports, reportsMap, months }: PerhitunganReportsTableBodyProps) => {
+    // 6. Hindari inline functions dalam map dengan useCallback
+    const renderRowClassName = useCallback((index: number) => cn(index % 2 === 1 ? "bg-slate-50/50" : ""), []);
+
+    const renderFormulaCell = useCallback(
+        (item: PerhitunganReportProps["masterReports"][number]) => item.descFormula || item.formula,
+        [],
+    );
+
+    const renderMonthCells = useCallback(
+        (item: PerhitunganReportProps["masterReports"][number]) =>
+            months.map((month) => (
+                <NilaiPencapaianCellBuilder
+                    key={`${item.id}-${month.value}`}
+                    className={month.value % 2 === 0 ? "bg-yellow-100" : ""}
+                    reportsMap={reportsMap}
+                    month={month.value}
+                    masterReportId={item.id}
+                />
+            )),
+        [months, reportsMap],
+    );
+
     return (
         <TableBody>
-            {rows.map((row) => (
-                <TableRow key={row.id}>
-                    <TableCell>{row.urut}</TableCell>
-                    <TableCell>{`${row.year}-${row.month}`}</TableCell>
-                    <TableCell>{row.descIndicator}</TableCell>
-                    <RumusCell item={row} />
-                    <TableCell>{row.formulaValue}</TableCell>
-                    <TableCell>{row.masterReport?.unit}</TableCell>
-                    <TableCell>{row.nilai}</TableCell>
-                </TableRow>
+            {groupedReports.map(({ aspect, masterReports }) => (
+                <Fragment key={aspect.id}>
+                    <TableRow className="bg-slate-50">
+                        <TableCell className="border font-semibold uppercase" colSpan={4 + months.length * 2}>
+                            {aspect.name}
+                        </TableCell>
+                    </TableRow>
+                    {masterReports.map((item, index) => (
+                        <TableRow key={item.id} className={renderRowClassName(index)}>
+                            <TableCell className="border text-center">{item.urut}</TableCell>
+                            <TableCell className="border whitespace-pre-wrap">{item.descIndicator}</TableCell>
+                            <TableCell className="border text-center whitespace-pre-wrap">{renderFormulaCell(item)}</TableCell>
+                            <TableCell className="border text-center">{item.weight}</TableCell>
+                            {renderMonthCells(item)}
+                        </TableRow>
+                    ))}
+                </Fragment>
             ))}
         </TableBody>
     );
 });
 PerhitunganReportsTableBody.displayName = "PerhitunganReportsTableBody";
 
-const PerhitunganReportsTable = ({ page }: PerhitunganReportsTableProps) => {
-    const rows = page.data;
+const PerhitunganReportsTable = ({
+    masterReports,
+    aspects,
+    reports,
+    filters,
+}: Omit<PerhitunganReportProps, "reportTypes">) => {
+    const months = useMemo(() => monthsList(), []);
 
-    if (!rows.length) {
-        return <div className="text-sm text-muted-foreground px-4 py-6">No data found.</div>;
+    // 7. Optimasi groupedReports dengan reduce
+    const groupedReports = useMemo(() => {
+        const aspectMap = new Map<
+            string,
+            {
+                aspect: PerhitunganReportProps["aspects"][number];
+                masterReports: PerhitunganReportProps["masterReports"][number][];
+            }
+        >();
+
+        aspects.forEach((aspect) => {
+            const filteredReports = masterReports
+                .filter((report) => report.aspect?.id === aspect.id)
+                .sort((a, b) => a.urut - b.urut);
+
+            if (filteredReports.length > 0) {
+                aspectMap.set(aspect.id, {
+                    aspect,
+                    masterReports: filteredReports,
+                });
+            }
+        });
+
+        return Array.from(aspectMap.values());
+    }, [aspects, masterReports]);
+
+    // 8. Gunakan Map untuk reports agar pencarian lebih cepat
+    const reportsMap = useMemo(() => createReportsMap(reports), [reports]);
+
+    // 9. Optimasi useEffect dengan dependency yang lebih spesifik
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const hasRequiredParams = params.get("year") || params.get("month") || params.get("report_type_id");
+
+        if (!hasRequiredParams) {
+            router.visit(perhitunganReports.url(), {
+                data: {
+                    year: filters.year,
+                    report_type_id: filters.report_type_id,
+                },
+                preserveState: true,
+                preserveScroll: true,
+                replace: true,
+            });
+        }
+    }, [filters.year, filters.report_type_id]); // 10. Hanya depend on yang diperlukan
+
+    // 11. Early return jika tidak ada data
+    if (groupedReports.length === 0) {
+        return <div className="p-4 text-center text-gray-500">Tidak ada data yang ditemukan</div>;
     }
 
     return (
-        <div className="space-y-3">
+        <div className="overflow-auto">
             <Table>
-                <PerhitunganReportsTableHeader />
-                <PerhitunganReportsTableBody page={page} />
+                <PerhitunganReportsTableHeader year={filters.year} months={months} />
+                <PerhitunganReportsTableBody
+                    groupedReports={groupedReports}
+                    reportsMap={reportsMap}
+                    months={months} />
             </Table>
         </div>
     );
 };
-export default PerhitunganReportsTable;
+
+export default memo(PerhitunganReportsTable);
