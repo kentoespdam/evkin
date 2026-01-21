@@ -65,8 +65,8 @@ class TransasksiInputsController extends Controller
 
         TransaksiInputs::upsert(
             $arrData,
-            ['year', 'month', 'master_input_id'],
-            ['nilai']
+            ['master_input_id', 'year', 'month'],
+            ['periode', 'nilai']
         );
 
         HitungJob::dispatch($data['year'], $data['month']);

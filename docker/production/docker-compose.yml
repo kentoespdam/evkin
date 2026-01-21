@@ -14,29 +14,44 @@ services:
       - .env.production
     restart: unless-stopped
     volumes:
-      - evkin_storage:/var/www/html
+      - evkin_storage:/var/www/html/storage
+      - evkin_bootstrap_cache:/var/www/html/bootstrap/cache
     deploy:
       resources:
         limits:
           memory: 256M
+    healthcheck:
+      test: ["CMD", "php", "artisan", "octane:status", "--no-interaction"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   worker:
     image: evkin-builder:production
     depends_on:
       - evkin
       - redis
-    command: ["sh", "-lc", "php artisan queue:work --tries=3 --timeout=90"]
+    # command: ["sh", "-c", "php artisan queue:work --tries=3 --timeout=90 --sleep=3 --max-jobs=1000"]
+    entrypoint: ["sh", "-c", "php artisan queue:work --tries=3 --timeout=90 --sleep=3 --max-jobs=1000"]
     restart: unless-stopped
     network_mode: bridge
+    env_file:
+      - .env.production
     environment:
-      APP_ENV: production
-      APP_DEBUG: "false"
+      - OCTANE_SERVER=frankenphp
     volumes:
-      - evkin_storage:/var/www/html
+      - evkin_storage:/var/www/html/storage
+      - evkin_bootstrap_cache:/var/www/html/bootstrap/cache
     deploy:
       resources:
         limits:
           memory: 256M
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "queue:work"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 
   redis:
     image: 'redis:alpine'
@@ -55,4 +70,5 @@ services:
 
 volumes:
   evkin_storage:
+  evkin_bootstrap_cache:
   evkin_redis:

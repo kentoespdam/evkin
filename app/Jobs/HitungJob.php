@@ -7,13 +7,15 @@ use App\Models\Master\MasterReports;
 use App\Models\Transaksi\PerhitunganReports;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class HitungJob implements ShouldQueue
 {
-    use Queueable;
+    use Queueable, Dispatchable;
 
     private Carbon $currentDate;
 
@@ -44,6 +46,7 @@ class HitungJob implements ShouldQueue
      */
     public function handle(): void
     {
+        Log::debug("Starting HitungJob for {$this->year}-{$this->month}");
         $this->loadTransactionInputs();
 
         if ($this->transactionInputs->isEmpty())
@@ -99,6 +102,8 @@ class HitungJob implements ShouldQueue
                 $previousPeriodData
             );
 
+            Log::debug("Evaluating formula for report ID {$report->id}: {$formulaValue}");
+
             $nilaiReport = FormulaHelper::evaluateFormula($formulaValue);
 
             $results->push([
@@ -141,6 +146,9 @@ class HitungJob implements ShouldQueue
 
     private function replaceKode(string $formula_item, array $arrayData): string
     {
+        if (empty($arrayData)) {
+            return $formula_item;
+        }
         foreach ($arrayData as $key => $value) {
             if ($formula_item == $key) {
                 return strval($value);
