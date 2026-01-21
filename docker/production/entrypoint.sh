@@ -25,4 +25,4 @@ if [ -n "$APP_KEY" ]; then
 fi
 
 # Start FrankenPHP via Octane (bind to port 80)
-exec php artisan octane:frankenphp --host=0.0.0.0 --port=${PORT:-80} --workers=${WORKERS:-auto} --max-requests=${MAX_REQUESTS:-500}
+exec php artisan octane:start --server=frankenphp --host=0.0.0.0 --admin-port=2019 --port=${APP_PORT:-80} --max-requests=${MAX_REQUESTS:-500}
