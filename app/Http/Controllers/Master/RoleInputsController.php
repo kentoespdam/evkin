@@ -17,18 +17,19 @@ use Inertia\Inertia;
 
 class RoleInputsController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): \Inertia\Response
     {
         $perPage = $request->per_page ?? 10;
-        $query = RoleInputs::with('role', 'masterInput');
-        if ($request->has('search')) {
-            $query->whereHas('role', function ($query) use ($request) {
-                $query->where('name', 'like', "%{$request->get('search')}%");
-            })
-                ->orWhereHas('masterInput', function ($query) use ($request) {
-                    $query->where('description', 'like', "%{$request->get('search')}%");
-                });
-        }
+        $search = $request->search;
+
+        $query = RoleInputs::with('role', 'masterInput')
+            ->when($search, function ($query) use ($search) {
+                $query->whereHas('role', fn($q) =>
+                    $q->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('masterInput', fn($q) =>
+                        $q->where('description', 'like', "%{$search}%"));
+            });
+
         $roleInputs = $query->paginate($perPage);
 
         return Inertia::render('master/role-inputs/index', [
@@ -36,7 +37,7 @@ class RoleInputsController extends Controller
         ]);
     }
 
-    public function add()
+    public function add(): \Inertia\Response
     {
         $inputs = MasterInputs::all();
         $roles = Roles::all();
@@ -47,10 +48,11 @@ class RoleInputsController extends Controller
         ]);
     }
 
-    public function store(RoleInputsRequest $request)
+    public function store(RoleInputsRequest $request): \Illuminate\Http\RedirectResponse
     {
-        $roleId = $request->validated()['role_id'];
-        $inputIds = $request->validated()['master_input_ids'];
+        $validated = $request->validated();
+        $roleId = $validated['role_id'];
+        $inputIds = $validated['master_input_ids'];
 
         foreach ($inputIds as $inputId) {
             RoleInputs::updateOrCreate([
@@ -62,13 +64,14 @@ class RoleInputsController extends Controller
         return redirect()->route('master.role-inputs')->with('success', 'Role Input created successfully');
     }
 
-    public function edit(Roles $role)
+    public function edit(Roles $role): \Inertia\Response
     {
         $inputs = MasterInputs::all();
         $roles = Roles::all();
 
         // Get all inputs associated with this role and map to sqids
-        $existingInputIds = RoleInputs::where('role_id', $role->id)
+        $existingInputIds = RoleInputs::query()
+            ->where('role_id', $role->id)
             ->pluck('master_input_id')
             ->map(fn($id) => MasterInputs::find($id)?->sqid)
             ->filter()
@@ -86,26 +89,28 @@ class RoleInputsController extends Controller
         ]);
     }
 
-    public function update(RoleInputsRequest $request, Roles $role)
+    public function update(RoleInputsRequest $request, Roles $role): \Illuminate\Http\RedirectResponse
     {
-        $roleId = $request->validated()['role_id'];
-        $inputIds = $request->validated()['master_input_ids'];
+        $validated = $request->validated();
+        $roleId = $validated['role_id'];
+        $inputIds = $validated['master_input_ids'];
+
 
         // Delete all existing role_inputs for this role
         RoleInputs::where('role_id', $roleId)->delete();
 
-        // Create new records for each selected input
-        foreach ($inputIds as $inputId) {
-            RoleInputs::create([
+        $data = array_map(function ($inputId) use ($roleId) {
+            return [
                 'role_id' => $roleId,
                 'master_input_id' => $inputId,
-            ]);
-        }
+            ];
+        }, $inputIds);
+        RoleInputs::insert($data);
 
         return redirect()->route('master.role-inputs')->with('success', 'Role Input updated successfully');
     }
 
-    public function destroy(CommonDeleteRequest $request, RoleInputs $roleInput)
+    public function destroy(CommonDeleteRequest $request, RoleInputs $roleInput): \Illuminate\Http\RedirectResponse
     {
         $roleInput->delete();
 
