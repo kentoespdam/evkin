@@ -171,7 +171,7 @@ class HitungJob implements ShouldQueue
         PerhitunganReports::upsert(
             $data,
             ['master_report_id', 'year', 'month'],
-            ['desc_indicator', 'formula', 'formula_value', 'nilai']
+            ['desc_indicator', 'formula', 'formula_value', 'nilai', 'nilai_indicator']
         );
     }
 }

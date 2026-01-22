@@ -23,6 +23,7 @@ class PerhitunganReports extends Model
         'formula',
         'formula_value',
         'nilai',
+        'nilai_indicator',
     ];
 
     protected $hidden = ['created_at'];

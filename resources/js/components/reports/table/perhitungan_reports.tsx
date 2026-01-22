@@ -12,8 +12,12 @@ type MonthOption = ReturnType<typeof monthsList>[number];
 
 const NilaiPencapaianHeaderCellBuilder = memo(({ className }: { className?: string }) => (
     <>
-        <TableHead className={cn("text-center border whitespace-pre-wrap text-sm", className)}>Nilai Pencapaian</TableHead>
-        <TableHead className={cn("text-center border whitespace-pre-wrap text-sm", className)}>Nilai Indikator</TableHead>
+        <TableHead className={cn("text-center border whitespace-pre-wrap text-sm", className)}>
+            Nilai Pencapaian
+        </TableHead>
+        <TableHead className={cn("text-center border whitespace-pre-wrap text-sm", className)}>
+            Nilai Indikator
+        </TableHead>
     </>
 ));
 NilaiPencapaianHeaderCellBuilder.displayName = "NilaiPencapaianHeaderCellBuilder";
@@ -101,7 +105,7 @@ const NilaiPencapaianCellBuilder = memo(
         return (
             <>
                 <TableCell className={cn("border text-center text-xs", className)}>{report?.nilai ?? "-"}</TableCell>
-                <TableCell className={cn("border text-center text-xs", className)}>{"-"}</TableCell>
+                <TableCell className={cn("border text-center text-xs", className)}>{report?.nilaiIndicator ?? "-"}</TableCell>
             </>
         );
     },
