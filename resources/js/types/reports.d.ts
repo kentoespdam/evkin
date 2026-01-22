@@ -11,6 +11,7 @@ export interface Report {
 	unit: string;
 	weight: number;
 	formula: string;
+	formulaIndicator: string;
 	withRules: boolean;
 	rules: string | null;
 }

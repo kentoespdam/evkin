@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { memo, useRef } from "react";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/textarea";
 import type { MasterInput } from "@/types/master-input";
@@ -9,7 +9,7 @@ interface FormulaTextAreaProps {
     errors: Record<string, string>;
     value?: string;
 }
-const FormulaTextArea = ({ availableCode, errors, value }: FormulaTextAreaProps) => {
+const FormulaTextArea = memo(({ availableCode, errors, value }: FormulaTextAreaProps) => {
     const formulaRef = useRef<HTMLTextAreaElement>(null);
     return (
         <div className="grid gap-4">
@@ -31,6 +31,7 @@ const FormulaTextArea = ({ availableCode, errors, value }: FormulaTextAreaProps)
             <AvailableCodeButton availableCode={availableCode} formulaRef={formulaRef} currentCode={value || ""} />
         </div>
     );
-};
+});
+FormulaTextArea.displayName = "FormulaTextArea";
 
 export default FormulaTextArea;

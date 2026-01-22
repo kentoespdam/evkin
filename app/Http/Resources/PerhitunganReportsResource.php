@@ -23,6 +23,7 @@ class PerhitunganReportsResource extends JsonResource
             'formula' => $this->formula,
             'formulaValue' => $this->formula_value,
             'nilai' => $this->nilai,
+            'nilaiIndicator' => $this->nilai_indicator,
         ];
     }
 }

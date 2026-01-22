@@ -17,6 +17,7 @@ const PerhitunganReportsDetailTableHeader = memo(() => (
             <TableCell>Rumus Value</TableCell>
             <TableCell>Satuan</TableCell>
             <TableCell>Nilai</TableCell>
+            <TableCell>Nilai Indikator</TableCell>
         </TableRow>
     </TableHeader>
 ));
@@ -74,7 +75,8 @@ const PerhitunganReportsDetailTableBody = memo(({ page }: { page: Pagination<Per
                     <RumusCell item={row} />
                     <TableCell>{row.formulaValue}</TableCell>
                     <TableCell>{row.masterReport?.unit}</TableCell>
-                    <TableCell>{row.nilai}</TableCell>
+                    <TableCell align="right">{row.nilai}</TableCell>
+                    <TableCell align="right">{row.nilaiIndicator}</TableCell>
                 </TableRow>
             ))}
         </TableBody>

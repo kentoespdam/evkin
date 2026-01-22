@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Helpers\FormulaHelper;
+use App\Helpers\FormulaIndicatorHelper;
 use App\Models\Master\MasterReports;
 use App\Models\Transaksi\PerhitunganReports;
 use Carbon\Carbon;
@@ -105,6 +106,11 @@ class HitungJob implements ShouldQueue
             Log::debug("Evaluating formula for report ID {$report->id}: {$formulaValue}");
 
             $nilaiReport = FormulaHelper::evaluateFormula($formulaValue);
+            $formulaIndicator = $report->formula_indicator !== null ? $report->formula_indicator : '';
+            $nilaiIndicator = FormulaIndicatorHelper::evaluateFormula(
+                $formulaIndicator,
+                $nilaiReport
+            );
 
             $results->push([
                 'master_report_id' => $report->id,
@@ -114,6 +120,7 @@ class HitungJob implements ShouldQueue
                 'formula' => $report->formula,
                 'formula_value' => $formulaValue,
                 'nilai' => $nilaiReport,
+                'nilai_indicator' => $nilaiIndicator,
             ]);
         }
 

@@ -16,6 +16,8 @@ interface InputFormFieldBuilderProps {
     children?: React.ReactNode;
     className?: string;
     step?: string;
+    rows?: number;
+    min?: number;
 }
 const InputFormFieldBuilder = memo(
     ({
@@ -30,6 +32,8 @@ const InputFormFieldBuilder = memo(
         children,
         className,
         step,
+        rows,
+        min,
     }: InputFormFieldBuilderProps) => (
         <Field>
             <FieldLabel htmlFor={id}>
@@ -45,6 +49,7 @@ const InputFormFieldBuilder = memo(
                         placeholder={placeholder}
                         className={cn(error && "border-destructive", className)}
                         required={required}
+                        rows={rows}
                     />
                 ) : (
                     <Input
@@ -56,6 +61,7 @@ const InputFormFieldBuilder = memo(
                         className={cn(error && "border-destructive", className)}
                         required={required}
                         step={step}
+                        min={type === "number" ? min : undefined}
                     />
                 ))}
 

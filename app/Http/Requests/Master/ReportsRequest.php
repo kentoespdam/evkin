@@ -18,14 +18,14 @@ class ReportsRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        if ($this->has('report_type_id') && ! is_numeric($this->report_type_id)) {
+        if ($this->has('report_type_id') && !is_numeric($this->report_type_id)) {
             $reportTypeId = ReportTypes::whereSqid($this->report_type_id)->first();
             if ($reportTypeId) {
                 $this->merge(['report_type_id' => $reportTypeId->id]);
             }
         }
 
-        if ($this->has('aspect_id') && ! is_numeric($this->aspect_id)) {
+        if ($this->has('aspect_id') && !is_numeric($this->aspect_id)) {
             $aspectId = Aspects::whereSqid($this->aspect_id)->first();
             if ($aspectId) {
                 $this->merge(['aspect_id' => $aspectId->id]);
@@ -35,7 +35,7 @@ class ReportsRequest extends FormRequest
         if ($this->has('with_rules')) {
             $withRules = filter_var($this->with_rules, FILTER_VALIDATE_BOOLEAN);
             $this->merge(['with_rules' => $withRules]);
-            if (! $withRules) {
+            if (!$withRules) {
                 $this->merge(['rules' => '']);
             }
         }
@@ -57,6 +57,7 @@ class ReportsRequest extends FormRequest
             'unit' => ['required', 'string'],
             'weight' => ['required', 'numeric'],
             'formula' => ['required', 'string'],
+            'formula_indicator' => ['required', 'string'],
             'with_rules' => ['required', 'boolean'],
             'rules' => ['required_if:with_rules,true', 'string'],
         ];
@@ -71,8 +72,9 @@ class ReportsRequest extends FormRequest
             'descIndicator.required' => 'Description indicator is required',
             'descFormula.required' => 'Description formula is required',
             'unit.required' => 'Unit is required',
-            'formula.required' => 'Formula is required',
             'weight.required' => 'Weight is required',
+            'formula.required' => 'Formula is required',
+            'formula_indicator.required' => 'Formula indikator is required',
             'with_rules.required' => 'With rules is required',
             'rules.required_if' => 'Rules is required when with rules is true',
         ];
