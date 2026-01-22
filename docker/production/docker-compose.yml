@@ -9,7 +9,6 @@ services:
       - redis
     ports:
       - "8083:80"
-    network_mode: bridge
     env_file:
       - .env.production
     restart: unless-stopped
@@ -34,7 +33,6 @@ services:
     # command: ["sh", "-c", "php artisan queue:work --tries=3 --timeout=90 --sleep=3 --max-jobs=1000"]
     entrypoint: ["sh", "-c", "php artisan queue:work --tries=3 --timeout=90 --sleep=3 --max-jobs=1000"]
     restart: unless-stopped
-    network_mode: bridge
     env_file:
       - .env.production
     environment:
@@ -55,11 +53,11 @@ services:
 
   redis:
     image: 'redis:alpine'
-    # ports:
+    ports:
+      - '6380:6379'
     #   - '${FORWARD_REDIS_PORT:-6379}:6379'
     volumes:
       - 'evkin_redis:/data'
-    network_mode: bridge
     healthcheck:
       test:
           - CMD
@@ -72,3 +70,5 @@ volumes:
   evkin_storage:
   evkin_bootstrap_cache:
   evkin_redis:
+
+networks: {}
