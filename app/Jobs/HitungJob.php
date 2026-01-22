@@ -103,7 +103,6 @@ class HitungJob implements ShouldQueue
                 $previousPeriodData
             );
 
-            Log::debug("Evaluating formula for report ID {$report->id}: {$formulaValue}");
 
             $nilaiReport = FormulaHelper::evaluateFormula($formulaValue);
             $formulaIndicator = $report->formula_indicator !== null ? $report->formula_indicator : '';
@@ -111,6 +110,8 @@ class HitungJob implements ShouldQueue
                 $formulaIndicator,
                 $nilaiReport
             );
+            Log::debug("Evaluating formula for report ID {$report->id}: {$formulaValue}");
+            Log::debug("Result nilai: {$nilaiReport}, nilai indicator: {$nilaiIndicator}");
 
             $results->push([
                 'master_report_id' => $report->id,
