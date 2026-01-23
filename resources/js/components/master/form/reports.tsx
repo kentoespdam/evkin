@@ -371,7 +371,7 @@ const ReportsForm = memo(({ reportTypes, availableCode, aspects, data }: Reports
 									defaultValue={defaultValues.urut}
 									placeholder="1"
 									error={errors.urut}
-									type="number"
+									type="text"
 									className="w-full"
 								/>
 

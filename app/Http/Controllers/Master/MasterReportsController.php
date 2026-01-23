@@ -24,8 +24,8 @@ class MasterReportsController extends Controller
         $perPage = $request->per_page ?? 10;
         $query = MasterReports::with('reportType');
         if ($request->has('search')) {
-            $query->where('descIndicator', 'like', "%{$request->get('search')}%")
-                ->orWhere('descFormula', 'like', "%{$request->get('search')}%");
+            $query->where('desc_indicator', 'like', "%{$request->get('search')}%")
+                ->orWhere('desc_formula', 'like', "%{$request->get('search')}%");
         }
         if ($request->has("reportTypeId")) {
             $reportTypeId = $request->get("reportTypeId");

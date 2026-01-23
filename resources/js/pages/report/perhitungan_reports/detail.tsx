@@ -1,5 +1,5 @@
 import { Head, router } from "@inertiajs/react";
-import { RefreshCwIcon } from "lucide-react";
+import { LockIcon, RefreshCwIcon } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo } from "react";
 import PaginationNav from "@/components/commons/pagination-nav";
 import TableTextSearch from "@/components/commons/table-text-search";
@@ -138,8 +138,12 @@ const Filters = memo(
                         </SelectContent>
                     </Select>
 
-                    <Button onClick={resetAll} className="gap-2" aria-label="Reset filters">
+                    <Button type="button" onClick={resetAll} className="gap-2" aria-label="Reset filters">
                         <RefreshCwIcon className="size-4" /> Reset
+                    </Button>
+
+                    <Button>
+                        <LockIcon className="size-4" /> Locked
                     </Button>
                 </div>
 
