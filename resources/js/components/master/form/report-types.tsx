@@ -2,12 +2,13 @@ import { Form, Link } from "@inertiajs/react";
 import { ArrowLeftIcon, FileTypeIcon } from "lucide-react";
 import { memo, useMemo } from "react";
 import ButtonLoading from "@/components/commons/button-loading";
+import ReportTypeTemplateSelect from "@/components/commons/form/report_type_template";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import master from "@/routes/master";
-import type { ReportType } from "@/types/report-types";
+import type { ReportType } from "@/types/report-types.d";
 
 interface ReportTypesFormProps {
 	data?: ReportType;
@@ -61,6 +62,12 @@ const ReportTypesForm = memo(({ data }: ReportTypesFormProps) => {
 									/>
 									<FieldError>{errors.name}</FieldError>
 								</Field>
+
+								{/* Template Name Field */}
+								<ReportTypeTemplateSelect
+									value={data?.templateName ?? ""}
+									errors={errors}
+								/>
 							</div>
 						</div>
 

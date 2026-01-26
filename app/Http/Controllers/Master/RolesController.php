@@ -15,37 +15,32 @@ use Inertia\Response;
 
 class RolesController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         $perPage = $request->per_page ?? 10;
 
-        $query = Roles::query();
-
-        if ($request->has('search')) {
+        $roles = Roles::when($request->filled('search'), function ($query) use ($request) {
             $query->where('name', 'like', "%{$request->get('search')}%");
-        }
-
-        $roles = $query->paginate($perPage);
+        })
+            ->paginate($perPage);
 
         return Inertia::render('master/roles/index', [
             'page' => new RolesCollection($roles),
         ]);
     }
 
-    public function add()
+    public function add(): Response
     {
         return Inertia::render('master/roles/add');
     }
 
     public function store(RolesRequest $request): RedirectResponse
     {
-        // check if role already exists
-        if (Roles::where('name', $request->name)->exists()) {
-            return redirect()->route('master.roles')->with('error', 'Role already exists');
-        }
-        Roles::create($request->all());
+        Roles::create($request->validated());
 
-        return redirect()->route('master.roles')->with('success', 'Role created successfully');
+        return redirect()
+            ->route('master.roles')
+            ->with('success', 'Role created successfully');
     }
 
     public function edit(Roles $role): Response
@@ -57,15 +52,19 @@ class RolesController extends Controller
 
     public function update(RolesRequest $request, Roles $role): RedirectResponse
     {
-        $role->update($request->all());
+        $role->update($request->validated());
 
-        return redirect()->route('master.roles')->with('success', 'Role updated successfully');
+        return redirect()
+            ->route('master.roles')
+            ->with('success', 'Role updated successfully');
     }
 
     public function destroy(CommonDeleteRequest $request, Roles $role): RedirectResponse
     {
         $role->delete();
 
-        return redirect()->route('master.roles')->with('success', 'Role deleted successfully');
+        return redirect()
+            ->route('master.roles')
+            ->with('success', 'Role deleted successfully');
     }
 }

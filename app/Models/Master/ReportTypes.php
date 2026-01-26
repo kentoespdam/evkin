@@ -12,7 +12,7 @@ class ReportTypes extends Model
 
     protected $table = 'report_types';
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'template_name'];
 
     protected $hidden = ['created_at', 'updated_at'];
 

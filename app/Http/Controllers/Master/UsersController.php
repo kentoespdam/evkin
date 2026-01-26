@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Master;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\CommonDeleteRequest;
 use App\Http\Requests\Master\UsersRequest;
-use App\Http\Requests\Master\UsersUpdateRequest;
 use App\Http\Resources\RolesResource;
 use App\Http\Resources\UserResource;
 use App\Models\Master\Roles;
@@ -19,17 +18,22 @@ class UsersController extends Controller
 {
     public function index(Request $request): Response
     {
-        $users = User::with('role:id,name')
-            ->paginate($request->per_page ?? 10);
+        $perPage = $request->per_page ?? 10;
+
+        $query = User::with('role:id,name');
+
         if ($request->has('search')) {
-            $users = User::with('role:id,name')
-                ->where('name', 'like', "%{$request->get('search')}%")
-                ->orWhere('email', 'like', "%{$request->get('search')}%")
-                ->orWhereHas('role', function ($query) use ($request) {
-                    $query->where('name', 'like', "%{$request->get('search')}%");
-                })
-                ->paginate($request->per_page ?? 10);
+            $search = $request->get('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhereHas('role', function ($roleQuery) use ($search) {
+                        $roleQuery->where('name', 'like', "%{$search}%");
+                    });
+            });
         }
+
+        $users = $query->paginate($perPage);
 
         return Inertia::render('master/users/index', [
             'page' => $users->toResourceCollection(),
@@ -48,9 +52,7 @@ class UsersController extends Controller
     public function store(UsersRequest $request): RedirectResponse
     {
         $data = $request->validated();
-
         unset($data['password_confirmation']);
-
         User::create($data);
 
         return redirect()
@@ -60,26 +62,19 @@ class UsersController extends Controller
 
     public function edit(User $user): Response
     {
-        $roles = Roles::all();
-
         return Inertia::render('master/users/edit', [
             'user' => new UserResource($user->load('role:id,name')),
-            'roles' => RolesResource::collection($roles),
+            'roles' => RolesResource::collection(Roles::all()),
         ]);
     }
 
-    public function update(UsersUpdateRequest $request, User $user)
+    public function update(UsersRequest $request, User $user): RedirectResponse
     {
         $data = $request->validated();
-
-        // Only update password if provided
         if (empty($data['password'])) {
             unset($data['password']);
         }
-
-        // Remove password_confirmation from data
         unset($data['password_confirmation']);
-
         $user->update($data);
 
         return redirect()

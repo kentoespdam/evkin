@@ -36,15 +36,11 @@ class MasterSourcesController extends Controller
 
     public function store(SourcesRequest $request): RedirectResponse
     {
-        if (MasterSources::where('name', $request->name)->exists()) {
-            return redirect()->route('master.sources.add')->with('error', 'Master Source already exists');
-        }
-
-        // $masterSourceData = $request->validated();
-
         MasterSources::create($request->validated());
 
-        return redirect()->route('master.sources')->with('success', 'Master Source created successfully');
+        return redirect()
+            ->route('master.sources')
+            ->with('success', 'Master Source created successfully');
     }
 
     public function edit(MasterSources $source): Response
@@ -56,21 +52,19 @@ class MasterSourcesController extends Controller
 
     public function update(SourcesRequest $request, MasterSources $source): RedirectResponse
     {
-        $sourceData = $request->validated();
+        $source->update($request->validated());
 
-        $source->update($sourceData);
-
-        return redirect()->route('master.sources')->with('success', 'Master Source updated successfully');
+        return redirect()
+            ->route('master.sources')
+            ->with('success', 'Master Source updated successfully');
     }
 
-    public function destroy(CommonDeleteRequest $request, MasterSources $source)
+    public function destroy(CommonDeleteRequest $request, MasterSources $source): RedirectResponse
     {
-        try {
-            $source->delete();
+        $source->delete();
 
-            return redirect()->route('master.sources')->with('success', 'Master Source deleted successfully');
-        } catch (\Exception $e) {
-            return redirect()->route('master.sources')->withErrors(['error' => 'Master Source deleted failed']);
-        }
+        return redirect()
+            ->route('master.sources')
+            ->with('success', 'Master Source deleted successfully');
     }
 }

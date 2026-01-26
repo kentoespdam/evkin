@@ -8,9 +8,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ReportsRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
@@ -18,65 +15,66 @@ class ReportsRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        if ($this->has('report_type_id') && !is_numeric($this->report_type_id)) {
-            $reportTypeId = ReportTypes::whereSqid($this->report_type_id)->first();
-            if ($reportTypeId) {
-                $this->merge(['report_type_id' => $reportTypeId->id]);
+        if ($this->has('report_type_id') && ! is_numeric($this->report_type_id)) {
+            $reportType = ReportTypes::whereSqid($this->report_type_id)->first();
+            if ($reportType) {
+                $this->merge(['report_type_id' => $reportType->id]);
             }
         }
 
-        if ($this->has('aspect_id') && !is_numeric($this->aspect_id)) {
-            $aspectId = Aspects::whereSqid($this->aspect_id)->first();
-            if ($aspectId) {
-                $this->merge(['aspect_id' => $aspectId->id]);
+        if ($this->has('aspect_id') && ! is_numeric($this->aspect_id)) {
+            $aspect = Aspects::whereSqid($this->aspect_id)->first();
+            if ($aspect) {
+                $this->merge(['aspect_id' => $aspect->id]);
             }
         }
 
         if ($this->has('with_rules')) {
             $withRules = filter_var($this->with_rules, FILTER_VALIDATE_BOOLEAN);
             $this->merge(['with_rules' => $withRules]);
-            if (!$withRules) {
+            if (! $withRules) {
                 $this->merge(['rules' => '']);
             }
         }
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            'urut' => ['string'],
+            'urut' => ['nullable', 'string'],
             'report_type_id' => ['required', 'exists:report_types,id'],
             'aspect_id' => ['required', 'exists:aspects,id'],
             'desc_indicator' => ['required', 'string'],
             'desc_formula' => ['required', 'string'],
-            'unit' => ['required', 'string'],
-            'weight' => ['required', 'numeric'],
+            'unit' => ['required', 'string', 'max:50'],
+            'weight' => ['required', 'numeric', 'min:0'],
             'formula' => ['required', 'string'],
             'formula_indicator' => ['required', 'string'],
             'with_rules' => ['required', 'boolean'],
-            'rules' => ['required_if:with_rules,true', 'string'],
+            'rules' => ['required_if:with_rules,true', 'nullable', 'string'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'urut.numeric' => 'Urut must be a number',
+            'urut.string' => 'Order must be a string',
             'report_type_id.required' => 'Report type is required',
             'report_type_id.exists' => 'Report type is invalid',
-            'descIndicator.required' => 'Description indicator is required',
-            'descFormula.required' => 'Description formula is required',
+            'aspect_id.required' => 'Aspect is required',
+            'aspect_id.exists' => 'Aspect is invalid',
+            'desc_indicator.required' => 'Description indicator is required',
+            'desc_formula.required' => 'Description formula is required',
             'unit.required' => 'Unit is required',
+            'unit.max' => 'Unit may not be greater than 50 characters',
             'weight.required' => 'Weight is required',
+            'weight.numeric' => 'Weight must be a number',
+            'weight.min' => 'Weight must be at least 0',
             'formula.required' => 'Formula is required',
-            'formula_indicator.required' => 'Formula indikator is required',
-            'with_rules.required' => 'With rules is required',
-            'rules.required_if' => 'Rules is required when with rules is true',
+            'formula_indicator.required' => 'Formula indicator is required',
+            'with_rules.required' => 'With rules field is required',
+            'with_rules.boolean' => 'With rules must be true or false',
+            'rules.required_if' => 'Rules is required when with rules is enabled',
         ];
     }
 }

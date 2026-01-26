@@ -8,70 +8,71 @@ use App\Http\Requests\Master\ReportTypesRequest;
 use App\Http\Resources\ReportTypesCollection;
 use App\Http\Resources\ReportTypesResource;
 use App\Models\Master\ReportTypes;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class ReportTypesController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         $perPage = $request->per_page ?? 10;
-        $query = ReportTypes::query();
-        if ($request->has('search')) {
+
+        $reportTypes = ReportTypes::when($request->filled('search'), function ($query) use ($request) {
             $query->where('name', 'like', "%{$request->get('search')}%");
-        }
-        $result = $query->paginate($perPage);
+        })
+            ->paginate($perPage);
 
         return Inertia::render('master/report-types/index', [
-            'page' => new ReportTypesCollection($result),
+            'page' => new ReportTypesCollection($reportTypes),
         ]);
     }
 
-    public function add()
+    public function add(): Response
     {
-        $result = ReportTypes::all();
-
         return Inertia::render('master/report-types/add', [
-            'sources' => new ReportTypesCollection($result),
+            'sources' => $this->getAllReportTypes(),
         ]);
     }
 
-    public function store(ReportTypesRequest $request)
+    public function store(ReportTypesRequest $request): RedirectResponse
     {
+        ReportTypes::create($request->validated());
 
-        if (ReportTypes::where('name', $request->input('name'))->exists()) {
-            return redirect()->route('master.report-types')->with('error', 'Report Type already exists');
-        }
-
-        $requestData = $request->validated();
-
-        ReportTypes::create($requestData);
-
-        return redirect()->route('master.report-types')->with('success', 'Report Type created successfully');
+        return redirect()
+            ->route('master.report-types')
+            ->with('success', 'Report Type created successfully');
     }
 
-    public function edit(ReportTypes $reportType)
+    public function edit(ReportTypes $reportType): Response
     {
-        $result = ReportTypes::all();
-
         return Inertia::render('master/report-types/edit', [
             'data' => new ReportTypesResource($reportType),
-            'sources' => new ReportTypesCollection($result),
+            'sources' => $this->getAllReportTypes(),
         ]);
     }
 
-    public function update(ReportTypesRequest $request, ReportTypes $reportType)
+    public function update(ReportTypesRequest $request, ReportTypes $reportType): RedirectResponse
     {
-        $requestData = $request->validated();
-        $reportType->update($requestData);
+        $reportType->update($request->validated());
 
-        return redirect()->route('master.report-types')->with('success', 'Report Type updated successfully');
+        return redirect()
+            ->route('master.report-types')
+            ->with('success', 'Report Type updated successfully');
     }
 
-    public function destroy(CommonDeleteRequest $request, ReportTypes $reportType)
+    public function destroy(CommonDeleteRequest $request, ReportTypes $reportType): RedirectResponse
     {
         $reportType->delete();
 
-        return redirect()->route('master.report-types')->with('success', 'Report Type deleted successfully');
+        return redirect()
+            ->route('master.report-types')
+            ->with('success', 'Report Type deleted successfully');
+    }
+
+    private function getAllReportTypes(): ReportTypesCollection
+    {
+        return new ReportTypesCollection(ReportTypes::all());
     }
 }

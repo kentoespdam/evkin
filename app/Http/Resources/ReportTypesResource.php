@@ -17,6 +17,7 @@ class ReportTypesResource extends JsonResource
         return [
             'id' => $this->sqid,
             'name' => $this->name,
+            'templateName' => $this->template_name,
         ];
     }
 }

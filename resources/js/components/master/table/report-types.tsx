@@ -2,6 +2,7 @@ import { Link } from "@inertiajs/react";
 import { MoreHorizontal, PencilIcon, TrashIcon } from "lucide-react";
 import { memo, useCallback, useMemo, useState } from "react";
 import TableEmpty from "@/components/commons/table-empty";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -28,6 +29,7 @@ const ReportTypesTableHeader = memo(() => {
 			<TableRow>
 				<TableHead className="w-16 text-center">#</TableHead>
 				<TableHead>Name</TableHead>
+				<TableHead>Template Name</TableHead>
 			</TableRow>
 		</TableHeader>
 	);
@@ -112,6 +114,9 @@ const ReportTypesTableBody = memo(({ page, setId, setShowDeleteDialog }: ReportT
 							/>
 							{item.name}
 						</div>
+					</TableCell>
+					<TableCell>
+						<Badge variant="outline">{item.templateName}</Badge>
 					</TableCell>
 				</TableRow>
 			))}

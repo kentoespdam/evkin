@@ -22,6 +22,7 @@ class MasterReports extends Model
         'weight',
         'formula',
         'formula_indicator',
+        'formula_archivement',
         'with_rules',
         'rules',
     ];

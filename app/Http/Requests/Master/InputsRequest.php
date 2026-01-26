@@ -2,15 +2,12 @@
 
 namespace App\Http\Requests\Master;
 
-use Illuminate\Foundation\Http\FormRequest;
-use App\Models\Master\MasterInputs;
 use App\Models\Master\MasterSources;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class InputsRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
@@ -18,46 +15,48 @@ class InputsRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        if (MasterInputs::where('kode', $this->input('kode'))->exists() === false) {
-            $this->merge(['kode' => str_replace(' ', '', $this->input('kode'))]);
+        $kode = $this->input('kode');
+        if ($kode) {
+            $this->merge(['kode' => str_replace(' ', '', $kode)]);
         }
 
-        if ($this->has('master_source_id') && !is_numeric($this->master_source_id)) {
-            $masterSourceId = MasterSources::whereSqid($this->master_source_id)->first();
-            if ($masterSourceId) {
-                $this->merge(['master_source_id' => $masterSourceId->id]);
+        if ($this->has('master_source_id') && ! is_numeric($this->master_source_id)) {
+            $masterSource = MasterSources::whereSqid($this->master_source_id)->first();
+            if ($masterSource) {
+                $this->merge(['master_source_id' => $masterSource->id]);
             }
         }
-
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
+        $inputId = $this->route('input')?->id;
+
         return [
-            'kode' => ['required', 'string', 'max:255'],
+            'kode' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('master_inputs', 'kode')->ignore($inputId),
+            ],
             'description' => ['required', 'string', 'max:255'],
             'satuan' => ['required', 'string', 'max:255'],
             'master_source_id' => ['required', 'integer', 'exists:master_sources,id'],
         ];
     }
 
-    /**
-     * Get custom error messages for validator errors.
-     */
     public function messages(): array
     {
         return [
-            'kode.required' => 'The code field is required.',
-            'kode.max' => 'The code may not be greater than 255 characters.',
-            'description.required' => 'The description field is required.',
-            'description.max' => 'The description may not be greater than 255 characters.',
-            'master_source_id.required' => 'Please select a source.',
-            'master_source_id.exists' => 'The selected source is invalid.',
+            'kode.required' => 'The code field is required',
+            'kode.unique' => 'The code has already been taken',
+            'kode.max' => 'The code may not be greater than 255 characters',
+            'description.required' => 'The description field is required',
+            'description.max' => 'The description may not be greater than 255 characters',
+            'satuan.required' => 'The unit field is required',
+            'satuan.max' => 'The unit may not be greater than 255 characters',
+            'master_source_id.required' => 'Please select a source',
+            'master_source_id.exists' => 'The selected source is invalid',
         ];
     }
 }

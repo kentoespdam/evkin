@@ -4,12 +4,10 @@ namespace App\Http\Requests\Master;
 
 use App\Models\Master\ReportTypes;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class AspectsRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
@@ -17,24 +15,28 @@ class AspectsRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        if ($this->has('report_type_id') && !is_numeric($this->report_type_id)) {
-            $reportTypeId = ReportTypes::whereSqid($this->report_type_id)->first();
-            if ($reportTypeId) {
-                $this->merge(['report_type_id' => $reportTypeId->id]);
+        if ($this->has('report_type_id') && ! is_numeric($this->report_type_id)) {
+            $reportType = ReportTypes::whereSqid($this->report_type_id)->first();
+            if ($reportType) {
+                $this->merge(['report_type_id' => $reportType->id]);
             }
         }
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
+        $aspectId = $this->route('aspect')?->id;
+
         return [
             'report_type_id' => ['required', 'exists:report_types,id'],
-            'name' => ['required', 'string', 'max:255'],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('aspects', 'name')
+                    ->where('report_type_id', $this->report_type_id)
+                    ->ignore($aspectId),
+            ],
         ];
     }
 
@@ -46,7 +48,7 @@ class AspectsRequest extends FormRequest
             'name.required' => 'Name is required',
             'name.string' => 'Name must be a string',
             'name.max' => 'Name must not exceed 255 characters',
-            'name.unique' => 'Name has already been taken',
+            'name.unique' => 'Name has already been taken for this report type',
         ];
     }
 }
