@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Master;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\CommonDeleteRequest;
 use App\Http\Requests\Master\InputsRequest;
-use App\Http\Requests\Master\InputsUpdateRequest;
 use App\Http\Resources\MasterInputsCollection;
 use App\Http\Resources\MasterInputsResource;
 use App\Http\Resources\MasterSourcesCollection;
@@ -59,7 +58,7 @@ class MasterInputsController extends Controller
         ]);
     }
 
-    public function update(InputsUpdateRequest $request, MasterInputs $input): RedirectResponse
+    public function update(InputsRequest $request, MasterInputs $input): RedirectResponse
     {
         $input->update($request->validated());
 
