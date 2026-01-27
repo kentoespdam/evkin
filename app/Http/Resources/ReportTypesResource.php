@@ -18,6 +18,7 @@ class ReportTypesResource extends JsonResource
             'id' => $this->sqid,
             'name' => $this->name,
             'templateName' => $this->template_name,
+            'formulaPerformance' => $this->formula_performance,
         ];
     }
 }

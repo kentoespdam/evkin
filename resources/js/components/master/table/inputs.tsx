@@ -1,18 +1,11 @@
 import { Link } from "@inertiajs/react";
-import { MoreHorizontal, PencilIcon, TrashIcon } from "lucide-react";
-import { memo, useCallback, useMemo, useState } from "react";
+import { DatabaseIcon, FileInputIcon, PencilIcon, RulerIcon, TagIcon, TrashIcon } from "lucide-react";
+import { memo, useCallback } from "react";
 import TableEmpty from "@/components/commons/table-empty";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import master from "@/routes/master";
 import type { Pagination } from "@/types";
 import type { MasterInput } from "@/types/master-input";
@@ -26,12 +19,33 @@ interface InputsTableProps {
 const InputsTableHeader = memo(() => {
 	return (
 		<TableHeader>
-			<TableRow>
-				<TableHead className="w-16 text-center">#</TableHead>
-				<TableHead>Kode</TableHead>
-				<TableHead>Indikator</TableHead>
-				<TableHead>Satuan</TableHead>
-				<TableHead>Sumber Data</TableHead>
+			<TableRow className="bg-muted/50">
+				<TableHead className="w-16 text-center font-semibold">#</TableHead>
+				<TableHead className="font-semibold">
+					<div className="flex items-center gap-2">
+						<TagIcon className="h-4 w-4 text-muted-foreground" />
+						Kode
+					</div>
+				</TableHead>
+				<TableHead className="font-semibold">
+					<div className="flex items-center gap-2">
+						<FileInputIcon className="h-4 w-4 text-muted-foreground" />
+						Indikator
+					</div>
+				</TableHead>
+				<TableHead className="font-semibold">
+					<div className="flex items-center gap-2">
+						<RulerIcon className="h-4 w-4 text-muted-foreground" />
+						Satuan
+					</div>
+				</TableHead>
+				<TableHead className="font-semibold">
+					<div className="flex items-center gap-2">
+						<DatabaseIcon className="h-4 w-4 text-muted-foreground" />
+						Sumber Data
+					</div>
+				</TableHead>
+				<TableHead className="w-24 text-center font-semibold">Actions</TableHead>
 			</TableRow>
 		</TableHeader>
 	);
@@ -39,41 +53,54 @@ const InputsTableHeader = memo(() => {
 InputsTableHeader.displayName = "InputsTableHeader";
 
 const InputsTableBody = memo(({ page, setId, setShowDeleteDialog }: InputsTableProps) => {
-	const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
-
-	const rows = useMemo(() => {
-		const firstNumber = page.meta.from;
-		return page.data.map((item, index) => ({
-			urut: firstNumber + index,
-			...item,
-		}));
-	}, [page]);
 	return (
 		<TableBody>
-			{rows.map((item) => (
-				<TableRow
-					key={item.id}
-					className="group"
-					onClick={() => setSelectedRowId(selectedRowId === item.id ? null : item.id)}
-				>
-					<TableCell className="w-16 text-center">{item.urut}</TableCell>
+			{page.data.map((item) => (
+				<TableRow key={item.id} className="group hover:bg-muted/50 transition-colors">
+					<TableCell className="w-16 text-center">
+						<Badge variant="outline" className="font-semibold">
+							{item.seq ?? 0}
+						</Badge>
+					</TableCell>
+
 					<TableCell>
-						<div className="flex items-center gap-3">
-							<InputTableActions
-								row={item}
-								isSelected={item.id === selectedRowId}
-								setId={setId}
-								setShowDeleteDialog={setShowDeleteDialog}
-							/>
-							{item.kode}
+						<div className="flex items-center gap-2">
+							<div className="flex items-center justify-center w-8 h-8 rounded-md bg-gradient-to-br from-emerald-500/10 to-teal-500/10">
+								<TagIcon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+							</div>
+							<p className="font-semibold text-foreground">{item.kode}</p>
 						</div>
 					</TableCell>
-					<TableCell>{item.description}</TableCell>
-					<TableCell>{item.satuan}</TableCell>
 					<TableCell>
-						<Badge variant="secondary" className="capitalize">
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<div className="flex items-center gap-2">
+									<FileInputIcon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+									<p className="text-sm truncate max-w-xs">{item.description}</p>
+								</div>
+							</TooltipTrigger>
+							<TooltipContent>
+								<p className="max-w-xs">{item.description}</p>
+							</TooltipContent>
+						</Tooltip>
+					</TableCell>
+					<TableCell>
+						<Badge variant="outline" className="font-medium">
+							<RulerIcon className="h-3 w-3 mr-1.5" />
+							{item.satuan}
+						</Badge>
+					</TableCell>
+					<TableCell>
+						<Badge
+							variant="secondary"
+							className="capitalize bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-300 border-blue-200 dark:border-blue-800"
+						>
+							<DatabaseIcon className="h-3 w-3 mr-1.5" />
 							{item.masterSource.name}
 						</Badge>
+					</TableCell>
+					<TableCell>
+						<InputTableActions row={item} setId={setId} setShowDeleteDialog={setShowDeleteDialog} />
 					</TableCell>
 				</TableRow>
 			))}
@@ -84,45 +111,46 @@ InputsTableBody.displayName = "InputsTableBody";
 
 interface InputTableActionsProps {
 	row: MasterInput;
-	isSelected: boolean;
 	setId: (id: string) => void;
 	setShowDeleteDialog: (show: boolean) => void;
 }
-const InputTableActions = memo(({ row, isSelected, setId, setShowDeleteDialog }: InputTableActionsProps) => {
+const InputTableActions = memo(({ row, setId, setShowDeleteDialog }: InputTableActionsProps) => {
 	const handleDelete = useCallback(() => {
 		setId(row.id);
 		setShowDeleteDialog(true);
 	}, [row.id, setId, setShowDeleteDialog]);
 
 	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
-				<Button
-					variant="ghost"
-					size="icon"
-					className={`size-8 transition-opacity md:opacity-0 md:group-hover:opacity-100 ${isSelected ? "opacity-100" : "opacity-0"}`}
-				>
-					<MoreHorizontal className="size-4" />
-				</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end" className="w-40">
-				<DropdownMenuLabel>Actions</DropdownMenuLabel>
-				<DropdownMenuSeparator />
-				<DropdownMenuItem asChild className="text-blue-500 font-bold">
-					<Link href={master.inputs.edit.url(row.id)} className="flex items-center gap-2">
-						<PencilIcon className="size-4 text-blue-500" />
-						Edit
-					</Link>
-				</DropdownMenuItem>
-				<DropdownMenuItem
-					className="flex items-center gap-2 text-destructive focus:text-destructive font-bold"
-					onClick={handleDelete}
-				>
-					<TrashIcon className="size-4 text-destructive" />
-					Delete
-				</DropdownMenuItem>
-			</DropdownMenuContent>
-		</DropdownMenu>
+		<div className="flex items-center justify-center gap-2">
+			<Tooltip>
+				<TooltipTrigger asChild>
+					<Button
+						asChild
+						size="sm"
+						variant="outline"
+						className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950"
+					>
+						<Link href={master.inputs.edit.url(row.id)}>
+							<PencilIcon className="size-4" />
+						</Link>
+					</Button>
+				</TooltipTrigger>
+				<TooltipContent>Edit Master Input</TooltipContent>
+			</Tooltip>
+			<Tooltip>
+				<TooltipTrigger asChild>
+					<Button
+						size="sm"
+						variant="outline"
+						onClick={handleDelete}
+						className="text-destructive hover:text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/20"
+					>
+						<TrashIcon className="size-4" />
+					</Button>
+				</TooltipTrigger>
+				<TooltipContent>Delete Master Input</TooltipContent>
+			</Tooltip>
+		</div>
 	);
 });
 InputTableActions.displayName = "InputTableActions";

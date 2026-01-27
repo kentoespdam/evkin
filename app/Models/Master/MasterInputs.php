@@ -12,7 +12,7 @@ class MasterInputs extends Model
 
     protected $table = 'master_inputs';
 
-    protected $fillable = ['kode', 'description', 'satuan', 'master_source_id'];
+    protected $fillable = ['seq', 'kode', 'description', 'satuan', 'master_source_id'];
 
     protected $hidden = ['created_at', 'updated_at'];
 

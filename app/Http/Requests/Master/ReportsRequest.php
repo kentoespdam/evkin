@@ -41,6 +41,7 @@ class ReportsRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'seq' => ['nullable', 'integer'],
             'urut' => ['nullable', 'string'],
             'report_type_id' => ['required', 'exists:report_types,id'],
             'aspect_id' => ['required', 'exists:aspects,id'],
@@ -50,6 +51,7 @@ class ReportsRequest extends FormRequest
             'weight' => ['required', 'numeric', 'min:0'],
             'formula' => ['required', 'string'],
             'formula_indicator' => ['required', 'string'],
+            'formula_archivement' => ['string'],
             'with_rules' => ['required', 'boolean'],
             'rules' => ['required_if:with_rules,true', 'nullable', 'string'],
         ];

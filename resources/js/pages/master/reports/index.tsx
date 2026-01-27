@@ -47,6 +47,8 @@ const useReportsFilter = (filters: ReportFilters) => {
 
     const updateQueryAndVisit = useCallback((key: string, value: string) => {
         const params = new URLSearchParams(window.location.search);
+        params.delete("page"); // Reset pagination on filter change
+        params.delete("per_page");
 
         if (!value.trim()) {
             params.delete(key);

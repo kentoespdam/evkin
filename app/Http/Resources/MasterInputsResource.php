@@ -16,6 +16,7 @@ class MasterInputsResource extends JsonResource
     {
         return [
             'id' => $this->sqid,
+            'seq' => $this->seq,
             'kode' => $this->kode,
             'description' => $this->description,
             'satuan' => $this->satuan,

@@ -52,18 +52,12 @@ const ConditionalRulesField = memo(({ withRules, defaultValue, error }: Conditio
 		let timer: NodeJS.Timeout;
 
 		if (withRules) {
-			// Render konten terlebih dahulu
 			setShouldRender(true);
-
-			// Delay untuk memastikan DOM sudah siap sebelum animasi
 			timer = setTimeout(() => {
 				setIsExpanded(true);
 			}, 10);
 		} else {
-			// Mulai animasi collapse
 			setIsExpanded(false);
-
-			// Tunggu animasi selesai sebelum menghapus dari DOM
 			timer = setTimeout(() => {
 				setShouldRender(false);
 			}, 300);
@@ -78,13 +72,8 @@ const ConditionalRulesField = memo(({ withRules, defaultValue, error }: Conditio
 		<div
 			ref={contentRef}
 			className={cn(
-				// Base styles
 				"overflow-hidden",
-
-				// Animation classes
 				"transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
-
-				// Conditional animation states
 				isExpanded
 					? "max-h-[2000px] opacity-100 mt-4" // Nilai max-height yang cukup besar
 					: "max-h-0 opacity-0 mt-0",
@@ -111,7 +100,6 @@ const ConditionalRulesField = memo(({ withRules, defaultValue, error }: Conditio
 
 ConditionalRulesField.displayName = "ConditionalRulesField";
 
-// Header section yang dipisah untuk reusability
 const FormHeader = memo(() => (
 	<div className="flex items-center gap-3 pb-6 border-b mb-8">
 		<div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10">
@@ -126,7 +114,6 @@ const FormHeader = memo(() => (
 
 FormHeader.displayName = "FormHeader";
 
-// Section Header Component
 interface SectionHeaderProps {
 	icon: React.ComponentType<{ className?: string }>;
 	title: string;
@@ -216,7 +203,7 @@ const FormulaIndicator = memo(({ errors, value }: FormulaIndicatorProps) => {
 				id="formula_indicator"
 				name="formula_indicator"
 				defaultValue={value}
-				placeholder="Contoh: GTE 80"
+				placeholder="Contoh: &#10;GTE 80; &#10;LTE 79;"
 				className={cn(
 					"font-mono text-sm transition-all",
 					errors.formulaIndicator
@@ -235,6 +222,40 @@ const FormulaIndicator = memo(({ errors, value }: FormulaIndicatorProps) => {
 	);
 });
 FormulaIndicator.displayName = "FormulaIndicator";
+interface FormulaArchivementProps {
+	errors: Record<string, string>;
+	value?: string;
+}
+const FormulaArchivement = memo(({ errors, value }: FormulaArchivementProps) => {
+	return (
+		<Field>
+			<FieldLabel htmlFor={"formula_archivement"}>
+				Formula Pencapaian <StarRequired />
+				<FormulaIndicatorTooltip />
+			</FieldLabel>
+			<Textarea
+				id="formula_archivement"
+				name="formula_archivement"
+				defaultValue={value}
+				placeholder="Contoh: &#10;GTE 80; &#10;LTE 79;"
+				className={cn(
+					"font-mono text-sm transition-all",
+					errors.formulaArchivement
+						? "border-destructive focus-visible:ring-destructive"
+						: "focus-visible:ring-primary/20",
+				)}
+				rows={4}
+			/>
+			{errors.formulaArchivement && (
+				<p className="text-sm text-destructive mt-1.5 flex items-center gap-1">
+					<InfoIcon className="h-3 w-3" />
+					{errors.formulaArchivement}
+				</p>
+			)}
+		</Field>
+	);
+});
+FormulaArchivement.displayName = "FormulaArchivement";
 
 const FormActions = memo(({ processing, errors }: { processing: boolean; errors: Record<string, string> }) => {
 	const formRef = useRef<HTMLFormElement>(null);
@@ -338,6 +359,7 @@ const ReportsForm = memo(({ reportTypes, availableCode, aspects, data }: Reports
 			formula: data?.formula ?? "",
 			formulaIndicator: data?.formulaIndicator ?? "",
 			rules: data?.rules ?? "",
+			formulaArchivement: data?.formulaArchivement ?? "",
 		}),
 		[data],
 	);
@@ -362,6 +384,19 @@ const ReportsForm = memo(({ reportTypes, availableCode, aspects, data }: Reports
 								description="Pengaturan urutan dan kategori laporan"
 							/>
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-6 pl-11">
+								{/* Seq Field */}
+								<InputFormFieldBuilder
+									id="seq"
+									name="seq"
+									label="Sequence"
+									required={false}
+									defaultValue={data?.seq?.toString() ?? "0"}
+									placeholder="0"
+									error={errors.seq}
+									type="number"
+									className="w-full"
+								/>
+
 								{/* Urut Field */}
 								<InputFormFieldBuilder
 									id="urut"
@@ -492,6 +527,18 @@ const ReportsForm = memo(({ reportTypes, availableCode, aspects, data }: Reports
 
 								{/* Formula Text Area */}
 								<FormulaTextArea availableCode={availableCode} errors={errors} value={defaultValues.formula} />
+
+								{/* Formula Archivement Field */}
+								<InputFormFieldBuilder
+									id="formula_archivement"
+									name="formula_archivement"
+									label="Formula Pencapaian"
+									defaultValue={defaultValues.formulaArchivement}
+									placeholder="Masukkan formula pencapaian"
+									error={errors.formulaArchivement}
+									type="textarea"
+									className="w-full"
+								/>
 							</div>
 						</div>
 

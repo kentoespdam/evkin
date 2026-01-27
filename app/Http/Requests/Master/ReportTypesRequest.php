@@ -24,6 +24,7 @@ class ReportTypesRequest extends FormRequest
                 Rule::unique('report_types', 'name')->ignore($reportTypeId),
             ],
             'template_name' => ['required', 'string', 'max:255'],
+            'formula_performance' => ['nullable', 'string'],
         ];
     }
 

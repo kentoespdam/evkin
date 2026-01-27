@@ -13,6 +13,7 @@ class MasterReports extends Model
     protected $table = 'master_reports';
 
     protected $fillable = [
+        'seq',
         'urut',
         'report_type_id',
         'aspect_id',

@@ -37,6 +37,7 @@ class AspectsRequest extends FormRequest
                     ->where('report_type_id', $this->report_type_id)
                     ->ignore($aspectId),
             ],
+            'formula_aspect' => ['nullable', 'string'],
         ];
     }
 

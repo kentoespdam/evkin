@@ -11,8 +11,11 @@ class Aspects extends Model
     use HasFactory, HasSqids;
 
     protected $table = 'aspects';
-    protected $fillable = ['name', 'report_type_id'];
+
+    protected $fillable = ['name', 'report_type_id', 'formula_aspect'];
+
     protected $hidden = ['created_at', 'updated_at'];
+
     protected string $sqidPrefix = 'as';
 
     public function reportTypes()

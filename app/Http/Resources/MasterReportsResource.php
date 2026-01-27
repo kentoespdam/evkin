@@ -16,6 +16,7 @@ class MasterReportsResource extends JsonResource
     {
         return [
             'id' => $this->sqid,
+            'seq' => $this->seq,
             'urut' => $this->urut,
             'reportType' => new ReportTypesResource($this->reportType),
             'aspect' => new AspectsResource($this->aspects),

@@ -93,9 +93,7 @@ const FormulaIndicatorBadge = memo(({ formulaIndicator }: { formulaIndicator: st
 	return (
 		<div className="flex flex-col gap-1.5">
 			<div className="flex gap-2">
-				<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-					Formula Indikator
-				</span>
+				<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Formula Indikator</span>
 				<FormulaIndicatorTooltip />
 			</div>
 			<div className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-md px-3 py-2 font-mono">
@@ -121,6 +119,18 @@ const FormulaBadge = memo(({ formula }: { formula: string }) => {
 	);
 });
 FormulaBadge.displayName = "FormulaBadge";
+
+const FormulaArchivementBadge = memo(({ formula }: { formula: string }) => {
+	return (
+		<div className="flex flex-col gap-1.5">
+			<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Formula Pencapaian</span>
+			<div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-md px-3 py-2 font-mono">
+				<p className="text-sm text-amber-900 dark:text-amber-100 break-all">{formula}</p>
+			</div>
+		</div>
+	);
+});
+FormulaArchivementBadge.displayName = "FormulaArchivementBadge";
 
 const RulesBadge = memo(({ rules }: { rules: string | null }) => {
 	const listRules = useMemo(
@@ -161,17 +171,9 @@ RulesBadge.displayName = "RulesBadge";
 const ReportsTableBody = memo(({ page, setId, setShowDeleteDialog }: ReportsTableProps) => {
 	const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
 
-	const rows = useMemo(() => {
-		const firstNumber = page.meta.from;
-		return page.data.map((item, index) => ({
-			hash: firstNumber + index,
-			...item,
-		}));
-	}, [page]);
-
 	return (
 		<TableBody>
-			{rows.map((item) => (
+			{page.data.map((item) => (
 				<TableRow
 					key={item.id}
 					className="group border-none"
@@ -182,7 +184,7 @@ const ReportsTableBody = memo(({ page, setId, setShowDeleteDialog }: ReportsTabl
 							<ItemHeader>
 								<ItemMedia>
 									<Badge variant={"outline"} className="font-semibold bg-white dark:bg-gray-950">
-										#{item.hash}
+										#{item.seq ?? 0}
 									</Badge>
 								</ItemMedia>
 								<div className="flex items-center gap-2 flex-wrap">
@@ -212,6 +214,7 @@ const ReportsTableBody = memo(({ page, setId, setShowDeleteDialog }: ReportsTabl
 									<RumusBadge rumus={item.descFormula} />
 									<FormulaIndicatorBadge formulaIndicator={item.formulaIndicator} />
 									<FormulaBadge formula={item.formula} />
+									<FormulaArchivementBadge formula={item.formulaArchivement} />
 									{item.withRules && <RulesBadge rules={item.rules} />}
 								</div>
 							</ItemContent>

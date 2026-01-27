@@ -33,6 +33,7 @@ class InputsRequest extends FormRequest
         $inputId = $this->route('input')?->id;
 
         return [
+            'seq' => ['nullable', 'integer'],
             'kode' => [
                 'required',
                 'string',

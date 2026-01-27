@@ -22,6 +22,9 @@ export interface PerhitunganReportDetail {
 	formulaValue: string;
 	nilai: number;
 	nilaiIndicator: number;
+	formulaAchievement: string;
+	formulaAchievementValue: string;
+	formulaAchievementNilai: number;
 }
 
 export interface PerhitunganReportProps {

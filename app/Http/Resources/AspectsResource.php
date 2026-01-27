@@ -17,6 +17,7 @@ class AspectsResource extends JsonResource
         return [
             'id' => $this->sqid,
             'name' => $this->name,
+            'formulaAspect' => $this->formula_aspect,
             'reportType' => new ReportTypesResource($this->reportTypes),
         ];
     }

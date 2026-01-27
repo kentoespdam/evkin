@@ -3,6 +3,7 @@ import type { ReportType } from "./report-types";
 
 export interface Report {
 	id: string;
+	seq?: number;
 	urut: number;
 	reportType: ReportType;
 	aspect: Aspect;
@@ -12,6 +13,7 @@ export interface Report {
 	weight: number;
 	formula: string;
 	formulaIndicator: string;
+	formulaArchivement: string;
 	withRules: boolean;
 	rules: string | null;
 }
