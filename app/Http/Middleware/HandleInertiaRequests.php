@@ -46,7 +46,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user() ? new UserResource($request->user()) : null,
             ],
-            'sidebarOpen' => !$request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'isAdmin' => $this->isAdmin($request),
         ];
     }
@@ -54,6 +54,7 @@ class HandleInertiaRequests extends Middleware
     private function isAdmin(Request $request): bool
     {
         $user = $request->user();
+
         return $user && in_array($user->role_id, explode(',', config('master.allowed_roles')));
     }
 }

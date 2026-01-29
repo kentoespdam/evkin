@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import master from "@/routes/master";
-import type { ReportType } from "@/types/report-types.d";
+import type { ReportType } from "@/types/report-type";
 
 interface ReportTypesFormProps {
 	data?: ReportType;

@@ -175,7 +175,7 @@ class PerhitunganTest extends TestCase
                 return $this->replaceKode($item, $currentPeriodData);
             }
         }, $formulaArray);
-        $new_formula = implode(' ', $result) . PHP_EOL;
+        $new_formula = implode(' ', $result).PHP_EOL;
 
         // return $formula;
         return $new_formula;

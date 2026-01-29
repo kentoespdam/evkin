@@ -11,7 +11,7 @@ import { yearsList } from "@/lib/utils";
 import { perhitunganReports } from "@/routes/report";
 import type { BreadcrumbItem } from "@/types";
 import type { PerhitunganReportFilters, PerhitunganReportProps } from "@/types/perhitungan-reports";
-import type { ReportType } from "@/types/report-types";
+import type { ReportType } from "@/types/report-type";
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: "Dashboard", href: "/dashboard" },

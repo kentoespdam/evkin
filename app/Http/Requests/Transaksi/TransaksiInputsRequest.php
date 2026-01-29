@@ -24,7 +24,7 @@ class TransaksiInputsRequest extends FormRequest
         $this->merge([
             'nilais' => array_map(function ($value) {
                 return (float) $value;
-            }, $this->input('nilais', []))
+            }, $this->input('nilais', [])),
         ]);
     }
 
@@ -60,9 +60,10 @@ class TransaksiInputsRequest extends FormRequest
     {
         if ($this->has($field) && is_array($this->{$field})) {
             $convertedIds = array_map(function ($value) use ($field) {
-                if (!is_numeric($value) && !empty($value)) {
+                if (! is_numeric($value) && ! empty($value)) {
                     $model = $this->getModelByField($field);
                     $model = $model->whereSqid($value)->first();
+
                     return $model?->id;
                 } else {
                     return (int) $value;
@@ -73,6 +74,4 @@ class TransaksiInputsRequest extends FormRequest
             ]);
         }
     }
-
-
 }

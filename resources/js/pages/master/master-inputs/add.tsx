@@ -6,10 +6,12 @@ import AppLayout from "@/layouts/app-layout";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
 import type { BreadcrumbItem } from "@/types";
+import type { Aspect } from "@/types/aspect";
 import type { MasterSource } from "@/types/master-source";
 
 interface MasterInputAddProps {
   sources: MasterSource[];
+  aspects: Aspect[];
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -31,7 +33,7 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
-const MasterInputAdd = ({ sources }: MasterInputAddProps) => {
+const MasterInputAdd = ({ sources, aspects }: MasterInputAddProps) => {
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title={`Add Master Input`} />
@@ -51,7 +53,7 @@ const MasterInputAdd = ({ sources }: MasterInputAddProps) => {
           </CardHeader>
         </Card>
 
-        <InputsForm sources={sources} />
+        <InputsForm sources={sources} aspects={aspects} />
       </div>
     </AppLayout>
   );

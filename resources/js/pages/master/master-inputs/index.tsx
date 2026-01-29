@@ -1,6 +1,6 @@
-import { Head, Link } from "@inertiajs/react";
-import { PlusIcon } from "lucide-react";
-import { useMemo } from "react";
+import { Head, Link, router } from "@inertiajs/react";
+import { PlusIcon, RefreshCwIcon } from "lucide-react";
+import { memo, useCallback, useMemo } from "react";
 import DeleteDialog from "@/components/commons/delete-dialog";
 import PaginationNav from "@/components/commons/pagination-nav";
 import TableShowTotalText from "@/components/commons/table-show-total-text";
@@ -8,16 +8,19 @@ import TableTextSearch from "@/components/commons/table-text-search";
 import InputsTable from "@/components/master/table/inputs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useGlobalDeleteHook } from "@/hooks/use-global-delete-hook";
-import { usePaginationHandler } from "@/hooks/use-pagination";
 import AppLayout from "@/layouts/app-layout";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
 import type { BreadcrumbItem, Pagination } from "@/types";
-import type { MasterInput } from "@/types/master-input";
+import type { Aspect } from "@/types/aspect";
+import type { MasterInput, MasterInputFilters } from "@/types/master-input";
 
 export interface InputsIndexProps {
     page: Pagination<MasterInput>;
+    aspects: Aspect[];
+    filters: MasterInputFilters;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -35,8 +38,74 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-const InputsIndex = ({ page }: InputsIndexProps) => {
-    const { params, handleSelectChange } = usePaginationHandler(page);
+const useFilters = () => {
+    const baseUrl = master.inputs().url;
+
+    const updateAndVisit = useCallback(
+        (key: string, value: string) => {
+            const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
+
+            if (!value.trim()) {
+                params.delete(key);
+            } else {
+                params.set(key, value);
+            }
+
+            // Changing filters should reset to first page
+            params.delete("page");
+
+            const qs = params.toString();
+            const nextUrl = qs ? `${baseUrl}?${qs}` : baseUrl;
+
+            router.visit(nextUrl, { preserveScroll: true, preserveState: true, replace: true });
+        },
+        [baseUrl],
+    );
+
+    const resetAll = useCallback(() => {
+        router.visit(baseUrl, { preserveScroll: true, preserveState: false, replace: true });
+    }, [baseUrl]);
+
+    return { updateAndVisit, resetAll };
+};
+
+const MasterInputFilterComponent = memo(({ filters, aspects }: { filters: MasterInputFilters; aspects: Aspect[] }) => {
+    const { updateAndVisit, resetAll } = useFilters();
+    const hasActiveFilters = Boolean(filters.search || filters.aspect_id);
+
+    return (
+        <div className="flex flex-wrap items-center gap-2">
+            <TableTextSearch
+                params={{ search: filters.search ?? "" }}
+                handleSelectChange={(v) => updateAndVisit("search", v.search ?? "")}
+                text="Kode / Description"
+                className="w-full sm:max-w-sm"
+            />
+
+            <Select value={filters.aspect_id ?? ""} onValueChange={(v) => updateAndVisit("aspect_id", v)}>
+                <SelectTrigger className="w-fit min-w-48">
+                    <SelectValue placeholder="Filter by Aspect" />
+                </SelectTrigger>
+                <SelectContent>
+                    {aspects.map((aspect) => (
+                        <SelectItem key={aspect.id} value={aspect.id}>
+                            {aspect.name}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+
+            {hasActiveFilters && (
+                <Button onClick={resetAll} variant="outline" className="gap-2" aria-label="Reset filters">
+                    <RefreshCwIcon className="size-4" /> Reset
+                </Button>
+            )}
+        </div>
+    );
+});
+MasterInputFilterComponent.displayName = "MasterInputFilterComponent";
+
+const InputsIndex = ({ page, aspects, filters }: InputsIndexProps) => {
     const { id, setId, showDeleteDialog, setShowDeleteDialog } = useGlobalDeleteHook();
     const formUrl = useMemo(() => master.inputs.destroy(id).url, [id]);
 
@@ -58,9 +127,8 @@ const InputsIndex = ({ page }: InputsIndexProps) => {
                         </Button>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <TableShowTotalText page={page} tableName="inputs">
-                            <TableTextSearch params={params} handleSelectChange={handleSelectChange} text="Kode / Description" />
-                        </TableShowTotalText>
+                        <MasterInputFilterComponent filters={filters} aspects={aspects} />
+                        <TableShowTotalText page={page} tableName="inputs" />
                         <InputsTable page={page} setId={setId} setShowDeleteDialog={setShowDeleteDialog} />
                         <PaginationNav page={page} />
                     </CardContent>

@@ -16,7 +16,7 @@ class RoleHelper
     {
         $user = Auth::user();
 
-        if (!$user) {
+        if (! $user) {
             return false;
         }
 
@@ -42,7 +42,7 @@ class RoleHelper
      */
     public static function redirectIfNotRole($roleIds): ?RedirectResponse
     {
-        if (!self::hasRole($roleIds)) {
+        if (! self::hasRole($roleIds)) {
             return back()->with('error', 'Anda tidak memiliki akses ke halaman ini.');
         }
 
@@ -66,7 +66,7 @@ class RoleHelper
      */
     public static function authorizeRole($roleIds): void
     {
-        if (!self::hasRole($roleIds)) {
+        if (! self::hasRole($roleIds)) {
             abort(403, 'Unauthorized access.');
         }
     }

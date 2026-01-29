@@ -6,7 +6,7 @@ import AppLayout from "@/layouts/app-layout";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
 import type { BreadcrumbItem } from "@/types";
-import type { ReportType } from "@/types/report-types";
+import type { ReportType } from "@/types/report-type";
 
 interface AspectsAddProps {
     reportTypes: ReportType[];

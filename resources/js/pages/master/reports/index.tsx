@@ -16,7 +16,7 @@ import { dashboard } from "@/routes";
 import master from "@/routes/master";
 import type { BreadcrumbItem, Pagination } from "@/types";
 import type { Aspect } from "@/types/aspect";
-import type { ReportType } from "@/types/report-types";
+import type { ReportType } from "@/types/report-type";
 import type { Report, ReportFilters } from "@/types/reports";
 
 const breadcrumbs: BreadcrumbItem[] = [

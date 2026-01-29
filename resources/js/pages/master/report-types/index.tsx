@@ -14,7 +14,7 @@ import AppLayout from "@/layouts/app-layout";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
 import type { BreadcrumbItem, Pagination } from "@/types";
-import type { ReportType } from "@/types/report-types";
+import type { ReportType } from "@/types/report-type";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {

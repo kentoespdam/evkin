@@ -102,6 +102,10 @@ const reportGroupItems: NavGroup = {
 			title: "Laporan Perhitungan",
 			href: report.perhitunganReports().url,
 			icon: FileSignatureIcon,
+		}, {
+			title: "Rekap Tahunan",
+			href: report.rekapTahunan().url,
+			icon: FileSignatureIcon,
 		},
 	],
 };

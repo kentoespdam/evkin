@@ -12,7 +12,7 @@ import { monthsList, yearsList } from "@/lib/utils";
 import type { BreadcrumbItem } from "@/types";
 import type { Aspect } from "@/types/aspect";
 import type { PerhitunganReportsDetailProps } from "@/types/perhitungan-reports";
-import type { ReportType } from "@/types/report-types";
+import type { ReportType } from "@/types/report-type";
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: "Dashboard", href: "/dashboard" },

@@ -17,10 +17,12 @@ class MasterInputsResource extends JsonResource
         return [
             'id' => $this->sqid,
             'seq' => $this->seq,
+            'aspect' => $this->aspect ? new AspectsResource($this->aspect) : null,
             'kode' => $this->kode,
             'description' => $this->description,
             'satuan' => $this->satuan,
-            'masterSource' => new MasterSourcesResource($this->masterSource),
+            'masterSource' => $this->masterSource ? new MasterSourcesResource($this->masterSource) : null,
+            'formula' => $this->formula,
         ];
     }
 }

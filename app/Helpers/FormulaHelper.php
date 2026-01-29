@@ -14,7 +14,8 @@ class FormulaHelper
         try {
             // Check if formula has alphabetic characters
             if (preg_match('/[a-zA-Z]/', $formula)) {
-                Log::error('Formula contains invalid characters: ' . $formula);
+                Log::error('Formula contains invalid characters: '.$formula);
+
                 return (float) 0.0;
             }
 
@@ -24,7 +25,7 @@ class FormulaHelper
 
             $result = self::safeEvaluate($normalizedFormula);
 
-            if (!is_numeric($result) || is_infinite($result) || is_nan($result)) {
+            if (! is_numeric($result) || is_infinite($result) || is_nan($result)) {
                 return 0.0;
             }
 

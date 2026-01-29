@@ -33,7 +33,7 @@ class MasterReportsController extends Controller
             })
             ->when($request->filled('reportTypeId'), function ($query) use ($request) {
                 $reportTypeId = $request->get('reportTypeId');
-                if (!is_numeric($reportTypeId)) {
+                if (! is_numeric($reportTypeId)) {
                     $reportType = ReportTypes::whereSqid($reportTypeId)->first();
                     $reportTypeId = $reportType?->id;
                 }
@@ -43,7 +43,7 @@ class MasterReportsController extends Controller
             })
             ->when($request->filled('aspectId'), function ($query) use ($request) {
                 $aspectId = $request->get('aspectId');
-                if (!is_numeric($aspectId)) {
+                if (! is_numeric($aspectId)) {
                     $aspect = Aspects::whereSqid($aspectId)->first();
                     $aspectId = $aspect?->id;
                 }
@@ -113,8 +113,8 @@ class MasterReportsController extends Controller
     private function getAvailableInputCodes(): array
     {
         return MasterInputs::all()
-            ->map(fn(MasterInputs $input) => new MasterInputsResource($input))
-            ->map(fn($resource) => [
+            ->map(fn (MasterInputs $input) => new MasterInputsResource($input))
+            ->map(fn ($resource) => [
                 'kode' => $resource->kode,
                 'description' => $resource->description,
             ])

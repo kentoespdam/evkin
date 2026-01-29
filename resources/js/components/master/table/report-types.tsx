@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import master from "@/routes/master";
 import type { Pagination } from "@/types";
-import type { ReportType } from "@/types/report-types";
+import type { ReportType } from "@/types/report-type";
 
 interface ReportTypesTableProps {
 	page: Pagination<ReportType>;

@@ -18,7 +18,7 @@ class RoleInputsWithTransaksiInputsResource extends JsonResource
             'id' => $this->sqid,
             'role' => new RolesResource($this->role),
             'masterInput' => new MasterInputsResource($this->masterInput),
-            "transaksiInputs" => new TransaksiInputsResource($this->transaksiInputs[0] ?? null),
+            'transaksiInputs' => new TransaksiInputsResource($this->transaksiInputs[0] ?? null),
         ];
     }
 }

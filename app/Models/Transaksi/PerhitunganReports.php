@@ -27,6 +27,7 @@ class PerhitunganReports extends Model
         'formula_archivement_value',
         'nilai_archivement',
         'nilai_indicator',
+        'nilai_archivement_indicator',
     ];
 
     protected $hidden = ['created_at'];

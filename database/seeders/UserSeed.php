@@ -13,39 +13,39 @@ class UserSeed extends Seeder
      */
     public function run(): void
     {
-        $users=[
+        $users = [
             [
-                "name"=> "Keuangan",
-                "email"=> "keuangan@perumdamts.com",
-                "password"=> Hash::make("tirtasatria"),
-                "role_id"=> 2,
+                'name' => 'Keuangan',
+                'email' => 'keuangan@perumdamts.com',
+                'password' => Hash::make('tirtasatria'),
+                'role_id' => 2,
             ],
             [
-                "name"=> "Renbang",
-                "email"=> "renbang@perumdamts.com",
-                "password"=> Hash::make("tirtasatria"),
-                "role_id"=> 3,
+                'name' => 'Renbang',
+                'email' => 'renbang@perumdamts.com',
+                'password' => Hash::make('tirtasatria'),
+                'role_id' => 3,
             ],
             [
-                "name"=> "Daltek",
-                "email"=> "daltek@perumdamts.com",
-                "password"=> Hash::make("tirtasatria"),
-                "role_id"=> 4,
+                'name' => 'Daltek',
+                'email' => 'daltek@perumdamts.com',
+                'password' => Hash::make('tirtasatria'),
+                'role_id' => 4,
             ],
             [
-                "name"=> "Pelayanan",
-                "email"=> "pelayanan@perumdamts.com",
-                "password"=> Hash::make("tirtasatria"),
-                "role_id"=> 5,
+                'name' => 'Pelayanan',
+                'email' => 'pelayanan@perumdamts.com',
+                'password' => Hash::make('tirtasatria'),
+                'role_id' => 5,
             ],
             [
-                "name"=> "SDM",
-                "email"=> "sdm@perumdamts.com",
-                "password"=> Hash::make("tirtasatria"),
-                "role_id"=> 6,
+                'name' => 'SDM',
+                'email' => 'sdm@perumdamts.com',
+                'password' => Hash::make('tirtasatria'),
+                'role_id' => 6,
             ],
         ];
-        foreach($users as $user){
+        foreach ($users as $user) {
             DB::table('users')->insert($user);
         }
     }

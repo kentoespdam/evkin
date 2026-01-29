@@ -1,5 +1,5 @@
 import type { Aspect } from "./aspect";
-import type { ReportType } from "./report-types";
+import type { ReportType } from "./report-type";
 
 export interface Report {
 	id: string;

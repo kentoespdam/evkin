@@ -12,7 +12,7 @@ class MasterInputs extends Model
 
     protected $table = 'master_inputs';
 
-    protected $fillable = ['seq', 'kode', 'description', 'satuan', 'master_source_id'];
+    protected $fillable = ['seq', 'aspect_id', 'kode', 'description', 'satuan', 'master_source_id', 'formula'];
 
     protected $hidden = ['created_at', 'updated_at'];
 
@@ -21,5 +21,10 @@ class MasterInputs extends Model
     public function masterSource()
     {
         return $this->belongsTo(MasterSources::class);
+    }
+
+    public function aspect()
+    {
+        return $this->belongsTo(Aspects::class);
     }
 }

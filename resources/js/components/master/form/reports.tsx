@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils";
 import master from "@/routes/master";
 import type { Aspect } from "@/types/aspect";
 import type { MasterInput } from "@/types/master-input";
-import type { ReportType } from "@/types/report-types";
+import type { ReportType } from "@/types/report-type";
 import type { Report } from "@/types/reports";
 
 interface ReportsFormProps {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Master;
 
+use App\Models\Master\Aspects;
 use App\Models\Master\MasterSources;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -26,6 +27,13 @@ class InputsRequest extends FormRequest
                 $this->merge(['master_source_id' => $masterSource->id]);
             }
         }
+
+        if ($this->has('aspect_id') && ! is_numeric($this->aspect_id) && $this->aspect_id !== null) {
+            $aspect = Aspects::whereSqid($this->aspect_id)->first();
+            if ($aspect) {
+                $this->merge(['aspect_id' => $aspect->id]);
+            }
+        }
     }
 
     public function rules(): array
@@ -34,6 +42,7 @@ class InputsRequest extends FormRequest
 
         return [
             'seq' => ['nullable', 'integer'],
+            'aspect_id' => ['integer', 'exists:aspects,id'],
             'kode' => [
                 'required',
                 'string',
@@ -43,6 +52,7 @@ class InputsRequest extends FormRequest
             'description' => ['required', 'string', 'max:255'],
             'satuan' => ['required', 'string', 'max:255'],
             'master_source_id' => ['required', 'integer', 'exists:master_sources,id'],
+            'formula' => ['nullable', 'string'],
         ];
     }
 
@@ -58,6 +68,7 @@ class InputsRequest extends FormRequest
             'satuan.max' => 'The unit may not be greater than 255 characters',
             'master_source_id.required' => 'Please select a source',
             'master_source_id.exists' => 'The selected source is invalid',
+            'aspect_id.exists' => 'The selected aspect is invalid',
         ];
     }
 }

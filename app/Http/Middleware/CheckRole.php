@@ -2,10 +2,10 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
-use Illuminate\Http\Request;
 use App\Helpers\RoleHelper;
+use Closure;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckRole
@@ -17,7 +17,7 @@ class CheckRole
      */
     public function handle(Request $request, Closure $next, string ...$roles): RedirectResponse|Response
     {
-        if (!RoleHelper::hasRole($roles)) {
+        if (! RoleHelper::hasRole($roles)) {
             abort(403, 'Unauthorized access.');
         }
 

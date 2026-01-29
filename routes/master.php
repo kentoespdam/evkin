@@ -10,7 +10,7 @@ use App\Http\Controllers\Master\RolesController;
 use App\Http\Controllers\Master\UsersController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth', 'role:' . config('master.allowed_roles')])->group(function () {
+Route::middleware(['auth', 'role:'.config('master.allowed_roles')])->group(function () {
     Route::redirect('master', '/dashboard');
     Route::group(['prefix' => 'master'], function () {
         Route::group(['prefix' => 'users'], function () {

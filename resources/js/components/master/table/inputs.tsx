@@ -1,5 +1,5 @@
 import { Link } from "@inertiajs/react";
-import { DatabaseIcon, FileInputIcon, PencilIcon, RulerIcon, TagIcon, TrashIcon } from "lucide-react";
+import { DatabaseIcon, FileInputIcon, PencilIcon, RulerIcon, SparklesIcon, TagIcon, TrashIcon, VariableIcon } from "lucide-react";
 import { memo, useCallback } from "react";
 import TableEmpty from "@/components/commons/table-empty";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +21,13 @@ const InputsTableHeader = memo(() => {
 		<TableHeader>
 			<TableRow className="bg-muted/50">
 				<TableHead className="w-16 text-center font-semibold">#</TableHead>
+				<TableHead className="w-24 text-center font-semibold">Actions</TableHead>
+				<TableHead className="font-semibold">
+					<div className="flex items-center gap-2">
+						<SparklesIcon className="h-4 w-4 text-muted-foreground" />
+						Aspek
+					</div>
+				</TableHead>
 				<TableHead className="font-semibold">
 					<div className="flex items-center gap-2">
 						<TagIcon className="h-4 w-4 text-muted-foreground" />
@@ -45,7 +52,12 @@ const InputsTableHeader = memo(() => {
 						Sumber Data
 					</div>
 				</TableHead>
-				<TableHead className="w-24 text-center font-semibold">Actions</TableHead>
+				<TableHead className="font-semibold">
+					<div className="flex items-center gap-2">
+						<VariableIcon className="h-4 w-4 text-muted-foreground" />
+						Formula
+					</div>
+				</TableHead>
 			</TableRow>
 		</TableHeader>
 	);
@@ -62,7 +74,22 @@ const InputsTableBody = memo(({ page, setId, setShowDeleteDialog }: InputsTableP
 							{item.seq ?? 0}
 						</Badge>
 					</TableCell>
-
+					<TableCell>
+						<InputTableActions row={item} setId={setId} setShowDeleteDialog={setShowDeleteDialog} />
+					</TableCell>
+					<TableCell>
+						{item.aspect ? (
+							<Badge
+								variant="secondary"
+								className="capitalize bg-purple-50 text-purple-700 dark:bg-purple-950/30 dark:text-purple-300 border-purple-200 dark:border-purple-800"
+							>
+								<SparklesIcon className="h-3 w-3 mr-1.5" />
+								{item.aspect.name}
+							</Badge>
+						) : (
+							<span className="text-xs text-muted-foreground italic">-</span>
+						)}
+					</TableCell>
 					<TableCell>
 						<div className="flex items-center gap-2">
 							<div className="flex items-center justify-center w-8 h-8 rounded-md bg-gradient-to-br from-emerald-500/10 to-teal-500/10">
@@ -100,7 +127,23 @@ const InputsTableBody = memo(({ page, setId, setShowDeleteDialog }: InputsTableP
 						</Badge>
 					</TableCell>
 					<TableCell>
-						<InputTableActions row={item} setId={setId} setShowDeleteDialog={setShowDeleteDialog} />
+						{item.formula ? (
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<div className="flex items-center gap-2">
+										<VariableIcon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+										<code className="text-xs font-mono bg-muted px-2 py-1 rounded truncate max-w-xs">
+											{item.formula}
+										</code>
+									</div>
+								</TooltipTrigger>
+								<TooltipContent>
+									<code className="text-xs font-mono max-w-xs break-all">{item.formula}</code>
+								</TooltipContent>
+							</Tooltip>
+						) : (
+							<span className="text-xs text-muted-foreground italic">-</span>
+						)}
 					</TableCell>
 				</TableRow>
 			))}

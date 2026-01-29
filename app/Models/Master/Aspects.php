@@ -22,4 +22,9 @@ class Aspects extends Model
     {
         return $this->belongsTo(ReportTypes::class, 'report_type_id');
     }
+
+    public function masterInputs()
+    {
+        return $this->hasMany(MasterInputs::class, 'aspect_id');
+    }
 }

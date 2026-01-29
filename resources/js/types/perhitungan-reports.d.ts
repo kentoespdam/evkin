@@ -1,6 +1,6 @@
 import type { Aspect } from "./aspect";
 import type { Pagination } from "./index";
-import type { ReportType } from "./report-types";
+import type { ReportType } from "./report-type";
 import type { Report } from "./reports";
 
 export interface PerhitunganReportFilters {

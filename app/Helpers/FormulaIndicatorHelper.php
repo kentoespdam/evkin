@@ -14,13 +14,10 @@ class FormulaIndicatorHelper
 {
     /**
      * Summary of evaluateFormula
-     * @param string $formula
-     * @param float $value
-     * @return int
      */
     public static function evaluateFormula(string $formula, float $value): int
     {
-        if ($formula == "" || !is_numeric($value)) {
+        if ($formula == '' || ! is_numeric($value)) {
             return 0;
         }
         // Split formula into lines
@@ -54,9 +51,6 @@ class FormulaIndicatorHelper
 
     /**
      * Evaluate a single condition against a value
-     * @param string $condition
-     * @param float $value
-     * @return bool
      */
     private static function evaluateCondition(string $condition, float $value): bool
     {
@@ -68,27 +62,27 @@ class FormulaIndicatorHelper
 
             if (str_starts_with($part, 'GT ')) {
                 $threshold = (float) trim(substr($part, 3));
-                if (!($value > $threshold)) {
+                if (! ($value > $threshold)) {
                     return false;
                 }
             } elseif (str_starts_with($part, 'GTE ')) {
                 $threshold = (float) trim(substr($part, 4));
-                if (!($value >= $threshold)) {
+                if (! ($value >= $threshold)) {
                     return false;
                 }
             } elseif (str_starts_with($part, 'LT ')) {
                 $threshold = (float) trim(substr($part, 3));
-                if (!($value < $threshold)) {
+                if (! ($value < $threshold)) {
                     return false;
                 }
             } elseif (str_starts_with($part, 'LTE ')) {
                 $threshold = (float) trim(substr($part, 4));
-                if (!($value <= $threshold)) {
+                if (! ($value <= $threshold)) {
                     return false;
                 }
             } elseif (str_starts_with($part, 'EQ ')) {
                 $threshold = (float) trim(substr($part, 3));
-                if (!($value == $threshold)) {
+                if (! ($value == $threshold)) {
                     return false;
                 }
             }

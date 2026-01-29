@@ -1,6 +1,6 @@
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ReportTypeTemplate } from "@/types/report-types.d";
+import { ReportTypeTemplate } from "@/types/report-type";
 
 interface ReportTypeTemplateSelectProps {
     value: string | undefined;
