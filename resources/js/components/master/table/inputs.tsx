@@ -1,5 +1,14 @@
 import { Link } from "@inertiajs/react";
-import { DatabaseIcon, FileInputIcon, PencilIcon, RulerIcon, SparklesIcon, TagIcon, TrashIcon, VariableIcon } from "lucide-react";
+import {
+	DatabaseIcon,
+	FileInputIcon,
+	PencilIcon,
+	RulerIcon,
+	SparklesIcon,
+	TagIcon,
+	TrashIcon,
+	VariableIcon,
+} from "lucide-react";
 import { memo, useCallback } from "react";
 import TableEmpty from "@/components/commons/table-empty";
 import { Badge } from "@/components/ui/badge";

@@ -12,55 +12,55 @@ import type { ReportType } from "@/types/report-type";
 import type { Report } from "@/types/reports";
 
 const breadcrumbs: BreadcrumbItem[] = [
-  {
-    title: "Dashboard",
-    href: dashboard().url,
-  },
-  {
-    title: "Master",
-    href: "#",
-  },
-  {
-    title: "Reports",
-    href: master.reports().url,
-  },
-  {
-    title: "Edit",
-    href: "#",
-  },
+	{
+		title: "Dashboard",
+		href: dashboard().url,
+	},
+	{
+		title: "Master",
+		href: "#",
+	},
+	{
+		title: "Reports",
+		href: master.reports().url,
+	},
+	{
+		title: "Edit",
+		href: "#",
+	},
 ];
 
 interface MasterReportAddProps {
-  reportTypes: ReportType[];
-  availableCode: MasterInput[];
-  data: Report;
-  aspects: Aspect[];
+	reportTypes: ReportType[];
+	availableCode: MasterInput[];
+	data: Report;
+	aspects: Aspect[];
 }
 
 const MasterReportEdit = ({ reportTypes, availableCode, data, aspects }: MasterReportAddProps) => {
-  return (
-    <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title={`Edit Master Report`} />
-      <div className="flex flex-col gap-6 p-4">
-        {/* Header Card */}
-        <Card className="border-primary/20">
-          <CardHeader className="space-y-1">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <FileTextIcon className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <CardTitle className="text-2xl">Edit Master Report</CardTitle>
-                <CardDescription>Edit Master Report information</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-        </Card>
+	return (
+		<AppLayout breadcrumbs={breadcrumbs}>
+			<Head title={`Edit Master Report`} />
+			<div className="flex flex-col gap-6 p-4">
+				{/* Header Card */}
+				<Card className="border-primary/20">
+					<CardHeader className="space-y-1">
+						<div className="flex items-center gap-3">
+							<div className="p-2 bg-primary/10 rounded-lg">
+								<FileTextIcon className="h-6 w-6 text-primary" />
+							</div>
+							<div>
+								<CardTitle className="text-2xl">Edit Master Report</CardTitle>
+								<CardDescription>Edit Master Report information</CardDescription>
+							</div>
+						</div>
+					</CardHeader>
+				</Card>
 
-        <ReportsForm data={data} reportTypes={reportTypes} availableCode={availableCode} aspects={aspects} />
-      </div>
-    </AppLayout>
-  );
+				<ReportsForm data={data} reportTypes={reportTypes} availableCode={availableCode} aspects={aspects} />
+			</div>
+		</AppLayout>
+	);
 };
 
 export default MasterReportEdit;

@@ -5,16 +5,16 @@ import AppLayoutTemplate from "@/layouts/app/app-sidebar-layout";
 import type { BreadcrumbItem } from "@/types";
 
 interface AppLayoutProps {
-    children: ReactNode;
-    breadcrumbs?: BreadcrumbItem[];
+	children: ReactNode;
+	breadcrumbs?: BreadcrumbItem[];
 }
 
 export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => {
-    useErrorToast();
-    return (
-        <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
-            {children}
-            <Toaster position="top-right" richColors />
-        </AppLayoutTemplate>
-    );
+	useErrorToast();
+	return (
+		<AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
+			{children}
+			<Toaster position="top-right" richColors />
+		</AppLayoutTemplate>
+	);
 };

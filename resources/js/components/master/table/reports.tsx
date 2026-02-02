@@ -83,9 +83,9 @@ const FormulaIndicatorBadge = memo(({ formulaIndicator }: { formulaIndicator: st
 		() =>
 			formulaIndicator
 				? formulaIndicator.split("\n").map((row) => ({
-					hash: uuidv4(),
-					item: row,
-				}))
+						hash: uuidv4(),
+						item: row,
+					}))
 				: [],
 		[formulaIndicator],
 	);

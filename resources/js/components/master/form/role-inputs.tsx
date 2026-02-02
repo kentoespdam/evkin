@@ -236,8 +236,9 @@ const RoleInputForm = ({ roles, inputs, data }: RoleInputFormProps) => {
 									</Button>
 
 									<div
-										className={`border rounded-md p-4 max-h-120 overflow-y-auto space-y-3 ${errors.master_input_ids ? "border-destructive" : ""
-											}`}
+										className={`border rounded-md p-4 max-h-120 overflow-y-auto space-y-3 ${
+											errors.master_input_ids ? "border-destructive" : ""
+										}`}
 									>
 										{renderCheckboxList}
 									</div>

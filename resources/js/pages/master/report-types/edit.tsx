@@ -8,46 +8,46 @@ import type { BreadcrumbItem } from "@/types";
 import type { ReportType } from "@/types/report-type";
 
 const breadcrumbs: BreadcrumbItem[] = [
-  {
-    title: "Dashboard",
-    href: dashboard().url,
-  },
-  {
-    title: "Master",
-    href: "#",
-  },
-  {
-    title: "Report Types",
-    href: master.reportTypes().url,
-  },
-  {
-    title: "Edit",
-    href: "#",
-  },
+	{
+		title: "Dashboard",
+		href: dashboard().url,
+	},
+	{
+		title: "Master",
+		href: "#",
+	},
+	{
+		title: "Report Types",
+		href: master.reportTypes().url,
+	},
+	{
+		title: "Edit",
+		href: "#",
+	},
 ];
 
 interface ReportTypesEditProps {
-  data: ReportType;
+	data: ReportType;
 }
 
 const ReportTypesEdit = ({ data }: ReportTypesEditProps) => {
-  return (
-    <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title="Edit Report Type" />
-      <div className="flex flex-col gap-6 p-4">
-        <Card>
-          <CardHeader className="flex-row items-center justify-between space-y-0">
-            <div className="space-y-1">
-              <CardTitle className="text-xl">Edit Report Type</CardTitle>
-              <CardDescription>Edit Report Type</CardDescription>
-            </div>
-          </CardHeader>
-        </Card>
+	return (
+		<AppLayout breadcrumbs={breadcrumbs}>
+			<Head title="Edit Report Type" />
+			<div className="flex flex-col gap-6 p-4">
+				<Card>
+					<CardHeader className="flex-row items-center justify-between space-y-0">
+						<div className="space-y-1">
+							<CardTitle className="text-xl">Edit Report Type</CardTitle>
+							<CardDescription>Edit Report Type</CardDescription>
+						</div>
+					</CardHeader>
+				</Card>
 
-        <ReportTypesForm data={data} />
-      </div>
-    </AppLayout>
-  );
+				<ReportTypesForm data={data} />
+			</div>
+		</AppLayout>
+	);
 };
 
 export default ReportTypesEdit;

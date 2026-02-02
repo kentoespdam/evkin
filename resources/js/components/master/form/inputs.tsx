@@ -120,15 +120,9 @@ const InputsForm = ({ data, sources, aspects }: InputsFormProps) => {
 										</SelectTrigger>
 										<SelectContent>
 											{aspects.map((item) => (
-												<SelectItem
-													key={item.id}
-													value={item.id}
-													className="space-x-2"
-												>
+												<SelectItem key={item.id} value={item.id} className="space-x-2">
 													<Badge>{item.reportType.name}</Badge>
-													<span className="capitalize">
-														{item.name}
-													</span>
+													<span className="capitalize">{item.name}</span>
 												</SelectItem>
 											))}
 										</SelectContent>

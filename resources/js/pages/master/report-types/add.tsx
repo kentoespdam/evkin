@@ -7,42 +7,42 @@ import master from "@/routes/master";
 import type { BreadcrumbItem } from "@/types";
 
 const breadcrumbs: BreadcrumbItem[] = [
-  {
-    title: "Dashboard",
-    href: dashboard().url,
-  },
-  {
-    title: "Master",
-    href: "#",
-  },
-  {
-    title: "Report Types",
-    href: master.reportTypes().url,
-  },
-  {
-    title: "Add",
-    href: "#",
-  },
+	{
+		title: "Dashboard",
+		href: dashboard().url,
+	},
+	{
+		title: "Master",
+		href: "#",
+	},
+	{
+		title: "Report Types",
+		href: master.reportTypes().url,
+	},
+	{
+		title: "Add",
+		href: "#",
+	},
 ];
 
 const ReportTypesAdd = () => {
-  return (
-    <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title="Add Report Type" />
-      <div className="flex flex-col gap-6 p-4">
-        <Card>
-          <CardHeader className="flex-row items-center justify-between space-y-0">
-            <div className="space-y-1">
-              <CardTitle className="text-xl">Add Report Type</CardTitle>
-              <CardDescription>Add new Report Type</CardDescription>
-            </div>
-          </CardHeader>
-        </Card>
+	return (
+		<AppLayout breadcrumbs={breadcrumbs}>
+			<Head title="Add Report Type" />
+			<div className="flex flex-col gap-6 p-4">
+				<Card>
+					<CardHeader className="flex-row items-center justify-between space-y-0">
+						<div className="space-y-1">
+							<CardTitle className="text-xl">Add Report Type</CardTitle>
+							<CardDescription>Add new Report Type</CardDescription>
+						</div>
+					</CardHeader>
+				</Card>
 
-        <ReportTypesForm />
-      </div>
-    </AppLayout>
-  );
+				<ReportTypesForm />
+			</div>
+		</AppLayout>
+	);
 };
 
 export default ReportTypesAdd;
