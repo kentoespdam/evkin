@@ -19,6 +19,7 @@ interface TransaksiInputsTableProps {
     filters: TransaksiInputFilter;
     setIsForm: React.Dispatch<React.SetStateAction<boolean>>;
     isForm: boolean;
+    isLocked?: boolean;
 }
 
 const TransaksiInputsTableHeader = memo(() => {
@@ -77,7 +78,7 @@ const TransaksiInputsTableBody = memo(
     },
 );
 
-const TransaksiInputsTable = ({ page, data, filters, setIsForm, isForm }: TransaksiInputsTableProps) => {
+const TransaksiInputsTable = ({ page, data, filters, setIsForm, isForm, isLocked }: TransaksiInputsTableProps) => {
     const formAction = useMemo(
         () => ({
             action: transaksi.inputs.store().url,
@@ -99,7 +100,7 @@ const TransaksiInputsTable = ({ page, data, filters, setIsForm, isForm }: Transa
                 <TransaksiInputsTableBody page={page} data={data} isForm={isForm} />
             </Table>
             {isForm && (
-                <Button type="submit" className="mt-4 w-full">
+                <Button type="submit" className="mt-4 w-full" disabled={isLocked}>
                     Simpan
                 </Button>
             )}

@@ -1,6 +1,6 @@
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ReportTypeTemplate } from "@/types/report-type";
+import { ReportTypeTemplate } from "@/types/report-type.d";
 
 interface ReportTypeTemplateSelectProps {
     value: string | undefined;
@@ -27,6 +27,6 @@ const ReportTypeTemplateSelect = ({ value, errors }: ReportTypeTemplateSelectPro
             <FieldError>{errors.template_name}</FieldError>
         </Field>
     );
-}
+};
 
 export default ReportTypeTemplateSelect;

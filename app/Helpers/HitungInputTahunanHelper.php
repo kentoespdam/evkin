@@ -41,6 +41,7 @@ class HitungInputTahunanHelper
                 // Build result array
                 $results[] = [
                     'seq' => $masterInput->seq,
+                    'master_input_id' => $masterInput->id,
                     'kode' => $masterInput->kode,
                     'description' => $masterInput->description,
                     'satuan' => $masterInput->satuan,
@@ -52,7 +53,7 @@ class HitungInputTahunanHelper
 
             return $results;
         } catch (\Throwable $e) {
-            Log::error('Error in hitungTotalTahunan: ' . $e->getMessage());
+            Log::error('Error in hitungTotalTahunan: '.$e->getMessage());
 
             return [];
         }
@@ -100,10 +101,10 @@ class HitungInputTahunanHelper
             RekapInputTahunans::upsert(
                 $results,
                 ['kode', 'year'],
-                ['seq', 'description', 'satuan', 'master_source_id', 'nilai']
+                ['seq', 'master_input_id', 'description', 'satuan', 'master_source_id', 'nilai']
             );
         } catch (\Throwable $e) {
-            Log::error('Error storing HitungInputTahunan results: ' . $e->getMessage());
+            Log::error('Error storing HitungInputTahunan results: '.$e->getMessage());
         }
     }
 

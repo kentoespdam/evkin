@@ -66,7 +66,7 @@ const TotalPage = memo(({ meta }: TotalPageProps) => (
 ));
 TotalPage.displayName = "TotalPage";
 
-const pageSizeList = [1, 2, 10, 25, 50, 100];
+const pageSizeList = [5, 10, 25, 50, 100];
 
 interface PageSizeProps {
 	meta: PaginationMeta;

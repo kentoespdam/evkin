@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Transaksi;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Transaksi\TransaksiInputsRequest;
+use App\Http\Resources\LockTransaksiInputsCollection;
 use App\Http\Resources\RoleInputsCollection;
 use App\Http\Resources\TransaksiInputsCollection;
 use App\Jobs\HitungJob;
 use App\Models\Master\RoleInputs;
+use App\Models\Transaksi\LockTransaksiInputs;
 use App\Models\Transaksi\TransaksiInputs;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -51,9 +53,12 @@ class TransaksiInputsController extends Controller
 
         $transaksiInputs = $transaksiInputsQuery->get();
 
+        $locks = LockTransaksiInputs::where('year', $year)->get();
+
         return Inertia::render('transaksi/inputs/index', [
             'page' => new RoleInputsCollection($roleInputs),
             'data' => new TransaksiInputsCollection($transaksiInputs),
+            'locks' => new LockTransaksiInputsCollection($locks),
             'filters' => [
                 'year' => $year,
                 'month' => (string) $month,
@@ -65,6 +70,16 @@ class TransaksiInputsController extends Controller
     public function store(TransaksiInputsRequest $request): RedirectResponse
     {
         $validated = $request->validated();
+
+        // Check if period is locked
+        $lock = LockTransaksiInputs::where('year', $validated['year'])
+            ->where('month', $validated['month'])
+            ->where('is_locked', true)
+            ->first();
+
+        if ($lock) {
+            return redirect()->back()->with('error', 'Periode sudah dikunci, tidak dapat mengubah data');
+        }
 
         $transaksiData = $this->prepareTransaksiData(
             $validated['year'],

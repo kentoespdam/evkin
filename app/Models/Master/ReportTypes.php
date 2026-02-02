@@ -17,4 +17,9 @@ class ReportTypes extends Model
     protected $hidden = ['created_at', 'updated_at'];
 
     protected string $sqidPrefix = 'rt';
+
+    public function aspects()
+    {
+        return $this->hasMany(Aspects::class);
+    }
 }

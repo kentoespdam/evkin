@@ -6,6 +6,7 @@ export interface TransaksiInput {
 	month: number;
 	masterInput: MasterInput;
 	nilai: number;
+	isLocked: boolean;
 }
 
 export interface TransaksiInputFilter {

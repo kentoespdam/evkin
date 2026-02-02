@@ -18,7 +18,7 @@ class Aspects extends Model
 
     protected string $sqidPrefix = 'as';
 
-    public function reportTypes()
+    public function reportType()
     {
         return $this->belongsTo(ReportTypes::class, 'report_type_id');
     }

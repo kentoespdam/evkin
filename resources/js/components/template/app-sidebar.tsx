@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/sidebar";
 import { dashboard } from "@/routes";
 import master from "@/routes/master";
+import rekap from "@/routes/rekap";
 import report from "@/routes/report";
 import transaksi from "@/routes/transaksi";
 import type { NavGroup, NavItem, SharedData } from "@/types";
@@ -102,26 +103,25 @@ const reportGroupItems: NavGroup = {
 			title: "Laporan Perhitungan",
 			href: report.perhitunganReports().url,
 			icon: FileSignatureIcon,
-		}, {
-			title: "Rekap Tahunan",
-			href: report.rekapTahunan().url,
-			icon: FileSignatureIcon,
 		},
 	],
 };
 
-// const footerNavItems: NavItem[] = [
-//     {
-//         title: 'Repository',
-//         href: 'https://github.com/laravel/react-starter-kit',
-//         icon: Folder,
-//     },
-//     {
-//         title: 'Documentation',
-//         href: 'https://laravel.com/docs/starter-kits#react',
-//         icon: BookOpen,
-//     },
-// ];
+const rekapGroupItems: NavGroup = {
+	title: "Rekapitulasi",
+	items: [
+		{
+			title: "Rekap Bulanan",
+			href: rekap.rekapBulanan().url,
+			icon: FileSignatureIcon,
+		},
+		{
+			title: "Rekap Tahunan",
+			href: rekap.rekapTahunan().url,
+			icon: FileSignatureIcon,
+		},
+	],
+};
 
 export function AppSidebar() {
 	const { isAdmin } = usePage<SharedData>().props;
@@ -143,10 +143,10 @@ export function AppSidebar() {
 				<NavMain items={mainNavItems} />
 				{isAdmin && <NavMaster group={masterGroupItems} />}
 				<NavMaster group={reportGroupItems} />
+				<NavMaster group={rekapGroupItems} />
 			</SidebarContent>
 
 			<SidebarFooter>
-				{/* <NavFooter items={footerNavItems} className="mt-auto" /> */}
 				<NavUser />
 			</SidebarFooter>
 		</Sidebar>

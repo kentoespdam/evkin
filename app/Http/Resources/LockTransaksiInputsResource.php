@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class AspectsResource extends JsonResource
+class LockTransaksiInputsResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,9 +16,9 @@ class AspectsResource extends JsonResource
     {
         return [
             'id' => $this->sqid,
-            'name' => $this->name,
-            'formulaAspect' => $this->formula_aspect,
-            'reportType' => new ReportTypesResource($this->reportType),
+            'year' => $this->year,
+            'month' => $this->month,
+            'isLocked' => (bool) $this->is_locked,
         ];
     }
 }

@@ -143,15 +143,6 @@ const RoleInputForm = ({ roles, inputs, data }: RoleInputFormProps) => {
 		router.visit(master.roleInputs.edit(value).url);
 	}, []);
 
-	// const filteredInputs = useMemo(() => {
-	// 	if (!searchQuery.trim()) return inputs;
-
-	// 	const query = searchQuery.toLowerCase();
-	// 	return inputs.filter(
-	// 		(item) => item.description.toLowerCase().includes(query) || item.kode.toLowerCase().includes(query),
-	// 	);
-	// }, [inputs, searchQuery]);
-
 	const initialCheckedItems = useMemo(() => data?.existingInputIds || [], [data?.existingInputIds]);
 
 	const [checkedItems, setCheckedItems] = useState<string[]>(initialCheckedItems);

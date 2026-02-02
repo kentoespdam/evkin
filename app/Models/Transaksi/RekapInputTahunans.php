@@ -2,6 +2,7 @@
 
 namespace App\Models\Transaksi;
 
+use App\Models\Master\MasterInputs;
 use App\Models\Master\MasterSources;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,6 +22,7 @@ class RekapInputTahunans extends Model
         'description',
         'satuan',
         'master_source_id',
+        'master_input_id',
         'year',
         'nilai',
     ];
@@ -30,5 +32,10 @@ class RekapInputTahunans extends Model
     public function masterSource()
     {
         return $this->belongsTo(MasterSources::class);
+    }
+
+    public function masterInput()
+    {
+        return $this->belongsTo(MasterInputs::class);
     }
 }

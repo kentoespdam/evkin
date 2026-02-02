@@ -1,8 +1,9 @@
 import { Head, router } from "@inertiajs/react";
-import { PencilIcon } from "lucide-react";
+import { AlertCircleIcon, PencilIcon } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import TransaksiInputsTable from "@/components/transaksi/table/inputs";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field } from "@/components/ui/field";
@@ -14,6 +15,7 @@ import { monthsList, yearsList } from "@/lib/utils";
 import { dashboard } from "@/routes";
 import transaksi from "@/routes/transaksi";
 import type { BreadcrumbItem } from "@/types";
+import type { LockTransaksiInput } from "@/types/lock-transaksi-input";
 import type { RoleInput } from "@/types/role-inputs";
 import type { TransaksiInput, TransaksiInputFilter } from "@/types/transaksi-inputs";
 
@@ -35,6 +37,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 interface TransaksiInputsProps {
     page: RoleInput[];
     data: TransaksiInput[];
+    locks: LockTransaksiInput[];
     filters: TransaksiInputFilter;
 }
 
@@ -129,10 +132,18 @@ const TransaksiInputsFilter = memo(({ filters }: { filters: TransaksiInputFilter
 TransaksiInputsFilter.displayName = "TransaksiInputsFilter";
 
 const TransaksiInputButton = memo(
-    ({ isForm, setIsForm }: { isForm: boolean; setIsForm: React.Dispatch<React.SetStateAction<boolean>> }) => {
+    ({
+        isForm,
+        setIsForm,
+        disabled,
+    }: {
+        isForm: boolean;
+        setIsForm: React.Dispatch<React.SetStateAction<boolean>>;
+        disabled?: boolean;
+    }) => {
         const toggleForm = useCallback(() => setIsForm((prev) => !prev), [setIsForm]);
         return isForm ? null : (
-            <Button className={"gap-2"} onClick={toggleForm}>
+            <Button className={"gap-2"} onClick={toggleForm} disabled={disabled}>
                 <PencilIcon />
                 <span>Input Data</span>
             </Button>
@@ -141,8 +152,14 @@ const TransaksiInputButton = memo(
 );
 TransaksiInputButton.displayName = "TransaksiInputButton";
 
-const TransaksiInputs = ({ page, data, filters }: TransaksiInputsProps) => {
+const TransaksiInputs = ({ page, data, locks, filters }: TransaksiInputsProps) => {
     const [isForm, setIsForm] = useState(false);
+
+    const isCurrentPeriodLocked = useMemo(() => {
+        return locks?.some(
+            (lock) => lock.year === parseInt(filters.year) && lock.month === parseInt(filters.month) && lock.isLocked,
+        );
+    }, [locks, filters.year, filters.month]);
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -169,12 +186,27 @@ const TransaksiInputs = ({ page, data, filters }: TransaksiInputsProps) => {
                             <CardTitle className="text-xl">Inputs Management</CardTitle>
                             <CardDescription>Manage your Transaksi Inputs</CardDescription>
                         </div>
-                        <TransaksiInputButton isForm={isForm} setIsForm={setIsForm} />
+                        <TransaksiInputButton isForm={isForm} setIsForm={setIsForm} disabled={isCurrentPeriodLocked} />
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <TransaksiInputsFilter filters={filters} />
                         <Separator />
-                        <TransaksiInputsTable page={page} data={data} filters={filters} setIsForm={setIsForm} isForm={isForm} />
+                        {isCurrentPeriodLocked && (
+                            <Alert variant="destructive">
+                                <AlertCircleIcon />
+                                <AlertDescription>
+                                    Periode {filters.month}/{filters.year} sudah dikunci. Data tidak dapat diubah.
+                                </AlertDescription>
+                            </Alert>
+                        )}
+                        <TransaksiInputsTable
+                            page={page}
+                            data={data}
+                            filters={filters}
+                            setIsForm={setIsForm}
+                            isForm={isForm}
+                            isLocked={isCurrentPeriodLocked}
+                        />
                     </CardContent>
                 </Card>
             </div>

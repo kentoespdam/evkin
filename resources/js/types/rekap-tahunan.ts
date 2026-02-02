@@ -1,3 +1,4 @@
+import type { MasterInput } from "./master-input";
 import type { MasterSource } from "./master-source";
 
 export interface RekapInputTahunan {
@@ -7,6 +8,7 @@ export interface RekapInputTahunan {
 	description: string;
 	satuan: string;
 	masterSource: MasterSource;
+	masterInput?: MasterInput | null;
 	periode: string;
 	year: number;
 	month: number;
@@ -14,7 +16,12 @@ export interface RekapInputTahunan {
 }
 
 export interface RekapInputTahunanFilters {
-	fromYear?: number;
-	toYear?: number;
+	fromYear: number;
+	toYear: number;
+	search?: string;
+}
+
+export interface RekapBulananFilters {
+	year: number;
 	search?: string;
 }

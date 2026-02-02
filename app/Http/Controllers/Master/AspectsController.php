@@ -21,7 +21,7 @@ class AspectsController extends Controller
     {
         $perPage = $request->per_page ?? 10;
 
-        $aspects = Aspects::with('reportTypes')
+        $aspects = Aspects::with('reportType')
             ->when($request->filled('search'), function ($query) use ($request) {
                 $query->where('name', 'like', "%{$request->get('search')}%");
             })

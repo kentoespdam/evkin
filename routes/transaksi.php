@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Transaksi\LockTransaksiInputsController;
 use App\Http\Controllers\Transaksi\TransaksiInputsController;
 use Illuminate\Support\Facades\Route;
 
@@ -13,5 +14,8 @@ Route::middleware('auth')->group(function () {
             Route::post('', [TransaksiInputsController::class, 'store'])->name('transaksi.inputs.store');
             Route::get('test', [TransaksiInputsController::class, 'TransTest'])->name('transaksi.inputs.test');
         });
+
+        Route::patch('lock/{year}/{month}', [LockTransaksiInputsController::class, 'update'])
+            ->name('transaksi.lock.update');
     });
 });

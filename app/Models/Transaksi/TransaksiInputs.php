@@ -21,6 +21,7 @@ class TransaksiInputs extends Model
         'month',
         'master_input_id',
         'nilai',
+        'is_locked',
     ];
 
     protected $hidden = ['created_at', 'updated_at'];
@@ -28,5 +29,17 @@ class TransaksiInputs extends Model
     public function masterInput()
     {
         return $this->belongsTo(MasterInputs::class);
+    }
+
+    public function masterSource()
+    {
+        return $this->hasOneThrough(
+            \App\Models\Master\MasterSources::class,
+            MasterInputs::class,
+            'id',
+            'id',
+            'master_input_id',
+            'master_source_id'
+        );
     }
 }

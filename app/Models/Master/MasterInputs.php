@@ -2,6 +2,7 @@
 
 namespace App\Models\Master;
 
+use App\Models\Transaksi\RekapInputTahunans;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use RedExplosion\Sqids\Concerns\HasSqids;
@@ -26,5 +27,10 @@ class MasterInputs extends Model
     public function aspect()
     {
         return $this->belongsTo(Aspects::class);
+    }
+
+    public function rekapInputTahunans()
+    {
+        return $this->hasMany(RekapInputTahunans::class);
     }
 }
