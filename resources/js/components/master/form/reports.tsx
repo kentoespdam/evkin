@@ -15,6 +15,7 @@ import AspectSelect from "@/components/commons/form/aspect";
 import FormulaTextArea from "@/components/commons/form/formula";
 import InputFormFieldBuilder from "@/components/commons/form/input-field-builder";
 import ReportTypeSelect from "@/components/commons/form/report-type";
+import FormulaIndicator from "@/components/commons/form/textarea-indicator";
 import StarRequired from "@/components/commons/star-required";
 import FormulaIndicatorTooltip from "@/components/commons/tooltip_formula_indicator";
 import { Button } from "@/components/ui/button";
@@ -27,8 +28,8 @@ import { cn } from "@/lib/utils";
 import master from "@/routes/master";
 import type { Aspect } from "@/types/aspect";
 import type { MasterInput } from "@/types/master-input";
+import type { Report } from "@/types/report";
 import type { ReportType } from "@/types/report-type";
-import type { Report } from "@/types/reports";
 
 interface ReportsFormProps {
 	reportTypes: ReportType[];
@@ -188,40 +189,40 @@ const RulesSwitchField = memo(({ withRules, onChange, error }: RulesSwitchFieldP
 });
 RulesSwitchField.displayName = "RulesSwitchField";
 
-interface FormulaIndicatorProps {
-	errors: Record<string, string>;
-	value?: string;
-}
-const FormulaIndicator = memo(({ errors, value }: FormulaIndicatorProps) => {
-	return (
-		<Field>
-			<FieldLabel htmlFor={"formula_indicator"}>
-				Formula Indikator <StarRequired />
-				<FormulaIndicatorTooltip />
-			</FieldLabel>
-			<Textarea
-				id="formula_indicator"
-				name="formula_indicator"
-				defaultValue={value}
-				placeholder="Contoh: &#10;GTE 80; &#10;LTE 79;"
-				className={cn(
-					"font-mono text-sm transition-all",
-					errors.formulaIndicator
-						? "border-destructive focus-visible:ring-destructive"
-						: "focus-visible:ring-primary/20",
-				)}
-				rows={4}
-			/>
-			{errors.formulaIndicator && (
-				<p className="text-sm text-destructive mt-1.5 flex items-center gap-1">
-					<InfoIcon className="h-3 w-3" />
-					{errors.formulaIndicator}
-				</p>
-			)}
-		</Field>
-	);
-});
-FormulaIndicator.displayName = "FormulaIndicator";
+// interface FormulaIndicatorProps {
+// 	errors: Record<string, string>;
+// 	value?: string;
+// }
+// const FormulaIndicator = memo(({ errors, value }: FormulaIndicatorProps) => {
+// 	return (
+// 		<Field>
+// 			<FieldLabel htmlFor={"formula_indicator"}>
+// 				Formula Indikator <StarRequired />
+// 				<FormulaIndicatorTooltip />
+// 			</FieldLabel>
+// 			<Textarea
+// 				id="formula_indicator"
+// 				name="formula_indicator"
+// 				defaultValue={value}
+// 				placeholder="Contoh: &#10;GTE 80; &#10;LTE 79;"
+// 				className={cn(
+// 					"font-mono text-sm transition-all",
+// 					errors.formulaIndicator
+// 						? "border-destructive focus-visible:ring-destructive"
+// 						: "focus-visible:ring-primary/20",
+// 				)}
+// 				rows={4}
+// 			/>
+// 			{errors.formulaIndicator && (
+// 				<p className="text-sm text-destructive mt-1.5 flex items-center gap-1">
+// 					<InfoIcon className="h-3 w-3" />
+// 					{errors.formulaIndicator}
+// 				</p>
+// 			)}
+// 		</Field>
+// 	);
+// });
+// FormulaIndicator.displayName = "FormulaIndicator";
 interface FormulaArchivementProps {
 	errors: Record<string, string>;
 	value?: string;
@@ -523,7 +524,12 @@ const ReportsForm = memo(({ reportTypes, availableCode, aspects, data }: Reports
 							/>
 							<div className="space-y-6 pl-11">
 								{/* Formula Indikator Field */}
-								<FormulaIndicator errors={errors} value={defaultValues.formulaIndicator} />
+								<FormulaIndicator
+									id="formula_indicator"
+									label="Formula Indikator"
+									errors={errors}
+									value={defaultValues.formulaIndicator}
+								/>
 
 								{/* Formula Text Area */}
 								<FormulaTextArea availableCode={availableCode} errors={errors} value={defaultValues.formula} />

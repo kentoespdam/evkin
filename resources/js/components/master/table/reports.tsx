@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import master from "@/routes/master";
 import type { Pagination } from "@/types";
-import type { Report } from "@/types/reports";
+import type { Report } from "@/types/report";
 
 interface ReportsTableProps {
 	page: Pagination<Report>;
@@ -83,9 +83,9 @@ const FormulaIndicatorBadge = memo(({ formulaIndicator }: { formulaIndicator: st
 		() =>
 			formulaIndicator
 				? formulaIndicator.split("\n").map((row) => ({
-						hash: uuidv4(),
-						item: row,
-					}))
+					hash: uuidv4(),
+					item: row,
+				}))
 				: [],
 		[formulaIndicator],
 	);

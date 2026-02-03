@@ -2,7 +2,7 @@ import { Head, router } from "@inertiajs/react";
 import { RefreshCwIcon } from "lucide-react";
 import { memo, useCallback, useMemo } from "react";
 import TableTextSearch from "@/components/commons/table-text-search";
-import PerhitunganReportsTable from "@/components/reports/table/perhitungan_reports";
+import PerhitunganReportsTable from "@/components/reports/table/perhitungan_kepmendagri_reports";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -132,6 +132,7 @@ const ReportPerhitungan = ({ masterReports, reportTypes, aspects, reports, filte
 							aspects={aspects}
 							reports={reports}
 							filters={filters}
+							jenisReport={jenisReport}
 						/>
 					</CardContent>
 				</Card>

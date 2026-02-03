@@ -3,11 +3,11 @@ import { ArrowLeftIcon, FileTypeIcon, FunctionSquareIcon, InfoIcon, LayoutTempla
 import { memo, useMemo } from "react";
 import ButtonLoading from "@/components/commons/button-loading";
 import ReportTypeTemplateSelect from "@/components/commons/form/report_type_template";
+import FormulaIndicator from "@/components/commons/form/textarea-indicator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import master from "@/routes/master";
 import type { ReportType } from "@/types/report-type";
@@ -128,53 +128,17 @@ const ReportTypesForm = memo(({ data }: ReportTypesFormProps) => {
 							{/* Section 3: Performance Formula */}
 							<SectionHeader
 								icon={FunctionSquareIcon}
-								title="Formula Performa"
-								description="Opsional: Tentukan formula untuk menghitung performa keseluruhan"
+								title="Formula Kinerja"
+								description="Opsional: Tentukan formula untuk menghitung Kinerja keseluruhan"
 							/>
 							<div className="pl-11">
+								<FormulaIndicator
+									id="formula_performance"
+									label="Formula Kinerja"
+									errors={errors}
+									value={data?.formulaPerformance ?? ""}
+								/>
 								{/* Formula Performance Field */}
-								<Field>
-									<FieldLabel htmlFor="formula_performance" className="flex items-center gap-2">
-										Formula Performance
-										<span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
-									</FieldLabel>
-									<Textarea
-										id="formula_performance"
-										name="formula_performance"
-										defaultValue={data?.formulaPerformance ?? ""}
-										placeholder="Contoh: AVG(all_aspects)&#10;SUM(weighted_scores) / COUNT(aspects)"
-										className={cn(
-											"font-mono text-sm transition-all min-h-[100px]",
-											errors.formula_performance
-												? "border-destructive focus-visible:ring-destructive"
-												: "focus-visible:ring-blue-500/20",
-										)}
-										rows={4}
-									/>
-									{errors.formula_performance && (
-										<p className="text-sm text-destructive mt-1.5 flex items-center gap-1">
-											<InfoIcon className="h-3 w-3" />
-											{errors.formula_performance}
-										</p>
-									)}
-									{!errors.formula_performance && (
-										<div className="mt-2 p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-md">
-											<div className="flex items-start gap-2">
-												<InfoIcon className="h-4 w-4 text-emerald-600 dark:text-emerald-400 mt-0.5 flex-shrink-0" />
-												<div className="space-y-1">
-													<p className="text-xs text-emerald-900 dark:text-emerald-100 font-medium">
-														Tips Formula Performa:
-													</p>
-													<ul className="text-xs text-emerald-800 dark:text-emerald-200 space-y-0.5 ml-2">
-														<li>• Gunakan AVG untuk rata-rata semua aspek</li>
-														<li>• Gunakan SUM untuk total score dengan pembobotan</li>
-														<li>• Formula ini akan menghitung performa keseluruhan laporan</li>
-													</ul>
-												</div>
-											</div>
-										</div>
-									)}
-								</Field>
 							</div>
 						</div>
 

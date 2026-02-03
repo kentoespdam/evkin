@@ -1,7 +1,7 @@
 import type { Aspect } from "./aspect";
 import type { Pagination } from "./index";
+import type { Report } from "./report";
 import type { ReportType } from "./report-type";
-import type { Report } from "./reports";
 
 export interface PerhitunganReportFilters {
 	report_type_id?: string;
@@ -32,6 +32,7 @@ export interface PerhitunganReportProps {
 	reportTypes: ReportType[];
 	aspects: Aspect[];
 	reports: PerhitunganReportDetail[];
+	jenisReport?: ReportType;
 	filters: PerhitunganReportFilters;
 }
 

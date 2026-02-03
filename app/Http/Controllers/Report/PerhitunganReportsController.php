@@ -26,16 +26,17 @@ class PerhitunganReportsController extends Controller
         $defaultReportTypeSqid = $this->getDefaultReportTypeSqid();
 
         $masterReports = MasterReports::where('report_type_id', $reportTypeId)
-            ->when($request->filled('search'), fn ($query) => $query->where('desc_indicator', 'like', "%{$request->search}%"))
+            ->when($request->filled('search'), fn($query) => $query->where('desc_indicator', 'like', "%{$request->search}%"))
             ->get();
 
         $reports = $this->getPerhitunganReports($year, $reportTypeId, $request->search, includeLastDecember: true);
         $reportsDecemberLastYear = $this->getDecemberLastYearReports($year - 1, $reportTypeId, $request->search);
+        $aspects = Aspects::where('report_type_id', $reportTypeId)->get();
 
         return Inertia::render('report/perhitungan_reports/index', [
             'masterReports' => new MasterReportsCollection($masterReports),
             'reportTypes' => new ReportTypesCollection(ReportTypes::all()),
-            'aspects' => new AspectsCollection(Aspects::all()),
+            'aspects' => new AspectsCollection($aspects),
             'reports' => new PerhitunganReportsCollection($reports),
             'reportsDecemberLastYear' => new PerhitunganReportsCollection($reportsDecemberLastYear),
             'filters' => [
@@ -58,15 +59,15 @@ class PerhitunganReportsController extends Controller
         $reports = PerhitunganReports::with('masterReport')
             ->where('year', $year)
             ->where('month', $month)
-            ->whereHas('masterReport', fn ($q) => $q->where('report_type_id', $reportTypeId))
-            ->when($request->filled('search'), fn ($q) => $q->where('desc_indicator', 'like', "%{$request->search}%"))
-            ->when($request->filled('aspect_id'), fn ($q) => $this->filterByAspect($q, $request->aspect_id))
+            ->whereHas('masterReport', fn($q) => $q->where('report_type_id', $reportTypeId))
+            ->when($request->filled('search'), fn($q) => $q->where('desc_indicator', 'like', "%{$request->search}%"))
+            ->when($request->filled('aspect_id'), fn($q) => $this->filterByAspect($q, $request->aspect_id))
             ->paginate($perPage);
 
         return Inertia::render('report/perhitungan_reports/detail', [
             'page' => new PerhitunganReportsCollection($reports),
             'reportTypes' => new ReportTypesCollection(ReportTypes::all()),
-            'aspects' => new AspectsCollection(Aspects::all()),
+            'aspects' => new AspectsCollection(Aspects::where('report_type_id', $reportTypeId)->get()),
             'filters' => [
                 'report_type_id' => $request->report_type_id ?? $defaultReportTypeSqid,
                 'aspect_id' => $request->aspect_id ?? '',
@@ -81,17 +82,17 @@ class PerhitunganReportsController extends Controller
     {
         $query = PerhitunganReports::with('masterReport')
             ->where('year', $year)
-            ->whereHas('masterReport', fn ($q) => $q->where('report_type_id', $reportTypeId));
+            ->whereHas('masterReport', fn($q) => $q->where('report_type_id', $reportTypeId));
 
         if ($includeLastDecember) {
             $query->orWhere(function ($q) use ($year, $reportTypeId) {
                 $q->where('year', $year - 1)
                     ->where('month', 12)
-                    ->whereHas('masterReport', fn ($inner) => $inner->where('report_type_id', $reportTypeId));
+                    ->whereHas('masterReport', fn($inner) => $inner->where('report_type_id', $reportTypeId));
             });
         }
 
-        return $query->when($search, fn ($q) => $q->whereHas('masterReport', fn ($inner) => $inner->where('desc_indicator', 'like', "%{$search}%")))
+        return $query->when($search, fn($q) => $q->whereHas('masterReport', fn($inner) => $inner->where('desc_indicator', 'like', "%{$search}%")))
             ->get();
     }
 
@@ -100,8 +101,8 @@ class PerhitunganReportsController extends Controller
         return PerhitunganReports::with('masterReport')
             ->where('year', $year)
             ->where('month', 12)
-            ->whereHas('masterReport', fn ($q) => $q->where('report_type_id', $reportTypeId))
-            ->when($search, fn ($q) => $q->whereHas('masterReport', fn ($inner) => $inner->where('desc_indicator', 'like', "%{$search}%")))
+            ->whereHas('masterReport', fn($q) => $q->where('report_type_id', $reportTypeId))
+            ->when($search, fn($q) => $q->whereHas('masterReport', fn($inner) => $inner->where('desc_indicator', 'like', "%{$search}%")))
             ->get();
     }
 
@@ -109,7 +110,7 @@ class PerhitunganReportsController extends Controller
     {
         $aspectId = $this->getAspectId($sqid);
 
-        return $aspectId ? $query->whereHas('masterReport', fn ($q) => $q->where('aspect_id', $aspectId)) : $query;
+        return $aspectId ? $query->whereHas('masterReport', fn($q) => $q->where('aspect_id', $aspectId)) : $query;
     }
 
     private function getDefaultReportTypeSqid(): string

@@ -8,8 +8,8 @@ import master from "@/routes/master";
 import type { BreadcrumbItem } from "@/types";
 import type { Aspect } from "@/types/aspect";
 import type { MasterInput } from "@/types/master-input";
+import type { Report } from "@/types/report";
 import type { ReportType } from "@/types/report-type";
-import type { Report } from "@/types/reports";
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{
