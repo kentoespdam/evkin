@@ -17,7 +17,6 @@ const RekapInputBulanansTable = memo(
 			return <TableEmpty tableName="Rekap Bulanan" />;
 		}
 
-		console.log("rekapDataMap", rekapDataMap);
 		return (
 			<div className="space-y-6">
 				{reportTypes.map((reportType) => {

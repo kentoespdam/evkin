@@ -1,9 +1,13 @@
 {
 	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+	"files": {
+		"includes": ["**", "!resources/js/actions/*", "!resources/js/routes/*", "!resources/js/wayfinder/*"]
+	},
 	"formatter": {
 		"enabled": true,
 		"indentStyle": "tab",
-		"lineWidth": 120
+		"lineWidth": 120,
+		"includes": ["!resources/js/actions/*", "!resources/js/routes/*", "!resources/js/wayfinder/*"]
 	},
 	"linter": {
 		"enabled": true,
