@@ -1,5 +1,8 @@
+import type { Pagination } from ".";
+import type { Aspect } from "./aspect";
 import type { MasterInput } from "./master-input";
 import type { MasterSource } from "./master-source";
+import type { ReportType } from "./report-type";
 
 export interface RekapInputTahunan {
 	id: string;
@@ -15,10 +18,25 @@ export interface RekapInputTahunan {
 	nilai: number;
 }
 
+export interface RekapTahunansProps {
+	page: Pagination<MasterInput>;
+	aspects: Aspect[];
+	reportTypes: ReportType[];
+	rekapData: RekapInputTahunan[];
+	filters: RekapInputTahunanFilters;
+}
+
 export interface RekapInputTahunanFilters {
 	fromYear: number;
 	toYear: number;
 	search?: string;
+}
+
+export interface RekapTahunansFiltersProps {
+	filters: RekapInputTahunanFilters;
+	onFilterChange: (key: string, value: string) => void;
+	onReset: () => void;
+	years: number[];
 }
 
 export interface RekapBulananFilters {

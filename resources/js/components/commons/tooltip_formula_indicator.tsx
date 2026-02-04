@@ -21,7 +21,13 @@ const FormulaIndicatorTooltip = memo(() => {
 							<span>NEQ : != (Not Equal)</span>
 						</div>
 						<p className="font-semibold text-xs mt-2">Contoh:</p>
-						<p className="text-xs text-primary-foreground/80">GTE 80, LTE 79, EQ 100</p>
+						<p className="text-xs text-primary-foreground/80">
+							LTE 3 = 1;<br />
+							LTE 6 = 2;<br />
+							LTE 9 = 3;<br />
+							LTE 12 = 4;<br />
+							GT 12 = 5;<br />
+						</p>
 					</div>
 				</TooltipContent>
 			</Tooltip>

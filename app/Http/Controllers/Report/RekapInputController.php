@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Report;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\AspectsCollection;
 use App\Http\Resources\LockTransaksiInputsCollection;
+use App\Http\Resources\MasterInputsCollection;
 use App\Http\Resources\RekapInputTahunansCollection;
 use App\Http\Resources\ReportTypesCollection;
 use App\Http\Resources\TransaksiInputsCollection;
+use App\Models\Master\MasterInputs;
 use App\Models\Transaksi\LockTransaksiInputs;
 use App\Models\Transaksi\RekapInputTahunans;
 use App\Models\Transaksi\TransaksiInputs;
@@ -27,31 +29,34 @@ class RekapInputController extends Controller
         $year = $request->integer('year', (int) date('Y'));
         $perPage = $request->integer('per_page', self::DEFAULT_PER_PAGE);
 
-        $page = TransaksiInputs::with(self::REKAP_RELATIONS)
-            ->join('master_inputs', 'transaksi_inputs.master_input_id', '=', 'master_inputs.id')
-            ->where('transaksi_inputs.year', $year)
-            ->when($request->filled('search'), fn ($query) => $query->where('master_inputs.description', 'like', '%'.$request->search.'%'))
-            ->orderBy('master_inputs.aspect_id')
-            ->orderBy('master_inputs.seq')
-            ->select('transaksi_inputs.*')
+        $page = MasterInputs::where('aspect_id', '!=', null)
+            ->when($request->filled('search'), fn($query) => $query->where('description', 'like', '%' . $request->search . '%'))
+            ->orderBy('aspect_id')
+            ->orderBy('seq')
             ->paginate($perPage);
 
-        $rekap = RekapInputTahunans::with(self::REKAP_RELATIONS)
+        [$masterIds, $aspects, $reportTypes] = $this->extractAspectsAndReportTypes($page);
+
+        $rekapData = TransaksiInputs::with(self::REKAP_RELATIONS)
+            ->whereIn('master_input_id', $masterIds)
             ->where('year', $year)
-            ->when($request->filled('search'), fn ($query) => $query->where('description', 'like', '%'.$request->search.'%'))
-            ->orderBy('master_input_id')
+            ->get()
+            ->sortBy(fn($item) => $item->masterInput->seq)
+            ->values();
+
+        $rekapTahunan = RekapInputTahunans::with(self::REKAP_RELATIONS)
+            ->whereIn('master_input_id', $masterIds)
+            ->where('year', $year - 1)
             ->orderBy('seq')
             ->get();
-
-        [$aspects, $reportTypes] = $this->extractAspectsAndReportTypes($page);
-
         $lockTransaksiInputs = LockTransaksiInputs::where('year', $year)->get();
 
         return Inertia::render('rekap/bulanan/index', [
-            'page' => new TransaksiInputsCollection($page),
+            'page' => new MasterInputsCollection($page),
             'aspects' => $aspects,
             'reportTypes' => $reportTypes,
-            'rekap' => new RekapInputTahunansCollection($rekap),
+            'rekapData' => new TransaksiInputsCollection($rekapData),
+            'rekapTahunan' => new RekapInputTahunansCollection($rekapTahunan),
             'lockTransaksiInputs' => new LockTransaksiInputsCollection($lockTransaksiInputs),
             'filters' => [
                 'year' => $year,
@@ -67,19 +72,26 @@ class RekapInputController extends Controller
         $toYear = $request->integer('toYear', $currentYear);
         $perPage = $request->integer('per_page', self::DEFAULT_PER_PAGE);
 
-        $page = RekapInputTahunans::with(self::REKAP_RELATIONS)
-            ->whereBetween('year', [$fromYear, $toYear])
-            ->when($request->filled('search'), fn ($query) => $query->where('description', 'like', '%'.$request->search.'%'))
-            ->orderBy('master_input_id')
+        $page = MasterInputs::where('aspect_id', '!=', null)
+            ->when($request->filled('search'), fn($query) => $query->where('description', 'like', '%' . $request->search . '%'))
+            ->orderBy('aspect_id')
             ->orderBy('seq')
             ->paginate($perPage);
 
-        [$aspects, $reportTypes] = $this->extractAspectsAndReportTypes($page);
+        [$masterIds, $aspects, $reportTypes] = $this->extractAspectsAndReportTypes($page);
+
+        $rekapData = RekapInputTahunans::with(self::REKAP_RELATIONS)
+            ->whereIn('master_input_id', $masterIds)
+            ->whereBetween('year', [$fromYear, $toYear])
+            ->get()
+            ->sortBy(fn($item) => [$item->year, $item->masterInput->seq])
+            ->values();
 
         return Inertia::render('rekap/tahunan/index', [
-            'page' => new RekapInputTahunansCollection($page),
+            'page' => new MasterInputsCollection($page),
             'aspects' => $aspects,
             'reportTypes' => $reportTypes,
+            'rekapData' => new RekapInputTahunansCollection($rekapData),
             'filters' => [
                 'fromYear' => $fromYear,
                 'toYear' => $toYear,
@@ -91,18 +103,31 @@ class RekapInputController extends Controller
     /**
      * Extract aspects and report types from paginated data.
      *
-     * @return array{0: \Illuminate\Support\Collection, 1: \Illuminate\Support\Collection}
+     * @return array{
+     *  0: \Illuminate\Support\Collection, 
+     *  1: \Illuminate\Support\Collection, 
+     *  2: \Illuminate\Support\Collection
+     * }
      */
     private function extractAspectsAndReportTypes(LengthAwarePaginator $page): array
     {
-        $aspects = new AspectsCollection(
-            $page->pluck('masterInput.aspect')->whereNotNull()->unique()
-        );
+        $masterIds = $page->pluck('id')->unique()->values();
+        $aspects = [];
+        foreach ($page->pluck('aspect')->whereNotNull()->unique() as $aspect) {
+            $aspects[$aspect->id] = $aspect;
+        }
+        $aspects = collect($aspects)->unique();
 
-        $reportTypes = new ReportTypesCollection(
-            $aspects->collection->pluck('reportType')->unique()
-        );
+        $reportTypes = [];
+        foreach ($aspects->pluck('reportType')->whereNotNull()->unique() as $reportType) {
+            $reportTypes[$reportType->id] = $reportType;
+        }
+        $reportTypes = collect($reportTypes)->unique();
 
-        return [$aspects->values(), $reportTypes->values()];
+        return [
+            $masterIds,
+            new AspectsCollection($aspects->values()),
+            new ReportTypesCollection($reportTypes->values())
+        ];
     }
 }

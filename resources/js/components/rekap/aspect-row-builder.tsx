@@ -7,13 +7,7 @@ interface AspectRowBuilderProps {
 	colspan: number;
 }
 const AspectRowBuilder = memo(({ aspect, colspan }: AspectRowBuilderProps) => (
-	<SectionHeaderRekapBuilder
-		label="Aspek"
-		title={aspect.name}
-		colSpan={colspan}
-		bgColor="bg-amber-50"
-		textColor="text-amber-800"
-	/>
+	<SectionHeaderRekapBuilder title={aspect.name} colSpan={colspan} bgColor="bg-amber-50" textColor="text-amber-800" />
 ));
 
 AspectRowBuilder.displayName = "AspectRowBuilder";

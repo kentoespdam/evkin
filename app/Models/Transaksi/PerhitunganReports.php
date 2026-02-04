@@ -23,10 +23,12 @@ class PerhitunganReports extends Model
         'formula',
         'formula_value',
         'nilai',
+        'nilai_indicator',
+        'formula_nilai_bobot',
+        'nilai_bobot',
         'formula_archivement',
         'formula_archivement_value',
         'nilai_archivement',
-        'nilai_indicator',
         'nilai_archivement_indicator',
     ];
 

@@ -1,7 +1,9 @@
 import { Link, usePage } from "@inertiajs/react";
 import {
+	FileClockIcon,
+	FileCodeIcon,
+	FileDigitIcon,
 	FileInputIcon,
-	FileSignatureIcon,
 	FileTextIcon,
 	FileTypeIcon,
 	GitPullRequestArrow,
@@ -97,12 +99,12 @@ const reportGroupItems: NavGroup = {
 		{
 			title: "Laporan Perhitungan Detail",
 			href: report.perhitunganReports.detail().url,
-			icon: FileSignatureIcon,
+			icon: FileCodeIcon,
 		},
 		{
 			title: "Laporan Perhitungan",
 			href: report.perhitunganReports().url,
-			icon: FileSignatureIcon,
+			icon: FileDigitIcon,
 		},
 	],
 };
@@ -113,12 +115,12 @@ const rekapGroupItems: NavGroup = {
 		{
 			title: "Rekap Bulanan",
 			href: rekap.rekapBulanan().url,
-			icon: FileSignatureIcon,
+			icon: FileClockIcon,
 		},
 		{
 			title: "Rekap Tahunan",
 			href: rekap.rekapTahunan().url,
-			icon: FileSignatureIcon,
+			icon: FileClockIcon,
 		},
 	],
 };

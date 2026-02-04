@@ -22,9 +22,11 @@ export interface PerhitunganReportDetail {
 	formulaValue: string;
 	nilai: number;
 	nilaiIndicator: number;
-	formulaAchievement: string;
-	formulaAchievementValue: string;
-	formulaAchievementNilai: number;
+	formulaNilaiBobot: string;
+	nilaiBobot: number;
+	formulaArchivement: string;
+	formulaArchivementValue: string;
+	nilaiArchivement: number;
 }
 
 export interface PerhitunganReportProps {
@@ -32,6 +34,7 @@ export interface PerhitunganReportProps {
 	reportTypes: ReportType[];
 	aspects: Aspect[];
 	reports: PerhitunganReportDetail[];
+	templateName: string;
 	jenisReport?: ReportType;
 	filters: PerhitunganReportFilters;
 }

@@ -60,6 +60,10 @@ class HitungPerhitunganReportsHelper
                     $nilai
                 );
 
+                $bobot = $masterReport->weight ?? 0;
+                $formulaNilaiBobot = "( $bobot * $nilaiIndicator )";
+                $nilaiBobot = FormulaHelper::evaluateFormula($formulaNilaiBobot);
+
                 // Calculate nilai_archivement from formula_archivement
                 $formulaArchivementValue = self::replaceKodeWithNilai(
                     $masterReport->formula ?? '',
@@ -85,6 +89,8 @@ class HitungPerhitunganReportsHelper
                     'formula_value' => $formulaValue,
                     'nilai' => $nilai,
                     'nilai_indicator' => $nilaiIndicator,
+                    'formula_nilai_bobot' => $formulaNilaiBobot,
+                    'nilai_bobot' => $nilaiBobot,
                     'formula_archivement' => $masterReport->formula,
                     'formula_archivement_value' => $formulaArchivementValue,
                     'nilai_archivement' => $nilaiArchivement,
@@ -212,6 +218,8 @@ class HitungPerhitunganReportsHelper
                     'formula_value',
                     'nilai',
                     'nilai_indicator',
+                    'formula_nilai_bobot',
+                    'nilai_bobot',
                     'formula_archivement',
                     'formula_archivement_value',
                     'nilai_archivement',

@@ -23,7 +23,7 @@ const FormulaIndicator = memo(({ id, label, errors, value }: FormulaIndicatorPro
                 id={id}
                 name={id}
                 defaultValue={value}
-                placeholder="Contoh: &#10;GTE 80; &#10;LTE 79;"
+                placeholder="Contoh:&#10; LTE 3 = 1;&#10; LTE 6 = 2;&#10; LTE 9 = 3;&#10; LTE 12 = 4;&#10; GT 12 = 5;&#10;"
                 className={cn(
                     "font-mono text-sm transition-all",
                     errors[id]

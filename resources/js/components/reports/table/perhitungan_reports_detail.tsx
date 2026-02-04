@@ -1,5 +1,6 @@
 import { memo, useMemo } from "react";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
+import { formatFormulaValue, formatNumber } from "@/lib/math_parser";
 import type { Pagination } from "@/types";
 import type { PerhitunganReportDetail } from "@/types/perhitungan-reports";
 
@@ -18,9 +19,11 @@ const PerhitunganReportsDetailTableHeader = memo(() => (
 			<TableCell>Satuan</TableCell>
 			<TableCell>Nilai</TableCell>
 			<TableCell>Nilai Indikator</TableCell>
+			<TableCell>Rumus Bobot</TableCell>
+			<TableCell>Nilai Bobot</TableCell>
 			<TableCell>Rumus Pencapaian</TableCell>
-			<TableCell>Rumus Pencapaian Value</TableCell>
-			<TableCell>Rumus Pencapaian Nilai</TableCell>
+			<TableCell>Rumus Pencapaian</TableCell>
+			<TableCell>Nilai Pencapaian</TableCell>
 		</TableRow>
 	</TableHeader>
 ));
@@ -65,6 +68,8 @@ const PerhitunganReportsDetailTableBody = memo(({ page }: { page: Pagination<Per
 		const firstNumber = page.meta.from;
 		return page.data.map((item, index) => ({
 			urut: firstNumber + index,
+			bobotDigits: item.nilaiBobot > 0 ? 3 : 0,
+			archivementDigits: item.nilaiArchivement > 0 ? 2 : 0,
 			...item,
 		}));
 	}, [page]);
@@ -76,13 +81,15 @@ const PerhitunganReportsDetailTableBody = memo(({ page }: { page: Pagination<Per
 					<TableCell>{`${row.year}-${row.month}`}</TableCell>
 					<TableCell>{row.descIndicator}</TableCell>
 					<RumusCell item={row} />
-					<TableCell>{row.formulaValue}</TableCell>
+					<TableCell>{formatFormulaValue(row.formulaValue)}</TableCell>
 					<TableCell>{row.masterReport?.unit}</TableCell>
-					<TableCell align="right">{row.nilai}</TableCell>
-					<TableCell align="right">{row.nilaiIndicator}</TableCell>
-					<TableCell>{row.formulaAchievement}</TableCell>
-					<TableCell>{row.formulaAchievementValue}</TableCell>
-					<TableCell align="right">{row.formulaAchievementNilai}</TableCell>
+					<TableCell align="right">{formatNumber(row.nilai, 2)}</TableCell>
+					<TableCell align="right">{formatNumber(row.nilaiIndicator)}</TableCell>
+					<TableCell>{formatFormulaValue(row.formulaNilaiBobot, 3)}</TableCell>
+					<TableCell align="right">{formatNumber(row.nilaiBobot, row.bobotDigits)}</TableCell>
+					<TableCell>{row.formulaArchivement}</TableCell>
+					<TableCell>{formatFormulaValue(row.formulaArchivementValue)}</TableCell>
+					<TableCell align="right">{formatNumber(row.nilaiArchivement, row.archivementDigits)}</TableCell>
 				</TableRow>
 			))}
 		</TableBody>

@@ -1,6 +1,7 @@
 import type { InertiaLinkProps } from "@inertiajs/react";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { IS_CLIENT } from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -46,72 +47,11 @@ export const monthsList = (): { value: number; label: string }[] => {
 };
 export type MonthOption = ReturnType<typeof monthsList>[number];
 
-export const formatCurrency = (amount: number, locale = "id-ID", currency = "IDR"): string => {
-	return new Intl.NumberFormat(locale, { style: "currency", currency }).format(amount).replace("IDR", "Rp.");
+export const createUrlSearchParams = (): URLSearchParams => {
+	return IS_CLIENT ? new URLSearchParams(window.location.search) : new URLSearchParams();
 };
 
-export const formatNumber = (value: number, decimals = 0): string => {
-	return new Intl.NumberFormat("id-ID", { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(
-		value,
-	);
-};
-
-/**
- * 
- * @param formula 
- * @param totalKinerja 
- * 
- * Example Formula
-	LTE 30 = "TIDAK BAIK";
-	LTE 45 = "KURANG";
-	LTE 60 = "CUKUP";
-	LTE 75 = "BAIK";
-	GT 75 = "BAIK SEKALI";
- */
-export const totalKinerjaToKinerja = (formula: string, totalKinerja: number): string => {
-	if (!formula) return "-";
-
-	const conditions = formula
-		.split(";")
-		.map((cond) => cond.trim())
-		.filter((cond) => cond.length > 0);
-
-	for (const condition of conditions) {
-		const [operatorPart, valuePart] = condition.split("=").map((part) => part.trim());
-		if (!operatorPart || !valuePart) continue;
-
-		const operatorMatch = operatorPart.match(/^(LTE|GTE|LT|GT|EQ)\s+(.+)$/i);
-		if (!operatorMatch) continue;
-
-		const operator = operatorMatch[1].toUpperCase();
-		const threshold = parseFloat(operatorMatch[2]);
-
-		if (Number.isNaN(threshold)) continue;
-
-		let conditionMet = false;
-		console.log({ operator, threshold, totalKinerja });
-		switch (operator) {
-			case "LTE":
-				conditionMet = totalKinerja <= threshold;
-				break;
-			case "GTE":
-				conditionMet = totalKinerja >= threshold;
-				break;
-			case "LT":
-				conditionMet = totalKinerja < threshold;
-				break;
-			case "GT":
-				conditionMet = totalKinerja > threshold;
-				break;
-			case "EQ":
-				conditionMet = totalKinerja === threshold;
-				break;
-		}
-
-		if (conditionMet) {
-			return valuePart.replace(/^"|"$/g, "");
-		}
-	}
-
-	return "-";
+export const buildUrlWithQuery = (baseUrl: string, params: URLSearchParams): string => {
+	const queryString = params.toString();
+	return queryString ? `${baseUrl}?${queryString}` : baseUrl;
 };

@@ -2,7 +2,7 @@ import { Head, router } from "@inertiajs/react";
 import { RefreshCwIcon } from "lucide-react";
 import { memo, useCallback, useMemo } from "react";
 import TableTextSearch from "@/components/commons/table-text-search";
-import PerhitunganReportsTable from "@/components/reports/table/perhitungan_kepmendagri_reports";
+import TemplateBuilder from "@/components/reports/table/builder";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -127,12 +127,13 @@ const ReportPerhitungan = ({ masterReports, reportTypes, aspects, reports, filte
 					</CardHeader>
 					<CardContent className="space-y-6">
 						<Filters filters={filters} reportTypes={reportTypes} />
-						<PerhitunganReportsTable
+						<TemplateBuilder
 							masterReports={masterReports}
+							reportTypes={reportTypes}
 							aspects={aspects}
 							reports={reports}
 							filters={filters}
-							jenisReport={jenisReport}
+							templateName={jenisReport?.templateName ?? "TEMPLATE_KEPMENDAGRI"}
 						/>
 					</CardContent>
 				</Card>

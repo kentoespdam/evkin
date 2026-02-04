@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/components/ui/input-group";
-import { formatNumber } from "@/lib/utils";
+import { formatNumber } from "@/lib/math_parser";
 import type { RoleInput } from "@/types/role-inputs";
 import type { TransaksiInput } from "@/types/transaksi-inputs";
 
