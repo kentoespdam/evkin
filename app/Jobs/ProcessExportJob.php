@@ -10,21 +10,25 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class ProcessExportJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected string $exportId;
+
     protected array $filters;
+
     protected int $userId;
 
-    public function __construct(string $exportId, array $filters, int $userId)
+    protected string $exportType;
+
+    public function __construct(string $exportId, array $filters, int $userId, string $exportType = 'detail')
     {
         $this->exportId = $exportId;
         $this->filters = $filters;
         $this->userId = $userId;
+        $this->exportType = $exportType;
     }
 
     public function handle(PerhitunganReportExportService $exportService): void
@@ -41,8 +45,17 @@ class ProcessExportJob implements ShouldQueue
             $fileName = "exports/{$this->exportId}.xlsx";
             $filePath = storage_path("app/{$fileName}");
 
-            // Generate and save the file
-            $exportService->generateAndStore($this->filters, $filePath);
+            // Ensure exports directory exists
+            if (! file_exists(storage_path('app/exports'))) {
+                mkdir(storage_path('app/exports'), 0755, true);
+            }
+
+            // Generate and save the file based on export type
+            if ($this->exportType === 'index') {
+                $exportService->generateAndStoreIndex($this->filters, $filePath);
+            } else {
+                $exportService->generateAndStore($this->filters, $filePath);
+            }
 
             // Update status to completed
             Cache::put("export.{$this->exportId}", [
@@ -56,6 +69,7 @@ class ProcessExportJob implements ShouldQueue
             Log::info('Export job completed', [
                 'export_id' => $this->exportId,
                 'user_id' => $this->userId,
+                'export_type' => $this->exportType,
                 'file_size' => filesize($filePath),
             ]);
 
@@ -68,6 +82,7 @@ class ProcessExportJob implements ShouldQueue
 
             Log::error('Export job failed', [
                 'export_id' => $this->exportId,
+                'export_type' => $this->exportType,
                 'error' => $e->getMessage(),
             ]);
 

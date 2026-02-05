@@ -18,9 +18,7 @@ const ErrorBoundary = ({ children }: { children: React.ReactNode }) => {
 	return <>{children}</>;
 };
 
-const MemoizedToaster = memo(({ config }: { config: typeof TOASTER_CONFIG }) => (
-	<Toaster {...config} />
-));
+const MemoizedToaster = memo(({ config }: { config: typeof TOASTER_CONFIG }) => <Toaster {...config} />);
 
 MemoizedToaster.displayName = "MemoizedToaster";
 
@@ -38,11 +36,13 @@ interface AppLayoutProps {
 }
 
 const AppLayout = ({ children, breadcrumbs, toasterConfig, showToaster = true, ...props }: AppLayoutProps) => {
-
-	const mergedToasterConfig = useMemo(() => ({
-		...TOASTER_CONFIG,
-		...toasterConfig,
-	}), [toasterConfig]);
+	const mergedToasterConfig = useMemo(
+		() => ({
+			...TOASTER_CONFIG,
+			...toasterConfig,
+		}),
+		[toasterConfig],
+	);
 
 	return (
 		<ErrorBoundary>

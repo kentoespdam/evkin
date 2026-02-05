@@ -70,7 +70,9 @@ export const useErrorToast = () => {
 		}
 
 		// Add new messages to shown set
-		newMessages.forEach((msg) => {shownMessagesRef.current.add(msg)});
+		newMessages.forEach((msg) => {
+			shownMessagesRef.current.add(msg);
+		});
 
 		// Cleanup: Clear old messages after navigation to prevent memory leaks
 		return () => {

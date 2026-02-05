@@ -22,11 +22,16 @@ const FormulaIndicatorTooltip = memo(() => {
 						</div>
 						<p className="font-semibold text-xs mt-2">Contoh:</p>
 						<p className="text-xs text-primary-foreground/80">
-							LTE 3 = 1;<br />
-							LTE 6 = 2;<br />
-							LTE 9 = 3;<br />
-							LTE 12 = 4;<br />
-							GT 12 = 5;<br />
+							LTE 3 = 1;
+							<br />
+							LTE 6 = 2;
+							<br />
+							LTE 9 = 3;
+							<br />
+							LTE 12 = 4;
+							<br />
+							GT 12 = 5;
+							<br />
 						</p>
 					</div>
 				</TooltipContent>

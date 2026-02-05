@@ -43,9 +43,7 @@ const SidebarContentComponent = memo(({ isAdmin, config }: SidebarContentProps) 
 	return (
 		<SidebarContent>
 			<NavMain items={mainItems} />
-			{isAdmin && adminGroups.map((group) => (
-				<NavMaster key={`admin-${group.title}`} group={group} />
-			))}
+			{isAdmin && adminGroups.map((group) => <NavMaster key={`admin-${group.title}`} group={group} />)}
 			{userGroups.map((group) => (
 				<NavMaster key={`user-${group.title}`} group={group} />
 			))}
@@ -68,10 +66,7 @@ export function AppSidebar() {
 		<Sidebar collapsible="icon" variant="inset">
 			<SidebarHeaderComponent />
 
-			<SidebarContentComponent
-				isAdmin={isAdmin}
-				config={config}
-			/>
+			<SidebarContentComponent isAdmin={isAdmin} config={config} />
 
 			<SidebarFooterComponent />
 		</Sidebar>

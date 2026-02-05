@@ -6,7 +6,14 @@ import type { PerhitunganReportProps } from "@/types/perhitungan-reports";
 import TotalFooter from "./table_footer_total";
 import TableSection from "./table_section";
 
-const TemplateBuilder = ({ masterReports, reportTypes, aspects, templateName, reports, filters }: PerhitunganReportProps) => {
+const TemplateBuilder = ({
+	masterReports,
+	reportTypes,
+	aspects,
+	templateName,
+	reports,
+	filters,
+}: PerhitunganReportProps) => {
 	const jenisReport = useMemo(() => reportTypes.find((rt) => rt.id === filters.report_type_id), [filters, reportTypes]);
 
 	const months = useMemo(() => monthsList(), []);

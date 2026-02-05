@@ -66,9 +66,7 @@ const RumusCell = memo(({ item }: { item: PerhitunganReportDetail }) => {
 		<TableCell>
 			<div className="whitespace-nowrap">
 				{item.formula}
-				{item.masterReport.withRules && (
-					<RulesBadge rule={item.masterReport.rules || ""} />
-				)}
+				{item.masterReport.withRules && <RulesBadge rule={item.masterReport.rules || ""} />}
 			</div>
 		</TableCell>
 	);
@@ -79,7 +77,7 @@ interface ReportTableRowProps {
 	row: PerhitunganReportDetail & {
 		urut: number;
 		bobotDigits: number;
-		archivementDigits: number
+		archivementDigits: number;
 	};
 }
 const ReportTableRow = memo(({ row }: ReportTableRowProps) => (
@@ -101,8 +99,7 @@ const ReportTableRow = memo(({ row }: ReportTableRowProps) => (
 ));
 ReportTableRow.displayName = "ReportTableRow";
 
-const PerhitunganReportsDetailTableBody = memo(({ page }:
-	{ page: Pagination<PerhitunganReportDetail> }) => {
+const PerhitunganReportsDetailTableBody = memo(({ page }: { page: Pagination<PerhitunganReportDetail> }) => {
 	const rows = useMemo(() => {
 		const firstNumber = page.meta.from;
 		return page.data.map((item, index) => ({

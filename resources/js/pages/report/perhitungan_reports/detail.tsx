@@ -8,11 +8,15 @@ import AppLayout from "@/layouts/app-layout";
 import report from "@/routes/report";
 import type { PerhitunganReportsDetailProps } from "@/types/perhitungan-reports";
 
-const useBreadcrumbs = () => useMemo(() => [
-	{ title: "Dashboard", href: "/dashboard" },
-	{ title: "Reports", href: "#" },
-	{ title: "Perhitungan", href: "#" },
-], []);
+const useBreadcrumbs = () =>
+	useMemo(
+		() => [
+			{ title: "Dashboard", href: "/dashboard" },
+			{ title: "Reports", href: "#" },
+			{ title: "Perhitungan", href: "#" },
+		],
+		[],
+	);
 
 const PerhitunganReportsDetail = ({ page, reportTypes, aspects, filters }: PerhitunganReportsDetailProps) => {
 	const baseUrl = useMemo(() => report.perhitunganReports.detail.url(), []);
@@ -47,10 +51,7 @@ const PerhitunganReportsDetail = ({ page, reportTypes, aspects, filters }: Perhi
 						</div>
 					</CardHeader>
 					<CardContent className="space-y-6">
-						<PerhitunganReportDetailFilter
-							filters={filters}
-							reportTypes={reportTypes}
-							aspects={aspects} />
+						<PerhitunganReportDetailFilter filters={filters} reportTypes={reportTypes} aspects={aspects} />
 
 						<PerhitunganReportsDetailTable page={page} />
 

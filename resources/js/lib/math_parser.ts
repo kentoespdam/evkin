@@ -11,13 +11,13 @@ export const formatCurrency = (amount: number, locale = "id-ID", currency = "IDR
 };
 
 export const formatNumber = (value: number | null | undefined, decimals = 0): string => {
-  if (value === null || value === undefined || Number.isNaN(value)) {
-    return "-";
-  }
-  return new Intl.NumberFormat("id-ID", { 
-    minimumFractionDigits: decimals, 
-    maximumFractionDigits: decimals 
-  }).format(value);
+	if (value === null || value === undefined || Number.isNaN(value)) {
+		return "-";
+	}
+	return new Intl.NumberFormat("id-ID", {
+		minimumFractionDigits: decimals,
+		maximumFractionDigits: decimals,
+	}).format(value);
 };
 
 // Helper untuk validasi ekspresi matematika yang aman

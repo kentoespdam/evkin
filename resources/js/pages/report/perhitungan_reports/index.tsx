@@ -1,14 +1,14 @@
-import { Head, router } from "@inertiajs/react";
-import { RefreshCwIcon } from "lucide-react";
-import { memo, useCallback, useMemo } from "react";
+import { Head } from "@inertiajs/react";
+import { DownloadIcon, RefreshCwIcon } from "lucide-react";
+import { memo, useMemo } from "react";
 import TableTextSearch from "@/components/commons/table-text-search";
 import TemplateBuilder from "@/components/reports/table/perhitungan_report_builder";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { usePerhitunganIndexFilter } from "@/hooks/use-perhitungan-report-index";
 import AppLayout from "@/layouts/app-layout";
 import { yearsList } from "@/lib/utils";
-import { perhitunganReports } from "@/routes/report";
 import type { BreadcrumbItem } from "@/types";
 import type { PerhitunganReportFilters, PerhitunganReportProps } from "@/types/perhitungan-reports";
 import type { ReportType } from "@/types/report-type";
@@ -18,43 +18,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 	{ title: "Reports", href: "#" },
 ];
 
-const useFilters = () => {
-	const baseUrl = perhitunganReports.url();
-	const updateAndVisit = useCallback(
-		(key: string, value: string) => {
-			const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
-
-			if (!value.trim()) {
-				params.delete(key);
-			} else {
-				params.set(key, value);
-			}
-
-			// Reset aspect when report type changes
-			if (key === "report_type_id") {
-				params.delete("aspect_id");
-			}
-
-			// Changing filters should reset to first page
-			params.delete("page");
-
-			const qs = params.toString();
-			const nextUrl = qs ? `${baseUrl}?${qs}` : baseUrl;
-
-			router.visit(nextUrl, { preserveScroll: true, preserveState: true, replace: true });
-		},
-		[baseUrl],
-	);
-
-	const resetAll = useCallback(() => {
-		router.visit(baseUrl, { preserveScroll: true, preserveState: false, replace: true });
-	}, [baseUrl]);
-
-	return { updateAndVisit, resetAll };
-};
-
 const Filters = memo(({ filters, reportTypes }: { filters: PerhitunganReportFilters; reportTypes: ReportType[] }) => {
-	const { updateAndVisit, resetAll } = useFilters();
+	const { updateAndVisit, resetAll, exportExcel, isExporting } = usePerhitunganIndexFilter();
 
 	const years = useMemo(() => {
 		const now = new Date();
@@ -98,6 +63,17 @@ const Filters = memo(({ filters, reportTypes }: { filters: PerhitunganReportFilt
 
 			<Button onClick={resetAll} className="gap-2" aria-label="Reset filters">
 				<RefreshCwIcon className="size-4" /> Reset
+			</Button>
+
+			<Button
+				type="button"
+				onClick={() => exportExcel(filters)}
+				disabled={isExporting || !filters.report_type_id}
+				className="gap-2"
+				aria-label="Download Excel"
+			>
+				<DownloadIcon className="size-4" />
+				{isExporting ? "Downloading..." : "Download Excel"}
 			</Button>
 		</div>
 	);

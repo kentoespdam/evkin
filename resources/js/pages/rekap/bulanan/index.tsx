@@ -33,7 +33,8 @@ const RekapBulanans = ({
 						<div className="space-y-1">
 							<CardTitle className="text-2xl font-bold">{pageTitle}</CardTitle>
 							<CardDescription>
-								Rekap Perhitungan Input Bulanan Tahun <span className="font-medium text-foreground">{filters.year}</span>
+								Rekap Perhitungan Input Bulanan Tahun{" "}
+								<span className="font-medium text-foreground">{filters.year}</span>
 							</CardDescription>
 						</div>
 					</CardHeader>

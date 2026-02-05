@@ -26,9 +26,9 @@ export interface NavItem {
 }
 
 export interface SidebarConfig {
-  mainItems: NavItem[];
-  adminGroups: NavGroup[];
-  userGroups: NavGroup[];
+	mainItems: NavItem[];
+	adminGroups: NavGroup[];
+	userGroups: NavGroup[];
 }
 
 export interface SharedData {

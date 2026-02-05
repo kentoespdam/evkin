@@ -7,39 +7,37 @@ import StarRequired from "../star-required";
 import FormulaIndicatorTooltip from "../tooltip_formula_indicator";
 
 interface FormulaIndicatorProps {
-    id: string
-    label: string;
-    errors: Record<string, string>;
-    value?: string;
+	id: string;
+	label: string;
+	errors: Record<string, string>;
+	value?: string;
 }
 const FormulaIndicator = memo(({ id, label, errors, value }: FormulaIndicatorProps) => {
-    return (
-        <Field>
-            <FieldLabel htmlFor={id}>
-                {label} <StarRequired />
-                <FormulaIndicatorTooltip />
-            </FieldLabel>
-            <Textarea
-                id={id}
-                name={id}
-                defaultValue={value}
-                placeholder="Contoh:&#10; LTE 3 = 1;&#10; LTE 6 = 2;&#10; LTE 9 = 3;&#10; LTE 12 = 4;&#10; GT 12 = 5;&#10;"
-                className={cn(
-                    "font-mono text-sm transition-all",
-                    errors[id]
-                        ? "border-destructive focus-visible:ring-destructive"
-                        : "focus-visible:ring-primary/20",
-                )}
-                rows={4}
-            />
-            {errors[id] && (
-                <p className="text-sm text-destructive mt-1.5 flex items-center gap-1">
-                    <InfoIcon className="h-3 w-3" />
-                    {errors[id]}
-                </p>
-            )}
-        </Field>
-    );
+	return (
+		<Field>
+			<FieldLabel htmlFor={id}>
+				{label} <StarRequired />
+				<FormulaIndicatorTooltip />
+			</FieldLabel>
+			<Textarea
+				id={id}
+				name={id}
+				defaultValue={value}
+				placeholder="Contoh:&#10; LTE 3 = 1;&#10; LTE 6 = 2;&#10; LTE 9 = 3;&#10; LTE 12 = 4;&#10; GT 12 = 5;&#10;"
+				className={cn(
+					"font-mono text-sm transition-all",
+					errors[id] ? "border-destructive focus-visible:ring-destructive" : "focus-visible:ring-primary/20",
+				)}
+				rows={4}
+			/>
+			{errors[id] && (
+				<p className="text-sm text-destructive mt-1.5 flex items-center gap-1">
+					<InfoIcon className="h-3 w-3" />
+					{errors[id]}
+				</p>
+			)}
+		</Field>
+	);
 });
 FormulaIndicator.displayName = "FormulaIndicator";
 
