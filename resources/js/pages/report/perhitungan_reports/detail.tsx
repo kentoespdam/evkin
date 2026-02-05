@@ -1,31 +1,22 @@
 import { Head, router } from "@inertiajs/react";
-import { LockIcon, RefreshCwIcon } from "lucide-react";
-import { memo, useCallback, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import PaginationNav from "@/components/commons/pagination-nav";
-import TableTextSearch from "@/components/commons/table-text-search";
 import PerhitunganReportsDetailTable from "@/components/reports/table/perhitungan_report_detail";
 import PerhitunganReportDetailFilter from "@/components/reports/table/perhitungan_report_detail/filter";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { usePerhitunganDetailFilter } from "@/hooks/user-perhitungan-report-detail";
 import AppLayout from "@/layouts/app-layout";
-import { monthsList, yearsList } from "@/lib/utils";
-import type { BreadcrumbItem } from "@/types";
-import type { Aspect } from "@/types/aspect";
+import report from "@/routes/report";
 import type { PerhitunganReportsDetailProps } from "@/types/perhitungan-reports";
-import type { ReportType } from "@/types/report-type";
 
-const breadcrumbs: BreadcrumbItem[] = [
+const useBreadcrumbs = () => useMemo(() => [
 	{ title: "Dashboard", href: "/dashboard" },
 	{ title: "Reports", href: "#" },
 	{ title: "Perhitungan", href: "#" },
-];
-
-
+], []);
 
 const PerhitunganReportsDetail = ({ page, reportTypes, aspects, filters }: PerhitunganReportsDetailProps) => {
-	const baseUrl = useMemo(() => "/report/perhitungan-reports/detail", []);
+	const baseUrl = useMemo(() => report.perhitunganReports.detail.url(), []);
+	const breadcrumbs = useBreadcrumbs();
 
 	useEffect(() => {
 		const params = new URLSearchParams(window.location.search);
@@ -34,6 +25,7 @@ const PerhitunganReportsDetail = ({ page, reportTypes, aspects, filters }: Perhi
 				data: {
 					year: filters.year,
 					month: filters.month,
+					report_type_id: filters.report_type_id,
 				},
 				preserveState: true,
 				preserveScroll: true,
@@ -53,14 +45,12 @@ const PerhitunganReportsDetail = ({ page, reportTypes, aspects, filters }: Perhi
 							<CardTitle className="text-2xl font-bold">Perhitungan Reports</CardTitle>
 							<CardDescription>Calculated report values with filters</CardDescription>
 						</div>
-						{/* Optional export buttons could go here */}
 					</CardHeader>
 					<CardContent className="space-y-6">
 						<PerhitunganReportDetailFilter
 							filters={filters}
 							reportTypes={reportTypes}
-							aspects={aspects}
-							isEmpty={page.meta.total === 0} />
+							aspects={aspects} />
 
 						<PerhitunganReportsDetailTable page={page} />
 

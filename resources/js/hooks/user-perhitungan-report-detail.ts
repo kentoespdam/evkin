@@ -1,14 +1,22 @@
 import { router } from "@inertiajs/react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { monthsList, yearsList } from "@/lib/utils";
 import report from "@/routes/report";
 import type { PerhitunganReportFilters } from "@/types/perhitungan-reports";
 
-const BASE_URL=report.perhitunganReports.detail.url();
-const EXPORT_ENDPOINT=report.perhitunganReports.detail.export.url();
-const EXPORT_TIMEOUT=30000; // 30 seconds
+const BASE_URL = report.perhitunganReports.detail.url();
 
 export const usePerhitunganDetailFilter = () => {
+    const {years, months} = useMemo(() => {
+                const now = new Date();
+                return {
+                    years: yearsList(now.getFullYear() - 5, now.getFullYear() + 1), 
+                    months: monthsList()
+                };
+            }, []);
+    const [isExporting, setIsExporting] = useState(false);
+
     const updateAndVisit = useCallback(
         (key: string, value: string) => {
             const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
@@ -39,75 +47,84 @@ export const usePerhitunganDetailFilter = () => {
         router.visit(BASE_URL, { preserveScroll: true, preserveState: false, replace: true });
     }, []);
 
-    
+    const exportExcel = useCallback(
+        async (filters: PerhitunganReportFilters) => {
+            if (!filters.report_type_id) {
+                toast.error("Pilih Report Type terlebih dahulu");
+                return;
+            }
 
-    return { updateAndVisit, resetAll };
-};
+            setIsExporting(true);
+            toast.info("Memproses export...");
 
-export const useExportHandler = (filters?: PerhitunganReportFilters) => {
-  const [isExporting, setIsExporting] = useState(false);
-  const exportTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  
-  const handleExport = useCallback(() => {
-    if (!filters) {
-      toast.error("Filter tidak lengkap");
-      return;
-    }
+            try {
+                // Get CSRF token from XSRF-TOKEN cookie
+                const csrfToken = document.cookie
+                    .split(';')
+                    .find(cookie => cookie.trim().startsWith('XSRF-TOKEN='))
+                    ?.split('=')[1];
 
-    // Prevent multiple exports
-    if (isExporting) {
-      toast.warning("Export sedang diproses...");
-      return;
-    }
+                if (!csrfToken) {
+                    throw new Error("XSRF-TOKEN cookie tidak ditemukan");
+                }
 
-    setIsExporting(true);
-    toast.info("Memulai proses export...");
+                // Decode the token if it's URL encoded
+                const decodedToken = decodeURIComponent(csrfToken);
 
-    // Set timeout to prevent hanging
-    exportTimeoutRef.current = setTimeout(() => {
-      if (isExporting) {
-        setIsExporting(false);
-        toast.error("Export timeout. Silakan coba lagi.");
-      }
-    }, EXPORT_TIMEOUT);
+                const formData = new FormData();
 
-    router.post(
-      EXPORT_ENDPOINT,
-      filters ? filters : {},
-      {
-        preserveScroll: true,
-        preserveState: true,
-        onSuccess: () => {
-          clearTimeout(exportTimeoutRef.current!);
-          toast.success("File Excel berhasil di-generate dan akan segera didownload");
-          setIsExporting(false);
+                // Add filter data to FormData
+                Object.entries(filters).forEach(([key, value]) => {
+                    if (value !== null && value !== undefined && value !== "") {
+                        formData.append(key, String(value));
+                    }
+                });
+
+                const response = await fetch("/report/perhitungan-reports/detail/export", {
+                    method: "POST",
+                    headers: {
+                        "X-XSRF-TOKEN": decodedToken,
+                    },
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+
+                // Get the filename from Content-Disposition header
+                const contentDisposition = response.headers.get("Content-Disposition");
+                let fileName = "perhitungan-reports-detail.xlsx";
+                if (contentDisposition) {
+                    const fileNameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+                    if (fileNameMatch) {
+                        fileName = decodeURIComponent(fileNameMatch[1]);
+                    }
+                }
+
+                // Convert response to blob and trigger download
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+
+                toast.success("File Excel berhasil diunduh");
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : "Gagal mengunduh file Excel";
+                toast.error(errorMessage);
+                console.error("Export error:", error);
+            } finally {
+                setIsExporting(false);
+            }
         },
-        onError: (errors) => {
-          clearTimeout(exportTimeoutRef.current!);
-          const errorMessages = Object.values(errors);
-          const errorMessage = errorMessages.length > 0 
-            ? String(errorMessages[0]) 
-            : "Gagal export file. Silakan coba lagi.";
-          
-          toast.error(errorMessage);
-          setIsExporting(false);
-        },
-        onFinish: () => {
-          // Cleanup timeout
-          if (exportTimeoutRef.current) {
-            clearTimeout(exportTimeoutRef.current);
-          }
-        },
-      },
+        [],
     );
-  }, [filters, isExporting]);
 
-  // Cleanup on unmount
-  const cleanup = useCallback(() => {
-    if (exportTimeoutRef.current) {
-      clearTimeout(exportTimeoutRef.current);
-    }
-  }, []);
-
-  return { isExporting, handleExport, cleanup };
+    return {years, months, updateAndVisit, resetAll, exportExcel, isExporting };
 };

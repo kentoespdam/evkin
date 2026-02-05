@@ -1,11 +1,9 @@
-import { RefreshCwIcon } from "lucide-react";
-import { memo, useMemo, useState } from "react";
-import ExportButton from "@/components/commons/form/export-button";
+import { DownloadIcon, RefreshCwIcon } from "lucide-react";
+import { memo, useMemo } from "react";
 import TableTextSearch from "@/components/commons/table-text-search";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useExportHandler, usePerhitunganDetailFilter } from "@/hooks/user-perhitungan-report-detail";
-import { monthsList, yearsList } from "@/lib/utils";
+import { usePerhitunganDetailFilter } from "@/hooks/user-perhitungan-report-detail";
 import type { Aspect } from "@/types/aspect";
 import type { PerhitunganReportsDetailProps } from "@/types/perhitungan-reports";
 import type { ReportType } from "@/types/report-type";
@@ -14,34 +12,14 @@ interface PerhitunganReportDetailFilterProps {
     filters: PerhitunganReportsDetailProps["filters"];
     reportTypes: ReportType[];
     aspects: Aspect[];
-    isEmpty: boolean;
 }
 const PerhitunganReportDetailFilter = memo(
     ({
         filters,
         reportTypes,
         aspects,
-        isEmpty = true
     }: PerhitunganReportDetailFilterProps) => {
-        const { updateAndVisit, resetAll } = usePerhitunganDetailFilter();
-        const { isExporting, handleExport, cleanup } = useExportHandler(filters);
-
-        useState(() => {
-            return () => cleanup();
-        });
-
-        const canExport = useMemo(() => {
-            return filters && !isEmpty;
-        }, [filters, isEmpty]);
-
-        const exportDisabled = useMemo(() => {
-            return !canExport || isExporting;
-        }, [canExport, isExporting]);
-
-        const [years, months] = useMemo(() => {
-            const now = new Date();
-            return [yearsList(now.getFullYear() - 5, now.getFullYear() + 1), monthsList()];
-        }, []);
+        const { years, months, updateAndVisit, resetAll, exportExcel, isExporting } = usePerhitunganDetailFilter();
 
         const filteredAspects = useMemo(() => {
             const rt = filters.report_type_id;
@@ -115,15 +93,16 @@ const PerhitunganReportDetailFilter = memo(
                         <RefreshCwIcon className="size-4" /> Reset
                     </Button>
 
-                    {/* <Button>
-                        <LockIcon className="size-4" /> Locked
-                    </Button> */}
-                    <ExportButton
-                        isExporting={isExporting}
-                        onExport={handleExport}
-                        disabled={exportDisabled}
-                        isEmpty={isEmpty}
-                    />
+                    <Button
+                        type="button"
+                        onClick={() => exportExcel(filters)}
+                        disabled={isExporting || !filters.report_type_id}
+                        className="gap-2"
+                        aria-label="Download Excel"
+                    >
+                        <DownloadIcon className="size-4" />
+                        {isExporting ? "Downloading..." : "Download Excel"}
+                    </Button>
                 </div>
 
                 <div className="flex items-center justify-between gap-2">
