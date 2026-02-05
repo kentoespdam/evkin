@@ -359,7 +359,8 @@ export const formatWithRuleValue = (formula: string, value?: number): string => 
 };
 
 // Fungsi bantu tambahan untuk validasi dan konversi
-export const isValidNumber = (value: unknown): value is number => {
+// biome-ignore lint/suspicious/noExplicitAny: Any Data
+export const isValidNumber = (value: any): value is number => {
 	return typeof value === "number" && !Number.isNaN(value) && Number.isFinite(value);
 };
 

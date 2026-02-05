@@ -25,6 +25,12 @@ export interface NavItem {
 	isActive?: boolean;
 }
 
+export interface SidebarConfig {
+  mainItems: NavItem[];
+  adminGroups: NavGroup[];
+  userGroups: NavGroup[];
+}
+
 export interface SharedData {
 	name: string;
 	quote: { message: string; author: string };
@@ -35,6 +41,14 @@ export interface SharedData {
 	};
 	sidebarOpen: boolean;
 	isAdmin: boolean;
+	errors?: Errors & ErrorBag;
+	flash?: {
+		success?: string;
+		error?: string;
+		warning?: string;
+		info?: string;
+		[key: string]: string | undefined;
+	};
 	[key: string]: unknown;
 }
 

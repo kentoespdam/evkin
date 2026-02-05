@@ -2,6 +2,15 @@ import { usePage } from "@inertiajs/react";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 
+type FlashMessages = {
+	success?: string;
+	error?: string;
+	warning?: string;
+	info?: string;
+};
+
+type ToastType = "success" | "error" | "warning" | "info";
+
 /**
  * Custom hook to display toast notifications for Laravel flash messages
  * Automatically shows error and success messages when Laravel redirects with:
@@ -13,57 +22,39 @@ import { toast } from "sonner";
 export const useErrorToast = () => {
 	const page = usePage();
 	const { errors } = page.props;
-	const flash = page.props.flash as { success?: string; error?: string; warning?: string; info?: string } | undefined;
+	const flash = page.props.flash as FlashMessages | undefined;
 
 	// Track shown messages to prevent duplicates
 	const shownMessagesRef = useRef<Set<string>>(new Set());
 
-	// Combined effect for all flash messages
 	useEffect(() => {
-		const currentMessages = new Set<string>();
+		const newMessages = new Set<string>();
 
-		// Handle success messages
-		if (flash?.success && !shownMessagesRef.current.has(`success:${flash.success}`)) {
-			toast.success(flash.success);
-			currentMessages.add(`success:${flash.success}`);
+		// Handle flash messages
+		if (flash) {
+			(["success", "error", "warning", "info"] as ToastType[]).forEach((type) => {
+				const message = flash[type];
+				if (message) {
+					const messageKey = `flash:${type}:${message}`;
+					if (!shownMessagesRef.current.has(messageKey)) {
+						toast[type](message);
+						newMessages.add(messageKey);
+					}
+				}
+			});
 		}
 
-		// Handle flash error messages
-		if (flash?.error && !shownMessagesRef.current.has(`error:${flash.error}`)) {
-			toast.error(flash.error);
-			currentMessages.add(`error:${flash.error}`);
-		}
-
-		// Handle warning messages
-		if (flash?.warning && !shownMessagesRef.current.has(`warning:${flash.warning}`)) {
-			toast.warning(flash.warning);
-			currentMessages.add(`warning:${flash.warning}`);
-		}
-
-		// Handle info messages
-		if (flash?.info && !shownMessagesRef.current.has(`info:${flash.info}`)) {
-			toast.info(flash.info);
-			currentMessages.add(`info:${flash.info}`);
-		}
-
-		// Update shown messages
-		currentMessages.forEach((msg) => {
-			shownMessagesRef.current.add(msg);
-		});
-	}, [flash?.success, flash?.error, flash?.warning, flash?.info]);
-
-	// Handle validation errors
-	useEffect(() => {
+		// Handle validation errors
 		if (errors && Object.keys(errors).length > 0) {
 			// Check for specific 'error' key (from withErrors(['error' => 'message']))
 			if ("error" in errors && typeof errors.error === "string") {
 				const errorKey = `validation:error:${errors.error}`;
 				if (!shownMessagesRef.current.has(errorKey)) {
 					toast.error(errors.error);
-					shownMessagesRef.current.add(errorKey);
+					newMessages.add(errorKey);
 				}
 			} else {
-				// If there are multiple validation errors, show them all
+				// Handle multiple validation errors
 				Object.entries(errors).forEach(([field, message]) => {
 					if (typeof message === "string") {
 						const errorKey = `validation:${field}:${message}`;
@@ -71,11 +62,25 @@ export const useErrorToast = () => {
 							toast.error(message, {
 								description: field !== "error" ? `Field: ${field}` : undefined,
 							});
-							shownMessagesRef.current.add(errorKey);
+							newMessages.add(errorKey);
 						}
 					}
 				});
 			}
 		}
-	}, [errors]);
+
+		// Add new messages to shown set
+		newMessages.forEach((msg) => {shownMessagesRef.current.add(msg)});
+
+		// Cleanup: Clear old messages after navigation to prevent memory leaks
+		return () => {
+			if (newMessages.size > 0) {
+				// Keep only last 50 messages to prevent unbounded growth
+				if (shownMessagesRef.current.size > 50) {
+					const messagesArray = Array.from(shownMessagesRef.current);
+					shownMessagesRef.current = new Set(messagesArray.slice(-50));
+				}
+			}
+		};
+	}, [flash, errors]);
 };
