@@ -6,6 +6,13 @@ import type { PerhitunganReportDetail } from "@/types/perhitungan-reports";
 
 interface PerhitunganReportsTableProps {
 	page: Pagination<PerhitunganReportDetail>;
+	filters?: {
+		year: number;
+		month: number;
+		report_type_id?: string;
+		aspect_id?: string;
+		search?: string;
+	};
 }
 
 const PerhitunganReportsDetailTableHeader = memo(() => (
@@ -31,6 +38,9 @@ PerhitunganReportsDetailTableHeader.displayName = "PerhitunganReportsDetailTable
 
 const RulesBadge = memo(({ rule }: { rule: string }) => {
 	const rules = rule?.split("\n").filter((item) => item.trim()) || [];
+
+	if (rules.length === 0) return null;
+
 	return (
 		<div className="mt-2 bg-slate-100 text-slate-900 rounded px-3 py-2 border border-slate-300 font-mono text-xs">
 			<div className="mb-2 font-semibold">Rules:</div>
@@ -56,14 +66,43 @@ const RumusCell = memo(({ item }: { item: PerhitunganReportDetail }) => {
 		<TableCell>
 			<div className="whitespace-nowrap">
 				{item.formula}
-				{item.masterReport.withRules && <RulesBadge rule={item.masterReport.rules || ""} />}
+				{item.masterReport.withRules && (
+					<RulesBadge rule={item.masterReport.rules || ""} />
+				)}
 			</div>
 		</TableCell>
 	);
 });
 RumusCell.displayName = "RumusCell";
 
-const PerhitunganReportsDetailTableBody = memo(({ page }: { page: Pagination<PerhitunganReportDetail> }) => {
+interface ReportTableRowProps {
+	row: PerhitunganReportDetail & {
+		urut: number;
+		bobotDigits: number;
+		archivementDigits: number
+	};
+}
+const ReportTableRow = memo(({ row }: ReportTableRowProps) => (
+	<TableRow key={row.id}>
+		<TableCell>{row.urut}</TableCell>
+		<TableCell>{`${row.year}-${row.month}`}</TableCell>
+		<TableCell>{row.descIndicator}</TableCell>
+		<RumusCell item={row} />
+		<TableCell>{formatFormulaValue(row.formulaValue)}</TableCell>
+		<TableCell>{row.masterReport?.unit}</TableCell>
+		<TableCell align="right">{formatNumber(row.nilai, 2)}</TableCell>
+		<TableCell align="right">{formatNumber(row.nilaiIndicator)}</TableCell>
+		<TableCell>{formatFormulaValue(row.formulaNilaiBobot, 3)}</TableCell>
+		<TableCell align="right">{formatNumber(row.nilaiBobot, row.bobotDigits)}</TableCell>
+		<TableCell>{row.formulaArchivement}</TableCell>
+		<TableCell>{formatFormulaValue(row.formulaArchivementValue)}</TableCell>
+		<TableCell align="right">{formatNumber(row.nilaiArchivement, row.archivementDigits)}</TableCell>
+	</TableRow>
+));
+ReportTableRow.displayName = "ReportTableRow";
+
+const PerhitunganReportsDetailTableBody = memo(({ page }:
+	{ page: Pagination<PerhitunganReportDetail> }) => {
 	const rows = useMemo(() => {
 		const firstNumber = page.meta.from;
 		return page.data.map((item, index) => ({
@@ -76,21 +115,7 @@ const PerhitunganReportsDetailTableBody = memo(({ page }: { page: Pagination<Per
 	return (
 		<TableBody>
 			{rows.map((row) => (
-				<TableRow key={row.id}>
-					<TableCell>{row.urut}</TableCell>
-					<TableCell>{`${row.year}-${row.month}`}</TableCell>
-					<TableCell>{row.descIndicator}</TableCell>
-					<RumusCell item={row} />
-					<TableCell>{formatFormulaValue(row.formulaValue)}</TableCell>
-					<TableCell>{row.masterReport?.unit}</TableCell>
-					<TableCell align="right">{formatNumber(row.nilai, 2)}</TableCell>
-					<TableCell align="right">{formatNumber(row.nilaiIndicator)}</TableCell>
-					<TableCell>{formatFormulaValue(row.formulaNilaiBobot, 3)}</TableCell>
-					<TableCell align="right">{formatNumber(row.nilaiBobot, row.bobotDigits)}</TableCell>
-					<TableCell>{row.formulaArchivement}</TableCell>
-					<TableCell>{formatFormulaValue(row.formulaArchivementValue)}</TableCell>
-					<TableCell align="right">{formatNumber(row.nilaiArchivement, row.archivementDigits)}</TableCell>
-				</TableRow>
+				<ReportTableRow key={row.id} row={row} />
 			))}
 		</TableBody>
 	);
@@ -98,19 +123,11 @@ const PerhitunganReportsDetailTableBody = memo(({ page }: { page: Pagination<Per
 PerhitunganReportsDetailTableBody.displayName = "PerhitunganReportsDetailTableBody";
 
 const PerhitunganReportsDetailTable = ({ page }: PerhitunganReportsTableProps) => {
-	const rows = page.data;
-
-	if (!rows.length) {
-		return <div className="text-sm text-muted-foreground px-4 py-6">No data found.</div>;
-	}
-
 	return (
-		<div className="space-y-3">
-			<Table>
-				<PerhitunganReportsDetailTableHeader />
-				<PerhitunganReportsDetailTableBody page={page} />
-			</Table>
-		</div>
+		<Table>
+			<PerhitunganReportsDetailTableHeader />
+			<PerhitunganReportsDetailTableBody page={page} />
+		</Table>
 	);
 };
 export default PerhitunganReportsDetailTable;

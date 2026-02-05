@@ -8,7 +8,7 @@
 		"dev": "vite",
 		"format": "biome format --write resources/",
 		"format:check": "biome check resources/",
-		"lint": "biome lint --write",
+		"lint": "biome lint",
 		"types": "tsc --noEmit"
 	},
 	"devDependencies": {
