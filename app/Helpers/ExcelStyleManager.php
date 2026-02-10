@@ -12,14 +12,27 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class ExcelStyleManager
 {
-    public static function applyHeaderStyle(Worksheet $sheet, array $headers, ExcelConfiguration $config): void
+    public static function addCell(Worksheet $sheet, string $cellCoordinate, string|int|float $value, int $row, array $styleArray = [])
+    {
+        $cell = $sheet->getCell($cellCoordinate);
+        $cell->setValue($value);
+        if (!empty($styleArray)) {
+            $sheet->getStyle($cellCoordinate)->applyFromArray($styleArray);
+        }
+    }
+
+    /**
+     * Summary of applyHeaderStyle
+     * @param Worksheet $sheet
+     * @param array<CellHelper> $headers
+     * @param ExcelConfiguration $config
+     * @return void
+     */
+    public static function applyHeaderStyle(Worksheet $sheet, array $headers, ExcelConfiguration $config, int $startRow = 1): void
     {
         foreach ($headers as $index => $header) {
             $column = Coordinate::stringFromColumnIndex($index + 1);
-            $cell = $sheet->getCell($column.'1');
-            $cell->setValue($header);
-
-            $sheet->getStyle($column.'1')->applyFromArray([
+            $styleFormat = [
                 'fill' => [
                     'fillType' => Fill::FILL_SOLID,
                     'color' => ['rgb' => '366092'],
@@ -39,10 +52,23 @@ class ExcelStyleManager
                         'color' => ['rgb' => '000000'],
                     ],
                 ],
-            ]);
+            ];
+
+            self::addCell(
+                $sheet,
+                "{$column}{$startRow}",
+                $header->value,
+                $startRow,
+                $styleFormat
+            );
+            if ($header->width != null) {
+                $sheet->getColumnDimension(Coordinate::stringFromColumnIndex($index + 1))
+                    ->setWidth($header->width)
+                    ->setAutoSize(false);
+            }
         }
 
-        $sheet->getRowDimension(1)->setRowHeight($config->headerRowHeight);
+        $sheet->getRowDimension($startRow)->setRowHeight($config->headerRowHeight);
     }
 
     public static function applyCellFormatting(
@@ -53,7 +79,7 @@ class ExcelStyleManager
         $value,
         ExcelConfiguration $config
     ): void {
-        $style = $sheet->getStyle($column.$row);
+        $style = $sheet->getStyle($column . $row);
 
         // Number formatting for numeric columns
         if (in_array($colIndex + 1, $config->numberColumns)) {
@@ -106,7 +132,7 @@ class ExcelStyleManager
         array $data,
         ExcelConfiguration $config
     ): void {
-        if (! $config->enableConditionalFormatting) {
+        if (!$config->enableConditionalFormatting) {
             return;
         }
 
@@ -116,7 +142,7 @@ class ExcelStyleManager
             $value = $rule['value'];
             $style = $rule['style'];
 
-            if (! isset($data[$columnIndex - 1])) {
+            if (!isset($data[$columnIndex - 1])) {
                 continue;
             }
 
@@ -143,7 +169,7 @@ class ExcelStyleManager
 
             if ($shouldApply) {
                 $column = Coordinate::stringFromColumnIndex($columnIndex);
-                $sheet->getStyle($column.$row)->applyFromArray($style);
+                $sheet->getStyle($column . $row)->applyFromArray($style);
             }
         }
     }
@@ -198,8 +224,8 @@ class ExcelStyleManager
             'creator' => config('app.name'),
             'lastModifiedBy' => config('app.name'),
             'title' => $config->sheetTitle,
-            'subject' => 'Export from '.config('app.name'),
-            'description' => 'Generated on '.now()->format('Y-m-d H:i:s'),
+            'subject' => 'Export from ' . config('app.name'),
+            'description' => 'Generated on ' . now()->format('Y-m-d H:i:s'),
         ];
 
         $allProperties = array_merge($defaultProperties, $config->documentProperties);

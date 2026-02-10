@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Data\ExcelConfiguration;
 use App\Helpers\ExcelStyleManager;
+use App\Helpers\CellHelper;
 use App\Models\Master\Aspects;
 use App\Models\Master\ReportTypes;
 use App\Models\Transaksi\PerhitunganReports;
@@ -14,46 +15,25 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class PerhitunganReportExportService extends BaseExcelExportService
+class PerhitunganReportDetailExportService extends BaseExcelExportService
 {
     protected function getConfiguration(): ExcelConfiguration
     {
         return ExcelConfiguration::create()
             ->withHeaders([
-                '#',
-                'Periode',
-                'Indikator',
-                'Rumus',
-                'Rumus Value',
-                'Satuan',
-                'Nilai',
-                'Nilai Indikator',
-                'Rumus Bobot',
-                'Nilai Bobot',
-                'Rumus Pencapaian',
-                'Rumus Pencapaian Value',
-                'Nilai Pencapaian',
-            ])
-            ->withColumnWidths([
-                1 => 6,    // # (nowrap, slightly wider)
-                2 => 15,   // Periode (nowrap)
-                3 => 30,   // Indikator (nowrap, wider)
-                4 => 35,   // Rumus (nowrap, wider)
-                5 => 25,   // Rumus Value (nowrap)
-                6 => 15,   // Satuan (nowrap)
-                7 => 18,   // Nilai (nowrap)
-                8 => 18,   // Nilai Indikator (nowrap)
-                9 => 20,   // Rumus Bobot (nowrap)
-                10 => 15,  // Nilai Bobot (nowrap)
-                11 => 25,  // Rumus Pencapaian (nowrap)
-                12 => 25,  // Rumus Pencapaian Value (nowrap)
-                13 => 18,  // Nilai Pencapaian (nowrap)
-            ])
-            ->withColumnFormats([
-                7 => '0.00',   // Nilai
-                8 => '0.00',   // Nilai Indikator
-                10 => '0.00',  // Nilai Bobot
-                13 => '0.00',  // Nilai Pencapaian
+                new CellHelper(value: '#', width: 6),
+                new CellHelper(value: 'Periode', width: 15),
+                new CellHelper(value: 'Indikator', width: 30),
+                new CellHelper(value: 'Rumus', width: 35),
+                new CellHelper(value: 'Rumus Value', width: 25),
+                new CellHelper(value: 'Satuan', width: 15),
+                new CellHelper(value: 'Nilai', width: 18, format: '0.00', alignment: 'right'),
+                new CellHelper(value: 'Nilai Indikator', width: 18, format: '0.00', alignment: 'right'),
+                new CellHelper(value: 'Rumus Bobot', width: 20),
+                new CellHelper(value: 'Nilai Bobot', width: 15, format: '0.00', alignment: 'right'),
+                new CellHelper(value: 'Rumus Pencapaian', width: 25),
+                new CellHelper(value: 'Rumus Pencapaian Value', width: 25),
+                new CellHelper(value: 'Nilai Pencapaian', width: 18, format: '0.00', alignment: 'right'),
             ])
             ->withMonospaceColumns([4, 5, 9, 12]) // Formula columns
             ->withNumberColumns([7, 8, 10, 13]) // Numeric columns
@@ -89,21 +69,21 @@ class PerhitunganReportExportService extends BaseExcelExportService
             ->where('year', $filters['year'])
             ->where('month', $filters['month']);
 
-        if (! empty($filters['report_type_id'])) {
+        if (!empty($filters['report_type_id'])) {
             $reportTypeId = $this->getReportTypeId($filters['report_type_id']);
             if ($reportTypeId) {
-                $query->whereHas('masterReport', fn ($q) => $q->where('report_type_id', $reportTypeId));
+                $query->whereHas('masterReport', fn($q) => $q->where('report_type_id', $reportTypeId));
             }
         }
 
-        if (! empty($filters['aspect_id'])) {
+        if (!empty($filters['aspect_id'])) {
             $aspectId = $this->getAspectId($filters['aspect_id']);
             if ($aspectId) {
-                $query->whereHas('masterReport', fn ($q) => $q->where('aspect_id', $aspectId));
+                $query->whereHas('masterReport', fn($q) => $q->where('aspect_id', $aspectId));
             }
         }
 
-        if (! empty($filters['search'])) {
+        if (!empty($filters['search'])) {
             $search = $filters['search'];
             $query->where(function ($q) use ($search) {
                 $q->where('desc_indicator', 'LIKE', "%{$search}%")
@@ -135,7 +115,7 @@ class PerhitunganReportExportService extends BaseExcelExportService
         ];
     }
 
-    protected function generateFileName(array $filters): string
+    public function generateFileName(array $filters): string
     {
         $timestamp = now()->format('Y-m-d-His');
         $year = $filters['year'];
@@ -143,14 +123,14 @@ class PerhitunganReportExportService extends BaseExcelExportService
 
         $fileName = "perhitungan-reports-{$year}-{$month}-{$timestamp}";
 
-        if (! empty($filters['report_type_id'])) {
+        if (!empty($filters['report_type_id'])) {
             $reportType = ReportTypes::whereSqid($filters['report_type_id'])->first();
             if ($reportType) {
-                $fileName .= '-'.Str::slug($reportType->name);
+                $fileName .= '-' . Str::slug($reportType->name);
             }
         }
 
-        return $fileName.'.xlsx';
+        return $fileName . '.xlsx';
     }
 
     // Legacy method for backward compatibility
@@ -163,7 +143,7 @@ class PerhitunganReportExportService extends BaseExcelExportService
     {
         $year = $filters['year'];
         $reportTypeId = $this->getReportTypeId($filters['report_type_id'] ?? null);
-        $aspectId = ! empty($filters['aspect_id']) ? $this->getAspectId($filters['aspect_id']) : null;
+        $aspectId = !empty($filters['aspect_id']) ? $this->getAspectId($filters['aspect_id']) : null;
         $search = $filters['search'] ?? null;
 
         // Get all reports for the year
@@ -171,11 +151,11 @@ class PerhitunganReportExportService extends BaseExcelExportService
             ->where('year', $year);
 
         if ($reportTypeId) {
-            $query->whereHas('masterReport', fn ($q) => $q->where('report_type_id', $reportTypeId));
+            $query->whereHas('masterReport', fn($q) => $q->where('report_type_id', $reportTypeId));
         }
 
         if ($aspectId) {
-            $query->whereHas('masterReport', fn ($q) => $q->where('aspect_id', $aspectId));
+            $query->whereHas('masterReport', fn($q) => $q->where('aspect_id', $aspectId));
         }
 
         if ($search) {
@@ -256,7 +236,7 @@ class PerhitunganReportExportService extends BaseExcelExportService
 
             foreach ($rowData as $colIndex => $value) {
                 $column = Coordinate::stringFromColumnIndex($colIndex + 1);
-                $cell = $sheet->getCell($column.$row);
+                $cell = $sheet->getCell($column . $row);
                 $cell->setValue($value);
 
                 ExcelStyleManager::applyCellFormatting(
@@ -299,174 +279,6 @@ class PerhitunganReportExportService extends BaseExcelExportService
         unset($this->spreadsheet);
     }
 
-    public function exportIndex(array $filters): StreamedResponse
-    {
-        $year = $filters['year'];
-        $reportTypeId = $this->getReportTypeId($filters['report_type_id'] ?? null);
-        $aspectId = ! empty($filters['aspect_id']) ? $this->getAspectId($filters['aspect_id']) : null;
-        $search = $filters['search'] ?? null;
-
-        // Get all reports for the year
-        $query = PerhitunganReports::with('masterReport')
-            ->where('year', $year);
-
-        if ($reportTypeId) {
-            $query->whereHas('masterReport', fn ($q) => $q->where('report_type_id', $reportTypeId));
-        }
-
-        if ($aspectId) {
-            $query->whereHas('masterReport', fn ($q) => $q->where('aspect_id', $aspectId));
-        }
-
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('desc_indicator', 'LIKE', "%{$search}%")
-                    ->orWhereHas('masterReport', function ($q) use ($search) {
-                        $q->where('desc_indicator', 'LIKE', "%{$search}%");
-                    });
-            });
-        }
-
-        $reports = $query->orderBy('desc_indicator')->get();
-
-        // Group reports by indicator and organize by month
-        $groupedReports = $reports->groupBy('desc_indicator')
-            ->map(function ($indicatorReports) {
-                $monthlyData = [];
-                foreach (range(1, 12) as $month) {
-                    $report = $indicatorReports->firstWhere('month', $month);
-                    $monthlyData[$month] = $report;
-                }
-
-                return [
-                    'indicator' => $indicatorReports->first()->desc_indicator,
-                    'unit' => $indicatorReports->first()->masterReport?->unit ?? '',
-                    'months' => $monthlyData,
-                ];
-            });
-
-        // Create Excel
-        $config = ExcelConfiguration::create()
-            ->withHeaders(array_merge(
-                ['#', 'Indikator', 'Satuan'],
-                ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des']
-            ))
-            ->withColumnWidths(array_merge(
-                [1 => 6, 2 => 40, 3 => 15],
-                array_fill(4, 12, 15)
-            ))
-            ->withColumnFormats(array_fill(4, 12, '0.00'))
-            ->withNumberColumns(range(4, 15))
-            ->withRightAlignColumns(range(4, 15))
-            ->withSheetTitle('Perhitungan Reports')
-            ->withZebraStriping(true)
-            ->withOrientation('landscape')
-            ->withDocumentProperties([
-                'subject' => 'Perhitungan Reports Index Export',
-                'keywords' => 'perhitungan, reports, index, export, excel',
-                'category' => 'Reports',
-            ]);
-
-        $this->spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet;
-        $this->spreadsheet->removeSheetByIndex(0);
-
-        ExcelStyleManager::setDocumentProperties($this->spreadsheet, $config);
-
-        $sheet = $this->spreadsheet->createSheet();
-        $sheet->setTitle($this->sanitizeSheetTitle('Perhitungan Reports'));
-
-        // Add headers
-        ExcelStyleManager::applyHeaderStyle($sheet, $config->headers, $config);
-
-        // Add data rows
-        $row = 2;
-        $index = 1;
-        foreach ($groupedReports as $data) {
-            $rowData = [
-                $index++,
-                $data['indicator'],
-                $data['unit'],
-            ];
-
-            // Add monthly nilai_archivement values
-            foreach (range(1, 12) as $month) {
-                $report = $data['months'][$month];
-                $rowData[] = $report ? $report->nilai_archivement : '';
-            }
-
-            foreach ($rowData as $colIndex => $value) {
-                $column = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIndex + 1);
-                $cell = $sheet->getCell($column.$row);
-                $cell->setValue($value);
-
-                ExcelStyleManager::applyCellFormatting(
-                    $sheet,
-                    $column,
-                    $row,
-                    $colIndex,
-                    $value,
-                    $config
-                );
-            }
-
-            $sheet->getRowDimension($row)->setRowHeight(20);
-            $row++;
-        }
-
-        // Apply sheet styles
-        $lastRow = $row - 1;
-        $lastColumn = count($config->headers);
-        $lastColumnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($lastColumn);
-
-        // Set column widths
-        foreach ($config->columnWidths as $col => $width) {
-            $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
-            $sheet->getColumnDimension($columnLetter)->setWidth($width)->setAutoSize(false);
-        }
-
-        if ($config->enableZebraStriping) {
-            ExcelStyleManager::applyZebraStriping($sheet, $lastRow, $lastColumnLetter);
-        }
-
-        $sheet->getPageSetup()->setPrintArea("A1:{$lastColumnLetter}{$lastRow}");
-        ExcelStyleManager::applySheetConfiguration($sheet, $config);
-
-        // Generate filename
-        $timestamp = now()->format('Y-m-d-His');
-        $fileName = "perhitungan-reports-{$year}-{$timestamp}";
-
-        if (! empty($filters['report_type_id'])) {
-            $reportType = ReportTypes::whereSqid($filters['report_type_id'])->first();
-            if ($reportType) {
-                $fileName .= '-'.Str::slug($reportType->name);
-            }
-        }
-
-        $fileName .= '.xlsx';
-
-        return new StreamedResponse(
-            function () {
-                if (ob_get_level() == 0) {
-                    ob_start();
-                }
-
-                $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($this->spreadsheet);
-                $writer->setPreCalculateFormulas(false);
-                $writer->save('php://output');
-
-                if (ob_get_level() > 0) {
-                    ob_end_flush();
-                }
-            },
-            200,
-            [
-                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
-                'Cache-Control' => 'max-age=0',
-            ]
-        );
-    }
-
     protected function sanitizeSheetTitle(string $title): string
     {
         // Excel sheet title max length is 31 chars
@@ -477,7 +289,7 @@ class PerhitunganReportExportService extends BaseExcelExportService
 
     private function getReportTypeId(?string $sqid): ?int
     {
-        if (! $sqid) {
+        if (!$sqid) {
             return ReportTypes::first()?->id;
         }
 

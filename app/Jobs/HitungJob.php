@@ -2,19 +2,11 @@
 
 namespace App\Jobs;
 
-use App\Helpers\FormulaHelper;
-use App\Helpers\FormulaIndicatorHelper;
 use App\Helpers\HitungInputTahunanHelper;
 use App\Helpers\HitungPerhitunganReportsHelper;
-use App\Models\Master\MasterReports;
-use App\Models\Transaksi\PerhitunganReports;
-use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class HitungJob implements ShouldQueue
 {

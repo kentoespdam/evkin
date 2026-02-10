@@ -2,9 +2,9 @@ import { Head, router } from "@inertiajs/react";
 import { useEffect, useMemo } from "react";
 import PaginationNav from "@/components/commons/pagination-nav";
 import PerhitunganReportsDetailTable from "@/components/reports/table/perhitungan_report_detail";
-import PerhitunganReportDetailFilter from "@/components/reports/table/perhitungan_report_detail/filter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AppLayout from "@/layouts/app-layout";
+import PerhitunganReportDetailFilter from "@/pages/report/perhitungan_reports/filter_detail";
 import report from "@/routes/report";
 import type { PerhitunganReportsDetailProps } from "@/types/perhitungan-reports";
 

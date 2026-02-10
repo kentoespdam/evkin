@@ -28,7 +28,7 @@ abstract class BaseExcelExportService
 
     abstract protected function processDataRow($item, int $index): array;
 
-    abstract protected function generateFileName(array $filters): string;
+    abstract function generateFileName(array $filters): string;
 
     public function exportData(array $filters): StreamedResponse
     {
@@ -125,6 +125,13 @@ abstract class BaseExcelExportService
         return $sheet;
     }
 
+    protected function addTitleRow(Worksheet $sheet, string $title, int $row, int $colSpan)
+    {
+        $sheet->setCellValue('A' . $row, $title);
+        $sheet->getStyle('A' . $row)->getFont()->setBold(true)->setSize(16);
+        $sheet->mergeCells('A' . $row . ':' . Coordinate::stringFromColumnIndex($colSpan) . $row);
+    }
+
     protected function addHeaders(Worksheet $sheet): void
     {
         ExcelStyleManager::applyHeaderStyle($sheet, $this->config->headers, $this->config);
@@ -153,7 +160,7 @@ abstract class BaseExcelExportService
     {
         foreach ($data as $colIndex => $value) {
             $column = Coordinate::stringFromColumnIndex($colIndex + 1);
-            $cell = $sheet->getCell($column.$row);
+            $cell = $sheet->getCell($column . $row);
             $cell->setValue(trim($value));
 
             ExcelStyleManager::applyCellFormatting(
@@ -212,7 +219,7 @@ abstract class BaseExcelExportService
 
         $estimatedWidth = min($estimatedWidth, $maxWidth);
 
-        if (! isset($this->columnWidths[$colIndex])) {
+        if (!isset($this->columnWidths[$colIndex])) {
             $this->columnWidths[$colIndex] = $estimatedWidth;
         } else {
             $this->columnWidths[$colIndex] = max($this->columnWidths[$colIndex], $estimatedWidth);

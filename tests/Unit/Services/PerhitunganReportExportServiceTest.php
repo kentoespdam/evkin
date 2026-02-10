@@ -5,17 +5,17 @@ namespace Tests\Unit\Services;
 use App\Models\Master\MasterReports;
 use App\Models\Master\ReportTypes;
 use App\Models\Transaksi\PerhitunganReports;
-use App\Services\PerhitunganReportExportService;
+use App\Services\PerhitunganReportDetailExportService;
 use Tests\TestCase;
 
 class PerhitunganReportExportServiceTest extends TestCase
 {
-    private PerhitunganReportExportService $service;
+    private PerhitunganReportDetailExportService $service;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new PerhitunganReportExportService;
+        $this->service = new PerhitunganReportDetailExportService;
     }
 
     public function test_export_detail_returns_streamed_response(): void

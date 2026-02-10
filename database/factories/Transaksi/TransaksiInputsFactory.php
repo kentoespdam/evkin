@@ -2,6 +2,8 @@
 
 namespace Database\Factories\Transaksi;
 
+use App\Models\Master\MasterInputs;
+use App\Models\Transaksi\TransaksiInputs;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -9,6 +11,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class TransaksiInputsFactory extends Factory
 {
+    protected $model = TransaksiInputs::class;
+
     /**
      * Define the model's default state.
      *
@@ -16,15 +20,17 @@ class TransaksiInputsFactory extends Factory
      */
     public function definition(): array
     {
-        $year = $this->faker->numberBetween(2024, 2026);
-        $month = $this->faker->numberBetween(1, 12);
+        $year = fake()->year();
+        $month = fake()->numberBetween(1, 12);
+        $periode = sprintf('%d-%02d-01', $year, $month); // Format as full date
 
         return [
+            'periode' => $periode,
             'year' => $year,
             'month' => $month,
-            'periode' => "$year-".str_pad($month, 2, '0', STR_PAD_LEFT).'-01',
-            'master_input_id' => \App\Models\Master\MasterInputs::factory(),
-            'nilai' => $this->faker->numberBetween(10, 1000),
+            'master_input_id' => MasterInputs::factory(),
+            'nilai' => fake()->randomFloat(2, 0, 10000),
+            'is_locked' => fake()->boolean(),
         ];
     }
 }

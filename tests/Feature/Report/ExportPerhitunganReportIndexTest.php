@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Report;
 
-use App\Jobs\ProcessExportJob;
+use App\Jobs\ProcessExportDetailJob;
 use App\Models\User;
 use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
@@ -29,7 +29,7 @@ class ExportPerhitunganReportIndexTest extends TestCase
             'message',
         ]);
 
-        Queue::assertPushed(ProcessExportJob::class);
+        Queue::assertPushed(ProcessExportDetailJob::class);
     }
 
     public function test_export_index_requires_authentication(): void

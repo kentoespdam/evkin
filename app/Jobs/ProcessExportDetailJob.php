@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Services\PerhitunganReportExportService;
+use App\Services\PerhitunganReportDetailExportService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -11,7 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
-class ProcessExportJob implements ShouldQueue
+class ProcessExportDetailJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -21,17 +21,14 @@ class ProcessExportJob implements ShouldQueue
 
     protected int $userId;
 
-    protected string $exportType;
-
-    public function __construct(string $exportId, array $filters, int $userId, string $exportType = 'detail')
+    public function __construct(string $exportId, array $filters, int $userId)
     {
         $this->exportId = $exportId;
         $this->filters = $filters;
         $this->userId = $userId;
-        $this->exportType = $exportType;
     }
 
-    public function handle(PerhitunganReportExportService $exportService): void
+    public function handle(PerhitunganReportDetailExportService $exportService): void
     {
         try {
             // Update status to processing
@@ -42,20 +39,16 @@ class ProcessExportJob implements ShouldQueue
             ], 3600);
 
             // Generate file path
-            $fileName = "exports/{$this->exportId}.xlsx";
+            $fileName = $exportService->generateFileName($this->filters);
             $filePath = storage_path("app/{$fileName}");
 
             // Ensure exports directory exists
-            if (! file_exists(storage_path('app/exports'))) {
+            if (!file_exists(storage_path('app/exports'))) {
                 mkdir(storage_path('app/exports'), 0755, true);
             }
 
             // Generate and save the file based on export type
-            if ($this->exportType === 'index') {
-                $exportService->generateAndStoreIndex($this->filters, $filePath);
-            } else {
-                $exportService->generateAndStore($this->filters, $filePath);
-            }
+            $exportService->generateAndStore($this->filters, $filePath);
 
             // Update status to completed
             Cache::put("export.{$this->exportId}", [
@@ -69,7 +62,6 @@ class ProcessExportJob implements ShouldQueue
             Log::info('Export job completed', [
                 'export_id' => $this->exportId,
                 'user_id' => $this->userId,
-                'export_type' => $this->exportType,
                 'file_size' => filesize($filePath),
             ]);
 
@@ -82,7 +74,6 @@ class ProcessExportJob implements ShouldQueue
 
             Log::error('Export job failed', [
                 'export_id' => $this->exportId,
-                'export_type' => $this->exportType,
                 'error' => $e->getMessage(),
             ]);
 

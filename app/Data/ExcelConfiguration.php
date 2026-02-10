@@ -2,10 +2,24 @@
 
 namespace App\Data;
 
+use App\Helpers\CellHelper;
+
 class ExcelConfiguration
 {
+    /**
+     * @param array<object, CellHelper> $headers
+     * @param array<string, int> $columnWidths
+     * @param array<string, string> $columnFormats
+     * @param array<string, mixed> $styleRules
+     * @param array<string, mixed> $conditionalFormattingRules
+     * @param array<int, string> $wrappedColumns
+     * @param array<int, string> $monospaceColumns
+     * @param array<int, string> $numberColumns
+     * @param array<int, string> $rightAlignColumns
+     * @param array<string, string> $documentProperties
+     */
     public function __construct(
-        public array $headers,
+        public array $headers = [],
         public array $columnWidths = [],
         public array $columnFormats = [],
         public array $styleRules = [],
@@ -23,7 +37,8 @@ class ExcelConfiguration
         public int $chunkSize = 1000,
         public int $headerRowHeight = 25,
         public array $documentProperties = [],
-    ) {}
+    ) {
+    }
 
     public static function create(): static
     {

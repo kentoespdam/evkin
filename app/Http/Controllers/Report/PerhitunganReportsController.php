@@ -9,13 +9,11 @@ use App\Http\Resources\AspectsCollection;
 use App\Http\Resources\MasterReportsCollection;
 use App\Http\Resources\PerhitunganReportsCollection;
 use App\Http\Resources\ReportTypesCollection;
-use App\Jobs\ProcessExportJob;
+use App\Jobs\ProcessExportDetailJob;
 use App\Models\Master\Aspects;
 use App\Models\Master\MasterReports;
 use App\Models\Master\ReportTypes;
 use App\Models\Transaksi\PerhitunganReports;
-use App\Models\User;
-use App\Services\PerhitunganReportExportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -38,7 +36,7 @@ class PerhitunganReportsController extends Controller
             ->when($request->filled('search'), fn($query) => $query->where('desc_indicator', 'like', "%{$request->search}%"))
             ->get();
 
-        $reports = $this->getPerhitunganReports($year, $reportTypeId, $request->search, includeLastDecember: true);
+        $reports = PerhitunganReports::getPerhitunganReports($year, $reportTypeId, $request->search, includeLastDecember: true);
         $reportsDecemberLastYear = $this->getDecemberLastYearReports($year - 1, $reportTypeId, $request->search);
         $aspects = Aspects::where('report_type_id', $reportTypeId)->get();
 
@@ -54,6 +52,35 @@ class PerhitunganReportsController extends Controller
                 'year' => $year,
                 'search' => $request->search ?? '',
             ],
+        ]);
+    }
+
+
+    public function exportIndex(ExportIndexRequest $request): JsonResponse
+    {
+        $exportId = Str::uuid()->toString();
+        $filters = $request->validated();
+
+        // Initialize cache with pending status
+        Cache::put("export.{$exportId}", [
+            'status' => 'pending',
+            'progress' => 0,
+            'created_at' => now(),
+        ], 3600);
+
+        $authId = (int) auth($request->user)->id();
+
+        // Dispatch job
+        // ProcessExportDetailJob::dispatch($exportId, $filters, $authId, 'index');
+
+        Log::info('Export Index Queued', [
+            'export_id' => $exportId,
+            'filters' => $filters,
+        ]);
+
+        return response()->json([
+            'export_id' => $exportId,
+            'message' => 'Export is being processed',
         ]);
     }
 
@@ -94,16 +121,7 @@ class PerhitunganReportsController extends Controller
         ]);
     }
 
-    public function exportDetail(ExportDetailRequest $request): StreamedResponse
-    {
-        Log::info('Excel Export Detail', $request->validated());
-
-        return (new PerhitunganReportExportService)->exportDetail(
-            $request->validated()
-        );
-    }
-
-    public function exportIndex(ExportIndexRequest $request): JsonResponse
+    public function exportDetail(ExportDetailRequest $request)
     {
         $exportId = Str::uuid()->toString();
         $filters = $request->validated();
@@ -117,8 +135,9 @@ class PerhitunganReportsController extends Controller
 
         $authId = (int) auth($request->user)->id();
 
+
         // Dispatch job
-        ProcessExportJob::dispatch($exportId, $filters, $authId, 'index');
+        ProcessExportDetailJob::dispatch($exportId, $filters, $authId);
 
         Log::info('Export Index Queued', [
             'export_id' => $exportId,
@@ -129,6 +148,16 @@ class PerhitunganReportsController extends Controller
             'export_id' => $exportId,
             'message' => 'Export is being processed',
         ]);
+    }
+
+    private function getDecemberLastYearReports(int $year, ?int $reportTypeId, ?string $search): Collection
+    {
+        return PerhitunganReports::with('masterReport')
+            ->where('year', $year)
+            ->where('month', 12)
+            ->whereHas('masterReport', fn($q) => $q->where('report_type_id', $reportTypeId))
+            ->when($search, fn($q) => $q->whereHas('masterReport', fn($inner) => $inner->where('desc_indicator', 'like', "%{$search}%")))
+            ->get();
     }
 
     public function exportStatus(string $exportId): JsonResponse
@@ -164,34 +193,6 @@ class PerhitunganReportsController extends Controller
         }, basename($status['file_path']), [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]);
-    }
-
-    private function getPerhitunganReports(int $year, ?int $reportTypeId, ?string $search, bool $includeLastDecember = false): Collection
-    {
-        $query = PerhitunganReports::with('masterReport')
-            ->where('year', $year)
-            ->whereHas('masterReport', fn($q) => $q->where('report_type_id', $reportTypeId));
-
-        if ($includeLastDecember) {
-            $query->orWhere(function ($q) use ($year, $reportTypeId) {
-                $q->where('year', $year - 1)
-                    ->where('month', 12)
-                    ->whereHas('masterReport', fn($inner) => $inner->where('report_type_id', $reportTypeId));
-            });
-        }
-
-        return $query->when($search, fn($q) => $q->whereHas('masterReport', fn($inner) => $inner->where('desc_indicator', 'like', "%{$search}%")))
-            ->get();
-    }
-
-    private function getDecemberLastYearReports(int $year, ?int $reportTypeId, ?string $search): Collection
-    {
-        return PerhitunganReports::with('masterReport')
-            ->where('year', $year)
-            ->where('month', 12)
-            ->whereHas('masterReport', fn($q) => $q->where('report_type_id', $reportTypeId))
-            ->when($search, fn($q) => $q->whereHas('masterReport', fn($inner) => $inner->where('desc_indicator', 'like', "%{$search}%")))
-            ->get();
     }
 
     private function getDefaultReportTypeSqid(): string

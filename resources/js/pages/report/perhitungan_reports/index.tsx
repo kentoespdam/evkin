@@ -1,84 +1,16 @@
 import { Head } from "@inertiajs/react";
-import { DownloadIcon, RefreshCwIcon } from "lucide-react";
-import { memo, useMemo } from "react";
-import TableTextSearch from "@/components/commons/table-text-search";
+import { useMemo } from "react";
 import TemplateBuilder from "@/components/reports/table/perhitungan_report_builder";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { usePerhitunganIndexFilter } from "@/hooks/use-perhitungan-report-index";
 import AppLayout from "@/layouts/app-layout";
-import { yearsList } from "@/lib/utils";
 import type { BreadcrumbItem } from "@/types";
-import type { PerhitunganReportFilters, PerhitunganReportProps } from "@/types/perhitungan-reports";
-import type { ReportType } from "@/types/report-type";
+import type { PerhitunganReportProps } from "@/types/perhitungan-reports";
+import PerhitunganReportIndexFilter from "./filter_index";
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{ title: "Dashboard", href: "/dashboard" },
 	{ title: "Reports", href: "#" },
 ];
-
-const Filters = memo(({ filters, reportTypes }: { filters: PerhitunganReportFilters; reportTypes: ReportType[] }) => {
-	const { updateAndVisit, resetAll, exportExcel, isExporting } = usePerhitunganIndexFilter();
-
-	const years = useMemo(() => {
-		const now = new Date();
-		return yearsList(now.getFullYear() - 5, now.getFullYear() + 1);
-	}, []);
-
-	return (
-		<div className="flex flex-wrap items-center gap-2">
-			<TableTextSearch
-				params={{ search: filters.search ?? "" }}
-				handleSelectChange={(v) => updateAndVisit("search", v.search ?? "")}
-				text="Indicators"
-				className="w-full sm:max-w-sm"
-			/>
-
-			<Select value={filters.report_type_id ?? ""} onValueChange={(v) => updateAndVisit("report_type_id", v)}>
-				<SelectTrigger className="w-fit min-w-48">
-					<SelectValue placeholder="Filter Report Type" />
-				</SelectTrigger>
-				<SelectContent>
-					{reportTypes.map((rt) => (
-						<SelectItem key={rt.id} value={rt.id}>
-							{rt.name}
-						</SelectItem>
-					))}
-				</SelectContent>
-			</Select>
-
-			<Select name="year" defaultValue={filters.year?.toString()} onValueChange={(v) => updateAndVisit("year", v)}>
-				<SelectTrigger className="w-fit">
-					<SelectValue placeholder="Select year" />
-				</SelectTrigger>
-				<SelectContent>
-					{years.map((year) => (
-						<SelectItem key={year} value={year.toString()}>
-							{year}
-						</SelectItem>
-					))}
-				</SelectContent>
-			</Select>
-
-			<Button onClick={resetAll} className="gap-2" aria-label="Reset filters">
-				<RefreshCwIcon className="size-4" /> Reset
-			</Button>
-
-			<Button
-				type="button"
-				onClick={() => exportExcel(filters)}
-				disabled={isExporting || !filters.report_type_id}
-				className="gap-2"
-				aria-label="Download Excel"
-			>
-				<DownloadIcon className="size-4" />
-				{isExporting ? "Downloading..." : "Download Excel"}
-			</Button>
-		</div>
-	);
-});
-Filters.displayName = "Filters";
 
 const ReportPerhitungan = ({ masterReports, reportTypes, aspects, reports, filters }: PerhitunganReportProps) => {
 	const jenisReport = useMemo(() => reportTypes.find((rt) => rt.id === filters.report_type_id), [filters, reportTypes]);
@@ -102,7 +34,7 @@ const ReportPerhitungan = ({ masterReports, reportTypes, aspects, reports, filte
 						{/* Optional export buttons could go here */}
 					</CardHeader>
 					<CardContent className="space-y-6">
-						<Filters filters={filters} reportTypes={reportTypes} />
+						<PerhitunganReportIndexFilter filters={filters} reportTypes={reportTypes} />
 						<TemplateBuilder
 							masterReports={masterReports}
 							reportTypes={reportTypes}

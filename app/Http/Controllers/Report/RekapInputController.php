@@ -65,6 +65,36 @@ class RekapInputController extends Controller
         ]);
     }
 
+    public function exportRekapBulanan(Request $request)
+    {
+        $year = $request->integer('year', (int) date('Y'));
+        $perPage = $request->integer('per_page', self::DEFAULT_PER_PAGE);
+
+        $page = MasterInputs::where('aspect_id', '!=', null)
+            ->when($request->filled('search'), fn($query) => $query->where('description', 'like', '%' . $request->search . '%'))
+            ->orderBy('aspect_id')
+            ->orderBy('seq')
+            ->paginate($perPage);
+
+        [$masterIds, $aspects, $reportTypes] = $this->extractAspectsAndReportTypes($page);
+
+        $rekapData = TransaksiInputs::with(self::REKAP_RELATIONS)
+            ->whereIn('master_input_id', $masterIds)
+            ->where('year', $year)
+            ->get()
+            ->sortBy(fn($item) => $item->masterInput->seq)
+            ->values();
+
+        $rekapTahunan = RekapInputTahunans::with(self::REKAP_RELATIONS)
+            ->whereIn('master_input_id', $masterIds)
+            ->where('year', $year - 1)
+            ->orderBy('seq')
+            ->get();
+        $lockTransaksiInputs = LockTransaksiInputs::where('year', $year)->get();
+
+
+    }
+
     public function rekapTahunan(Request $request): Response
     {
         $currentYear = (int) date('Y');
