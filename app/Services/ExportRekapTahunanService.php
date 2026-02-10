@@ -4,13 +4,12 @@ namespace App\Services;
 
 use App\Data\ExcelConfiguration;
 use App\Helpers\CellHelper;
-use App\Helpers\DateHelper;
 use App\Models\Master\MasterInputs;
 use App\Models\Transaksi\RekapInputTahunans;
-use App\Models\Transaksi\TransaksiInputs;
 use App\Services\Excel\ExcelStyleManager;
 use App\Services\Excel\PositionTracker;
 use App\Services\Excel\PositionTrackerBuilder;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
@@ -18,21 +17,21 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-class ExportRekapBulananService
+class ExportRekapTahunanService
 {
-    private const REKAP_RELATIONS = ['masterInput.masterSource', 'masterInput.aspect.reportType'];
-
     private const EXPORTS_DIRECTORY = 'exports';
 
     private const TITLE_ROW_HEIGHT = 2;
 
-    private const MONTH_COUNT = 12;
+    private int $YEAR_COUNT = 0;
 
     private const RATA_RATA_COLUMN_INDEX = 17;
 
     private const HEADER_ROW_HEIGHT = 1;
 
-    private int $year;
+    private int $fromYear;
+
+    private int $toYear;
 
     private string $fileName;
 
@@ -44,15 +43,19 @@ class ExportRekapBulananService
 
     private array $headerCells = [];
 
-    public function __construct(int $year)
+    public function __construct(int $fromYear, int $toYear)
     {
-        $this->year = $year;
+        $this->fromYear = $fromYear;
+        $this->toYear = $toYear;
+
+        $this->YEAR_COUNT = ($toYear - $fromYear) + 1;
+
         $this->initializeService();
     }
 
     private function initializeService(): void
     {
-        $this->positionTracker = (new PositionTrackerBuilder)
+        $this->positionTracker = (new PositionTrackerBuilder())
             ->startRow(1)
             ->build();
         $this->generateFileName();
@@ -69,7 +72,7 @@ class ExportRekapBulananService
         return $this->saveExcelFile();
     }
 
-    private function initializeSpreadsheet(): void
+    private function initializeSpreadsheet()
     {
         $this->spreadsheet = new Spreadsheet;
         $this->setDocumentProperties();
@@ -78,38 +81,13 @@ class ExportRekapBulananService
         $sheet->setTitle($this->excelConfig->sheetTitle);
     }
 
-    private function generateFileName(): void
-    {
-        $timestamp = now()->format('YmdHis');
-        $this->fileName = sprintf('rekap-bulanan-%d-%s.xlsx', $this->year, $timestamp);
-    }
-
-    private function generateHeaders(): void
-    {
-        $mainHeaders = [
-            new CellHelper('#'),
-            new CellHelper(value: 'Indikator', width: 50),
-            new CellHelper(value: 'Sumber Data', width: 20),
-            new CellHelper(value: 'Satuan', width: 15),
-        ];
-
-        $monthHeaders = array_map(
-            fn($month) => new CellHelper(value: $month, width: 20),
-            DateHelper::$monthList
-        );
-
-        $rataRataHeader = new CellHelper(value: 'Rata-Rata / Pencapaian', width: 25);
-
-        $this->headerCells = [...$mainHeaders, ...$monthHeaders, $rataRataHeader];
-    }
-
     private function createExcelConfiguration(): void
     {
         $this->excelConfig = ExcelConfiguration::create()
             ->withHeaders($this->headerCells)
-            ->withSheetTitle(sprintf('Rekap Bulanan Tahun %d', $this->year))
-            ->withNumberColumns(array_fill(4, self::MONTH_COUNT + 1, '0.00'))
-            ->withRightAlignColumns([0, ...range(4, 4 + self::MONTH_COUNT)])
+            ->withSheetTitle('Rekap Input Tahunan')
+            ->withNumberColumns(array_fill(4, $this->YEAR_COUNT, '0.00'))
+            ->withRightAlignColumns([0, ...range(4, 4 + $this->YEAR_COUNT - 1)])
             ->withZebraStriping(true);
     }
 
@@ -120,7 +98,7 @@ class ExportRekapBulananService
 
         $properties->setCreator('Developer Perumdam Tirta Satria');
         $properties->setLastModifiedBy('Developer Perumdam Tirta Satria');
-        $properties->setTitle('Rekap Bulanan');
+        $properties->setTitle($this->excelConfig->sheetTitle);
         $properties->setSubject('Export from Perumdam Tirta Satria');
         $properties->setDescription("Generated on {$timestamp}");
     }
@@ -128,15 +106,23 @@ class ExportRekapBulananService
     private function addTitleRow(): void
     {
         $sheet = $this->spreadsheet->getActiveSheet();
-        $title = sprintf('Rekap Bulanan - Tahun %d', $this->year);
+        $title = sprintf(
+            'Rekap Input Tahunan Periode %d - %d',
+            $this->fromYear,
+            $this->toYear
+        );
 
-        ExcelStyleManager::addCell($sheet, 'A1', $title, [
-            'font' => ['bold' => true, 'size' => 16],
-            'alignment' => [
-                'horizontal' => Alignment::HORIZONTAL_CENTER,
-                'vertical' => Alignment::VERTICAL_CENTER,
-            ],
-        ]);
+        $syles = ExcelStyleManager::mergeStyles(
+            ExcelStyleManager::$FONT_BOLD_16_STYLE,
+            ExcelStyleManager::$ALIGN_CENTER_CENTER_STYLE
+        );
+
+        ExcelStyleManager::addCell(
+            $sheet,
+            'A1',
+            $title,
+            $syles
+        );
 
         $lastColumn = $this->getLastColumnIndex();
         $sheet->mergeCells("A1:{$lastColumn}1");
@@ -150,9 +136,8 @@ class ExportRekapBulananService
         $this->generateReportTypeSections($data);
     }
 
-    private function prepareData(): array
+    private function prepareData()
     {
-        // Prepare Data: ambil master inputs dan organzie sesuai spec
         $masterInputs = MasterInputs::with('aspect.reportType')
             ->with('masterSource')
             ->whereNotNull('aspect_id')
@@ -162,55 +147,31 @@ class ExportRekapBulananService
 
         $masterInputIds = $masterInputs->pluck('id')->unique()->toArray();
 
-        // Ambil data rekap bulanan
-        $rekapDataBulanan = $this->getRekapData($masterInputIds);
-
-        // Ambil data rekap tahunan
-        $rekapDataTahunan = $this->getRekapTahunanData($masterInputIds);
-
-        // Join data rekap bulanan dan tahunan
-        $rekapData = array_merge($rekapDataBulanan, $rekapDataTahunan);
+        $rekapData = $this->getRekapData($masterInputIds);
 
         return $this->organizeData($masterInputs, $rekapData);
     }
 
-    private function getRekapData($masterInputIds): array
+    private function getRekapData(array $masterInputIds)
     {
-        return TransaksiInputs::with(self::REKAP_RELATIONS)
+        return RekapInputTahunans::with(['masterInput.masterSource', 'masterInput.aspect.reportType'])
             ->whereIn('master_input_id', $masterInputIds)
-            ->where('year', $this->year)
-            ->get()
-            ->keyBy(fn($item) => sprintf(
-                '%d-%d-%d',
-                $item->master_input_id,
-                $item->year,
-                $item->month
-            ))
-            ->map(fn($item) => (float) $item->nilai)
-            ->toArray();
-    }
-
-    private function getRekapTahunanData($masterInputIds): array
-    {
-        return RekapInputTahunans::with(self::REKAP_RELATIONS)
-            ->whereIn('master_input_id', $masterInputIds)
-            ->where('year', $this->year - 1)
+            ->whereBetween('year', [$this->fromYear, $this->toYear])
             ->get()
             ->keyBy(fn($item) => sprintf(
                 '%d-%d',
                 $item->master_input_id,
                 $item->year
             ))
-            ->map(fn($item) => (float) $item->nilai)
+            ->map(fn($item) => $item->nilai)
             ->toArray();
     }
 
-    private function organizeData($masterInputs, array $rekapData): array
+    private function organizeData(Collection $masterInputs, array $rekapData)
     {
-        // Process Data: ambil unique reportTypes
-        $reportTypesGrouped = $masterInputs
+        $reportTypeGruoped = $masterInputs
             ->groupBy(fn($item) => $item->aspect?->reportType?->id)
-            ->filter(fn($items) => $items->first()->aspect?->reportType !== null)
+            ->filter(fn($item) => $item->first()?->aspect?->reportType !== null)
             ->map(function ($items) {
                 $firstItem = $items->first();
 
@@ -221,7 +182,6 @@ class ExportRekapBulananService
             })
             ->keyBy('report_type_id');
 
-        // Ambil unique aspect dari master inputs, map dengan reportType
         $aspectsGrouped = $masterInputs
             ->groupBy('aspect_id')
             ->filter(fn($items) => $items->first()->aspect !== null)
@@ -229,32 +189,30 @@ class ExportRekapBulananService
                 $firstItem = $items->first();
 
                 return [
-                    'aspect_id' => $firstItem->aspect_id,
+                    'aspect_id' => $firstItem->aspect->id,
                     'aspect_name' => $firstItem->aspect->name,
-                    'report_type_id' => $firstItem->aspect->reportType?->id,
+                    'report_type_id' => $firstItem->aspect->reportType->id,
                 ];
             })
             ->keyBy('aspect_id');
 
-        // Group aspects by report type
         $aspectsByReportType = $aspectsGrouped
             ->groupBy('report_type_id')
             ->toArray();
 
-        // Group master inputs by aspect
         $masterInputsByAspect = $masterInputs
             ->groupBy('aspect_id')
             ->toArray();
 
         return [
-            'reportTypes' => $reportTypesGrouped->values()->toArray(),
+            'reportTypes' => $reportTypeGruoped,
             'aspectsByReportType' => $aspectsByReportType,
             'masterInputsByAspect' => $masterInputsByAspect,
             'rekapData' => $rekapData,
         ];
     }
 
-    private function generateReportTypeSections(array $data): void
+    private function generateReportTypeSections(array $data)
     {
         $sheet = $this->spreadsheet->getActiveSheet();
 
@@ -264,7 +222,6 @@ class ExportRekapBulananService
             $this->addReportTypeHeader($sheet, $reportType['report_type_name']);
             $this->addTableHeaders($sheet);
 
-            // Ambil aspects untuk report type ini
             $aspects = $data['aspectsByReportType'][$reportTypeId] ?? [];
 
             $this->generateAspectRows(
@@ -276,7 +233,6 @@ class ExportRekapBulananService
 
             $this->positionTracker = $this->positionTracker->advanceRows(self::HEADER_ROW_HEIGHT);
         }
-
     }
 
     private function addReportTypeHeader($sheet, string $reportTypeName): void
@@ -353,10 +309,7 @@ class ExportRekapBulananService
         $this->addBasicInfoCells($sheet, $currentRow, $masterInput);
 
         // Add monthly values
-        $this->addMonthlyValues($sheet, $currentRow, $masterInput['id'], $rekapData);
-
-        // Add average/yearly value column
-        $this->addAverageValue($sheet, $currentRow, $masterInput['id'], $rekapData);
+        $this->addYearlyValues($sheet, $currentRow, $masterInput['id'], $rekapData);
     }
 
     private function addBasicInfoCells($sheet, int $row, $masterInput): void
@@ -384,12 +337,12 @@ class ExportRekapBulananService
         }
     }
 
-    private function addMonthlyValues($sheet, int $row, int $masterId, array $rekapData): void
+    private function addYearlyValues($sheet, int $row, int $masterId, array $rekapData): void
     {
-        for ($month = 1; $month <= self::MONTH_COUNT; $month++) {
-            $key = sprintf('%d-%d-%d', $masterId, $this->year, $month);
+        for ($year = $this->fromYear; $year <= $this->toYear; $year++) {
+            $key = sprintf('%d-%d', $masterId, $year);
             $value = $rekapData[$key] ?? '';
-            $column = $this->getColumnLetter(4 + $month);
+            $column = $this->getColumnLetter(4 + ($year - $this->fromYear + 1));
 
             $style = array_merge(
                 ExcelStyleManager::$ALL_BORDER_STYLE,
@@ -408,26 +361,31 @@ class ExportRekapBulananService
         }
     }
 
-    private function addAverageValue($sheet, int $row, int $masterId, array $rekapData): void
+    private function generateHeaders()
     {
-        // Cari nilai tahunan (year sebelumnya)
-        $key = sprintf('%d-%d', $masterId, $this->year - 1);
-        $value = $rekapData[$key] ?? '';
-        $column = $this->getColumnLetter(self::RATA_RATA_COLUMN_INDEX);
+        $mainHeaders = [
+            new CellHelper('#'),
+            new CellHelper(value: 'Indikator', width: 50),
+            new CellHelper(value: 'Sumber Data', width: 20),
+            new CellHelper(value: 'Satuan', width: 15),
+        ];
 
-        $style = array_merge(
-            ExcelStyleManager::$ALL_BORDER_STYLE,
-            array_merge(
-                ExcelStyleManager::$ALIGN_RIGHT_CENTER_STYLE,
-                ExcelStyleManager::$FORMAT_NUMBER_00_STYLE,
-            )
-        );
+        $yearList = [];
+        for ($year = $this->fromYear; $year <= $this->toYear; $year++) {
+            $yearList[] = new CellHelper(value: (string) $year, width: 15);
+        }
 
-        ExcelStyleManager::addCell(
-            $sheet,
-            "{$column}{$row}",
-            $value,
-            $style
+        $this->headerCells = array_merge($mainHeaders, $yearList);
+    }
+
+    private function generateFileName(): void
+    {
+        $timestamp = time();
+        $this->fileName = sprintf(
+            'rekap-tahunan-%d-%d-%s.xlsx',
+            $this->fromYear,
+            $this->toYear,
+            $timestamp
         );
     }
 

@@ -42,10 +42,17 @@ class ExcelStyleManager
         ],
     ];
 
-    public static array $FONT_BOLD_12_STYLE = [
+    public static $FONT_BOLD_12_STYLE = [
         'font' => [
             'bold' => true,
             'size' => 12,
+        ],
+    ];
+
+    public static $FONT_BOLD_16_STYLE = [
+        'font' => [
+            'bold' => true,
+            'size' => 16,
         ],
     ];
 
