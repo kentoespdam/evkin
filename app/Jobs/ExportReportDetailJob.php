@@ -2,34 +2,58 @@
 
 namespace App\Jobs;
 
-use App\Services\PerhitunganReportDetailExportService;
-use Illuminate\Bus\Queueable;
+use App\Services\ExportReportPerhitunganDetailService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
-class ProcessExportDetailJob implements ShouldQueue
+class ExportReportDetailJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, Queueable;
 
-    protected string $exportId;
+    private int $userId;
 
-    protected array $filters;
+    private string $exportId;
 
-    protected int $userId;
+    private int $year;
 
-    public function __construct(string $exportId, array $filters, int $userId)
-    {
-        $this->exportId = $exportId;
-        $this->filters = $filters;
+    private int $month;
+
+    private string $report_type_id;
+
+    private ?string $aspect_id;
+
+    private ?string $search;
+
+    /**
+     * Create a new job instance.
+     */
+    public function __construct(
+        int $userId,
+        string $exportId,
+        int $year,
+        int $month,
+        string $report_type_id,
+        ?string $aspect_id = null,
+        ?string $search = null
+    ) {
         $this->userId = $userId;
+        $this->exportId = $exportId;
+        $this->year = $year;
+        $this->month = $month;
+        $this->report_type_id = $report_type_id;
+        $this->aspect_id = $aspect_id;
+        $this->search = $search;
     }
 
-    public function handle(PerhitunganReportDetailExportService $exportService): void
+    /**
+     * Execute the job.
+     */
+    public function handle(): void
     {
+
         try {
             // Update status to processing
             Cache::put("export.{$this->exportId}", [
@@ -38,23 +62,23 @@ class ProcessExportDetailJob implements ShouldQueue
                 'updated_at' => now(),
             ], 3600);
 
-            // Generate file path
-            $fileName = $exportService->generateFileName($this->filters);
-            $filePath = storage_path("app/{$fileName}");
-
-            // Ensure exports directory exists
-            if (!file_exists(storage_path('app/exports'))) {
-                mkdir(storage_path('app/exports'), 0755, true);
-            }
-
             // Generate and save the file based on export type
-            $exportService->generateAndStore($this->filters, $filePath);
+            $exportService = new ExportReportPerhitunganDetailService(
+                $this->year,
+                $this->month,
+                $this->report_type_id,
+                $this->aspect_id,
+                $this->search
+            );
+            $exportService->generateAndStore();
+
+            $filePath = storage_path("app/{$exportService->getFilePath()}");
 
             // Update status to completed
             Cache::put("export.{$this->exportId}", [
                 'status' => 'completed',
                 'progress' => 100,
-                'file_path' => $fileName,
+                'file_path' => $exportService->getFileName(),
                 'file_size' => filesize($filePath),
                 'updated_at' => now(),
             ], 3600);
@@ -63,6 +87,7 @@ class ProcessExportDetailJob implements ShouldQueue
                 'export_id' => $this->exportId,
                 'user_id' => $this->userId,
                 'file_size' => filesize($filePath),
+                'file_path' => $filePath,
             ]);
 
         } catch (\Exception $e) {

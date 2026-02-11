@@ -28,8 +28,7 @@ class MasterReportsController extends Controller
         $masterReports = MasterReports::with('reportType')
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->get('search');
-                $query->where('desc_indicator', 'like', "%{$search}%")
-                    ->orWhere('desc_formula', 'like', "%{$search}%");
+                $query->where('desc_indicator', 'like', "%{$search}%");
             })
             ->when($request->filled('reportTypeId'), function ($query) use ($request) {
                 $reportTypeId = $request->get('reportTypeId');

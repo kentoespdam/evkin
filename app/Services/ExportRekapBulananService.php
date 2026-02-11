@@ -22,7 +22,7 @@ class ExportRekapBulananService
 {
     private const REKAP_RELATIONS = ['masterInput.masterSource', 'masterInput.aspect.reportType'];
 
-    private const EXPORTS_DIRECTORY = 'exports';
+    public const EXPORTS_DIRECTORY = 'exports';
 
     private const TITLE_ROW_HEIGHT = 2;
 
@@ -34,7 +34,7 @@ class ExportRekapBulananService
 
     private int $year;
 
-    private string $fileName;
+    public string $fileName;
 
     private Spreadsheet $spreadsheet;
 
@@ -94,7 +94,7 @@ class ExportRekapBulananService
         ];
 
         $monthHeaders = array_map(
-            fn($month) => new CellHelper(value: $month, width: 20),
+            fn ($month) => new CellHelper(value: $month, width: 20),
             DateHelper::$monthList
         );
 
@@ -180,13 +180,13 @@ class ExportRekapBulananService
             ->whereIn('master_input_id', $masterInputIds)
             ->where('year', $this->year)
             ->get()
-            ->keyBy(fn($item) => sprintf(
+            ->keyBy(fn ($item) => sprintf(
                 '%d-%d-%d',
                 $item->master_input_id,
                 $item->year,
                 $item->month
             ))
-            ->map(fn($item) => (float) $item->nilai)
+            ->map(fn ($item) => (float) $item->nilai)
             ->toArray();
     }
 
@@ -196,12 +196,12 @@ class ExportRekapBulananService
             ->whereIn('master_input_id', $masterInputIds)
             ->where('year', $this->year - 1)
             ->get()
-            ->keyBy(fn($item) => sprintf(
+            ->keyBy(fn ($item) => sprintf(
                 '%d-%d',
                 $item->master_input_id,
                 $item->year
             ))
-            ->map(fn($item) => (float) $item->nilai)
+            ->map(fn ($item) => (float) $item->nilai)
             ->toArray();
     }
 
@@ -209,8 +209,8 @@ class ExportRekapBulananService
     {
         // Process Data: ambil unique reportTypes
         $reportTypesGrouped = $masterInputs
-            ->groupBy(fn($item) => $item->aspect?->reportType?->id)
-            ->filter(fn($items) => $items->first()->aspect?->reportType !== null)
+            ->groupBy(fn ($item) => $item->aspect?->reportType?->id)
+            ->filter(fn ($items) => $items->first()->aspect?->reportType !== null)
             ->map(function ($items) {
                 $firstItem = $items->first();
 
@@ -224,7 +224,7 @@ class ExportRekapBulananService
         // Ambil unique aspect dari master inputs, map dengan reportType
         $aspectsGrouped = $masterInputs
             ->groupBy('aspect_id')
-            ->filter(fn($items) => $items->first()->aspect !== null)
+            ->filter(fn ($items) => $items->first()->aspect !== null)
             ->map(function ($items) {
                 $firstItem = $items->first();
 
@@ -364,7 +364,7 @@ class ExportRekapBulananService
         $cells = [
             'A' => ['value' => $masterInput['seq'], 'alignment' => 'right'],
             'B' => ['value' => $masterInput['description']],
-            'C' => ['value' => optional($masterInput['master_source'])['name'] ?? ""],
+            'C' => ['value' => optional($masterInput['master_source'])['name'] ?? ''],
             'D' => ['value' => $masterInput['satuan'], 'alignment' => 'center'],
         ];
 
@@ -464,5 +464,17 @@ class ExportRekapBulananService
     private function getColumnLetter(int $columnIndex): string
     {
         return Coordinate::stringFromColumnIndex($columnIndex);
+    }
+
+    public function getFileName(): string
+    {
+        return $this->fileName;
+    }
+
+    public function getFilePath(): string
+    {
+        $filePath = sprintf('app/%s/%s', self::EXPORTS_DIRECTORY, $this->fileName);
+
+        return storage_path($filePath);
     }
 }

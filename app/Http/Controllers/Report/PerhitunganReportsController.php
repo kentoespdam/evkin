@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Report;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ExportDetailRequest;
 use App\Http\Requests\ExportIndexRequest;
 use App\Http\Resources\AspectsCollection;
 use App\Http\Resources\MasterReportsCollection;
 use App\Http\Resources\PerhitunganReportsCollection;
 use App\Http\Resources\ReportTypesCollection;
-use App\Jobs\ProcessExportDetailJob;
+use App\Jobs\ExportReportDetailJob;
 use App\Models\Master\Aspects;
 use App\Models\Master\MasterReports;
 use App\Models\Master\ReportTypes;
@@ -22,7 +21,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PerhitunganReportsController extends Controller
 {
@@ -54,7 +52,6 @@ class PerhitunganReportsController extends Controller
             ],
         ]);
     }
-
 
     public function exportIndex(ExportIndexRequest $request): JsonResponse
     {
@@ -121,11 +118,16 @@ class PerhitunganReportsController extends Controller
         ]);
     }
 
-    public function exportDetail(ExportDetailRequest $request)
+    public function exportDetail(Request $request)
     {
         $exportId = Str::uuid()->toString();
-        $filters = $request->validated();
-
+        $filters = $request->only([
+            'year',
+            'month',
+            'report_type_id',
+            'aspect_id',
+            'search',
+        ]);
         // Initialize cache with pending status
         Cache::put("export.{$exportId}", [
             'status' => 'pending',
@@ -135,9 +137,16 @@ class PerhitunganReportsController extends Controller
 
         $authId = (int) auth($request->user)->id();
 
-
         // Dispatch job
-        ProcessExportDetailJob::dispatch($exportId, $filters, $authId);
+        ExportReportDetailJob::dispatch(
+            $authId,
+            $exportId,
+            $filters['year'],
+            $filters['month'],
+            $filters['report_type_id'],
+            $filters['aspect_id'] ?? null,
+            $filters['search'] ?? null
+        );
 
         Log::info('Export Index Queued', [
             'export_id' => $exportId,
@@ -174,15 +183,17 @@ class PerhitunganReportsController extends Controller
         return response()->json($status);
     }
 
-    public function exportDownload(string $exportId): StreamedResponse
+    public function exportDownload(string $exportId)
     {
         $status = Cache::get("export.{$exportId}");
 
         if (!$status || $status['status'] !== 'completed') {
-            abort(404, 'Export not found or not ready');
+            abort(404, message: 'Export not found or not ready');
         }
 
-        $filePath = storage_path("app/{$status['file_path']}");
+        Log::info('file_path', ['file_path' => $status['file_path']]);
+
+        $filePath = storage_path("app/exports/{$status['file_path']}");
 
         if (!file_exists($filePath)) {
             abort(404, 'Export file not found');

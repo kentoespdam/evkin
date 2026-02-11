@@ -39,27 +39,66 @@ class PerhitunganReports extends Model
         return $this->belongsTo(MasterReports::class);
     }
 
+    public function scopeForPeriod($query, int $year, int $month)
+    {
+        return $query->where('year', $year)->where('month', $month);
+    }
+
+    public function scopeForReportType($query, ?int $reportTypeId)
+    {
+        if (! $reportTypeId) {
+            return $query;
+        }
+
+        return $query->whereHas('masterReport', fn ($q) => $q->where('report_type_id', $reportTypeId));
+    }
+
+    public function scopeForAspect($query, ?int $aspectId)
+    {
+        if (! $aspectId) {
+            return $query;
+        }
+
+        return $query->whereHas('masterReport', fn ($q) => $q->where('aspect_id', $aspectId));
+    }
+
+    public function scopeSearchIndicator($query, ?string $search)
+    {
+        if (empty($search)) {
+            return $query;
+        }
+
+        return $query->where('desc_indicator', 'like', "%{$search}%");
+    }
+
+    public function scopeOrderedByMasterReport($query)
+    {
+        return $query
+            ->join('master_reports', 'master_reports.id', '=', 'perhitungan_reports.master_report_id')
+            ->select('perhitungan_reports.*')
+            ->orderBy('master_reports.aspect_id')
+            ->orderBy('master_reports.seq');
+    }
+
     public static function getPerhitunganReports(int $year, ?int $reportTypeId, ?string $search, bool $includeLastDecember = false): \Illuminate\Database\Eloquent\Collection
     {
         $query = self::with('masterReport')
             ->where('year', $year)
-            ->whereHas('masterReport', fn($q) => $q->where('report_type_id', $reportTypeId));
+            ->whereHas('masterReport', fn ($q) => $q->where('report_type_id', $reportTypeId));
 
         if ($includeLastDecember) {
             $query->orWhere(function ($q) use ($year, $reportTypeId) {
                 $q->where('year', $year - 1)
                     ->where('month', 12)
-                    ->whereHas('masterReport', fn($inner) => $inner->where('report_type_id', $reportTypeId));
+                    ->whereHas('masterReport', fn ($inner) => $inner->where('report_type_id', $reportTypeId));
             });
         }
 
         return $query->when(
             $search,
-            fn($q) =>
-            $q->whereHas(
+            fn ($q) => $q->whereHas(
                 'masterReport',
-                fn($inner) =>
-                $inner->where('desc_indicator', 'like', "%{$search}%")
+                fn ($inner) => $inner->where('desc_indicator', 'like', "%{$search}%")
             )
         )
             ->get();

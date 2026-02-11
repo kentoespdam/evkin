@@ -23,12 +23,12 @@ class PerhitunganReportsResource extends JsonResource
             'formula' => $this->formula,
             'formulaValue' => $this->formula_value,
             'nilai' => $this->nilai,
+            'nilaiIndicator' => $this->nilai_indicator,
             'formulaNilaiBobot' => $this->formula_nilai_bobot,
             'nilaiBobot' => $this->nilai_bobot,
             'formulaArchivement' => $this->formula_archivement,
             'formulaArchivementValue' => $this->formula_archivement_value,
             'nilaiArchivement' => $this->nilai_archivement,
-            'nilaiIndicator' => $this->nilai_indicator,
         ];
     }
 }

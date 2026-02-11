@@ -52,9 +52,7 @@ const PerhitunganReportsDetail = ({ page, reportTypes, aspects, filters }: Perhi
 					</CardHeader>
 					<CardContent className="space-y-6">
 						<PerhitunganReportDetailFilter filters={filters} reportTypes={reportTypes} aspects={aspects} />
-
 						<PerhitunganReportsDetailTable page={page} />
-
 						<PaginationNav page={page} />
 					</CardContent>
 				</Card>

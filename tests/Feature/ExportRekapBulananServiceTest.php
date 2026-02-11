@@ -9,14 +9,11 @@ use App\Models\Master\ReportTypes;
 use App\Models\Transaksi\RekapInputTahunans;
 use App\Models\Transaksi\TransaksiInputs;
 use App\Services\ExportRekapBulananService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ExportRekapBulananServiceTest extends TestCase
 {
-    use RefreshDatabase;
-
     private int $year = 2025;
 
     protected function setUp(): void
@@ -28,24 +25,24 @@ class ExportRekapBulananServiceTest extends TestCase
     public function test_can_generate_excel_file_with_basic_data(): void
     {
         // Setup data
-        $reportType = ReportTypes::create([
+        $reportType = ReportTypes::updateOrCreate([
             'name' => 'Pertumbuhan',
             'template_name' => 'template_1',
             'formula_performance' => 'sum',
         ]);
 
-        $aspect = Aspects::create([
+        $aspect = Aspects::updateOrCreate([
             'name' => 'Aspek 1',
             'report_type_id' => $reportType->id,
             'formula_aspect' => 'sum',
         ]);
 
-        $masterSource = MasterSources::create([
+        $masterSource = MasterSources::updateOrCreate([
             'name' => 'Sumber Data 1',
             'kode' => 'SD001',
         ]);
 
-        $masterInput1 = MasterInputs::create([
+        $masterInput1 = MasterInputs::updateOrCreate([
             'aspect_id' => $aspect->id,
             'master_source_id' => $masterSource->id,
             'description' => 'Master Input 1',
@@ -55,7 +52,7 @@ class ExportRekapBulananServiceTest extends TestCase
         ]);
 
         // Create monthly data for current year (hanya beberapa bulan untuk test lebih cepat)
-        TransaksiInputs::create([
+        TransaksiInputs::updateOrCreate([
             'master_input_id' => $masterInput1->id,
             'year' => $this->year,
             'month' => 1,
@@ -64,7 +61,7 @@ class ExportRekapBulananServiceTest extends TestCase
             'is_locked' => false,
         ]);
 
-        TransaksiInputs::create([
+        TransaksiInputs::updateOrCreate([
             'master_input_id' => $masterInput1->id,
             'year' => $this->year,
             'month' => 2,
@@ -74,7 +71,7 @@ class ExportRekapBulananServiceTest extends TestCase
         ]);
 
         // Create yearly data for previous year
-        RekapInputTahunans::create([
+        RekapInputTahunans::updateOrCreate([
             'master_input_id' => $masterInput1->id,
             'year' => $this->year - 1,
             'nilai' => 1250.50,

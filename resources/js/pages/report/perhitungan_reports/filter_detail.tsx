@@ -4,6 +4,8 @@ import TableTextSearch from "@/components/commons/table-text-search";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { usePerhitunganDetailFilter } from "@/hooks/use-perhitungan-report-detail";
+import { useDownloadPolling } from "@/lib/download_helper";
+import report from "@/routes/report";
 import type { Aspect } from "@/types/aspect";
 import type { PerhitunganReportsDetailProps } from "@/types/perhitungan-reports";
 import type { ReportType } from "@/types/report-type";
@@ -14,7 +16,11 @@ interface PerhitunganReportDetailFilterProps {
 	aspects: Aspect[];
 }
 const PerhitunganReportDetailFilter = memo(({ filters, reportTypes, aspects }: PerhitunganReportDetailFilterProps) => {
-	const { years, months, updateAndVisit, resetAll, exportExcel, isExporting } = usePerhitunganDetailFilter();
+	const baseUrl = report.perhitunganReports.detail.url();
+	const baseExportUrl = "/report/perhitungan-reports/export";
+
+	const { years, months, updateAndVisit, resetAll } = usePerhitunganDetailFilter();
+	const { exportExcel, isExporting } = useDownloadPolling(baseUrl, baseExportUrl);
 
 	const filteredAspects = useMemo(() => {
 		const rt = filters.report_type_id;

@@ -4,13 +4,19 @@ import TableTextSearch from "@/components/commons/table-text-search";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { usePerhitunganIndexFilter } from "@/hooks/use-perhitungan-report-index";
+import { useDownloadPolling } from "@/lib/download_helper";
 import { yearsList } from "@/lib/utils";
+import report from "@/routes/report";
 import type { PerhitunganReportFilters } from "@/types/perhitungan-reports";
 import type { ReportType } from "@/types/report-type";
 
 const PerhitunganReportIndexFilter = memo(
     ({ filters, reportTypes }: { filters: PerhitunganReportFilters; reportTypes: ReportType[] }) => {
-        const { updateAndVisit, resetAll, exportExcel, isExporting } = usePerhitunganIndexFilter();
+        const baseUrl = report.perhitunganReports.url();
+        const baseExportUrl = "/report/perhitungan-reports/export";
+
+        const { updateAndVisit, resetAll } = usePerhitunganIndexFilter();
+        const { exportExcel, isExporting } = useDownloadPolling(baseUrl, baseExportUrl);
 
         const years = useMemo(() => {
             const now = new Date();

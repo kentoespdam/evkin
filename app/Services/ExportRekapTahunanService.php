@@ -25,8 +25,6 @@ class ExportRekapTahunanService
 
     private int $YEAR_COUNT = 0;
 
-    private const RATA_RATA_COLUMN_INDEX = 17;
-
     private const HEADER_ROW_HEIGHT = 1;
 
     private int $fromYear;
@@ -55,7 +53,7 @@ class ExportRekapTahunanService
 
     private function initializeService(): void
     {
-        $this->positionTracker = (new PositionTrackerBuilder())
+        $this->positionTracker = (new PositionTrackerBuilder)
             ->startRow(1)
             ->build();
         $this->generateFileName();
@@ -158,20 +156,20 @@ class ExportRekapTahunanService
             ->whereIn('master_input_id', $masterInputIds)
             ->whereBetween('year', [$this->fromYear, $this->toYear])
             ->get()
-            ->keyBy(fn($item) => sprintf(
+            ->keyBy(fn ($item) => sprintf(
                 '%d-%d',
                 $item->master_input_id,
                 $item->year
             ))
-            ->map(fn($item) => $item->nilai)
+            ->map(fn ($item) => $item->nilai)
             ->toArray();
     }
 
     private function organizeData(Collection $masterInputs, array $rekapData)
     {
         $reportTypeGruoped = $masterInputs
-            ->groupBy(fn($item) => $item->aspect?->reportType?->id)
-            ->filter(fn($item) => $item->first()?->aspect?->reportType !== null)
+            ->groupBy(fn ($item) => $item->aspect?->reportType?->id)
+            ->filter(fn ($item) => $item->first()?->aspect?->reportType !== null)
             ->map(function ($items) {
                 $firstItem = $items->first();
 
@@ -184,7 +182,7 @@ class ExportRekapTahunanService
 
         $aspectsGrouped = $masterInputs
             ->groupBy('aspect_id')
-            ->filter(fn($items) => $items->first()->aspect !== null)
+            ->filter(fn ($items) => $items->first()->aspect !== null)
             ->map(function ($items) {
                 $firstItem = $items->first();
 
@@ -317,7 +315,7 @@ class ExportRekapTahunanService
         $cells = [
             'A' => ['value' => $masterInput['seq'], 'alignment' => 'right'],
             'B' => ['value' => $masterInput['description']],
-            'C' => ['value' => optional($masterInput['master_source'])['name'] ?? ""],
+            'C' => ['value' => optional($masterInput['master_source'])['name'] ?? ''],
             'D' => ['value' => $masterInput['satuan'], 'alignment' => 'center'],
         ];
 
@@ -422,5 +420,12 @@ class ExportRekapTahunanService
     private function getColumnLetter(int $columnIndex): string
     {
         return Coordinate::stringFromColumnIndex($columnIndex);
+    }
+
+    public function getFilePath(): string
+    {
+        $filePath = sprintf('app/%s/%s', self::EXPORTS_DIRECTORY, $this->fileName);
+
+        return storage_path($filePath);
     }
 }
