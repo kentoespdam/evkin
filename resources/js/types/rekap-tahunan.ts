@@ -34,8 +34,6 @@ export interface RekapInputTahunanFilters {
 
 export interface RekapTahunansFiltersProps {
 	filters: RekapInputTahunanFilters;
-	onFilterChange: (key: string, value: string) => void;
-	onReset: () => void;
 	years: number[];
 }
 

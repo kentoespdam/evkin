@@ -20,9 +20,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::group(['prefix' => 'rekap'], function () {
         Route::get('bulanan', [RekapInputController::class, 'rekapBulanan'])->name('rekap.rekap-bulanan');
-        Route::get('export/bulanan', [RekapInputController::class, 'exportRekapBulanan'])->name('rekap.export-rekap-bulanan');
+        Route::post('bulanan/export', [RekapInputController::class, 'exportRekapBulanan'])->name('rekap.rekap-bulanan.export');
         Route::get('tahunan', [RekapInputController::class, 'rekapTahunan'])->name('rekap.rekap-tahunan');
-        Route::get('export/tahunan', [RekapInputController::class, 'exportRekapTahunan'])->name('rekap.export-rekap-tahunan');
+        Route::post('tahunan/export', [RekapInputController::class, 'exportRekapTahunan'])->name('rekap.rekap-tahunan.export');
         Route::get('export/{exportId}/status', [RekapInputController::class, 'exportStatus'])->name('rekap.export.status');
         Route::get('export/{exportId}/download', [RekapInputController::class, 'exportDownload'])->name('rekap.export.download');
     });

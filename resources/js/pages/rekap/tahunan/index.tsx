@@ -4,7 +4,7 @@ import PaginationNav from "@/components/commons/pagination-nav";
 import TableSummary from "@/components/commons/table-summary";
 import RekapInputTahunansTable from "@/components/rekap/input-tahunan";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useInitializeFilters, useRekapTahunanFilters, useYearRangeLaporanTahunan } from "@/hooks/use-rekap-tahunan";
+import { useInitializeFilters, useYearRangeLaporanTahunan } from "@/hooks/use-rekap-tahunan";
 import AppLayout from "@/layouts/app-layout";
 import type { BreadcrumbItem } from "@/types";
 import type { RekapTahunansProps } from "@/types/rekap-tahunan";
@@ -17,7 +17,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const RekapTahunans = memo(({ page, aspects, reportTypes, rekapData, filters }: RekapTahunansProps) => {
-	const { updateAndVisit, resetAll } = useRekapTahunanFilters();
 	const { rangeLabel } = useInitializeFilters(filters);
 	const yearNow = useMemo(() => new Date().getFullYear(), []);
 	const yearSelectFilter = useYearRangeLaporanTahunan(yearNow - 5, yearNow);
@@ -39,12 +38,7 @@ const RekapTahunans = memo(({ page, aspects, reportTypes, rekapData, filters }: 
 						</div>
 					</CardHeader>
 					<CardContent className="space-y-6">
-						<RekapTahunansFilters
-							filters={filters}
-							onFilterChange={updateAndVisit}
-							onReset={resetAll}
-							years={yearSelectFilter}
-						/>
+						<RekapTahunansFilters filters={filters} years={yearSelectFilter} />
 						<TableSummary page={page} />
 						<RekapInputTahunansTable
 							page={page}

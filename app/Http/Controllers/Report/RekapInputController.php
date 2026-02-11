@@ -37,7 +37,7 @@ class RekapInputController extends Controller
         $perPage = $request->integer('per_page', self::DEFAULT_PER_PAGE);
 
         $page = MasterInputs::where('aspect_id', '!=', null)
-            ->when($request->filled('search'), fn ($query) => $query->where('description', 'like', '%'.$request->search.'%'))
+            ->when($request->filled('search'), fn($query) => $query->where('description', 'like', '%' . $request->search . '%'))
             ->orderBy('aspect_id')
             ->orderBy('seq')
             ->paginate($perPage);
@@ -48,7 +48,7 @@ class RekapInputController extends Controller
             ->whereIn('master_input_id', $masterIds)
             ->where('year', $year)
             ->get()
-            ->sortBy(fn ($item) => $item->masterInput->seq)
+            ->sortBy(fn($item) => $item->masterInput->seq)
             ->values();
 
         $rekapTahunan = RekapInputTahunans::with(self::REKAP_RELATIONS)
@@ -75,7 +75,6 @@ class RekapInputController extends Controller
     public function exportRekapBulanan(Request $request)
     {
         $exportId = Str::uuid()->toString();
-        $filters = $request->validated();
 
         // Initialize cache with pending status
         Cache::put("export.{$exportId}", [
@@ -91,7 +90,7 @@ class RekapInputController extends Controller
 
         Log::info('Export Index Queued', [
             'export_id' => $exportId,
-            'filters' => $filters,
+            'filters' => $request->all(),
         ]);
 
         return response()->json([
@@ -109,7 +108,7 @@ class RekapInputController extends Controller
         $perPage = $request->integer('per_page', self::DEFAULT_PER_PAGE);
 
         $page = MasterInputs::where('aspect_id', '!=', null)
-            ->when($request->filled('search'), fn ($query) => $query->where('description', 'like', '%'.$request->search.'%'))
+            ->when($request->filled('search'), fn($query) => $query->where('description', 'like', '%' . $request->search . '%'))
             ->orderBy('aspect_id')
             ->orderBy('seq')
             ->paginate($perPage);
@@ -120,7 +119,7 @@ class RekapInputController extends Controller
             ->whereIn('master_input_id', $masterIds)
             ->whereBetween('year', [$fromYear, $toYear])
             ->get()
-            ->sortBy(fn ($item) => [$item->year, $item->masterInput->seq])
+            ->sortBy(fn($item) => [$item->year, $item->masterInput->seq])
             ->values();
 
         return Inertia::render('rekap/tahunan/index', [
@@ -139,7 +138,6 @@ class RekapInputController extends Controller
     public function exportRekapTahunan(Request $request)
     {
         $exportId = Str::uuid()->toString();
-        $filters = $request->validated();
 
         // Initialize cache with pending status
         Cache::put("export.{$exportId}", [
@@ -155,7 +153,7 @@ class RekapInputController extends Controller
 
         Log::info('Export Index Queued', [
             'export_id' => $exportId,
-            'filters' => $filters,
+            'filters' => $request->all(),
         ]);
 
         return response()->json([
@@ -199,7 +197,7 @@ class RekapInputController extends Controller
     {
         $status = Cache::get("export.{$exportId}");
 
-        if (! $status) {
+        if (!$status) {
             return response()->json([
                 'status' => 'not_found',
                 'message' => 'Export not found or expired',
@@ -213,13 +211,13 @@ class RekapInputController extends Controller
     {
         $status = Cache::get("export.{$exportId}");
 
-        if (! $status || $status['status'] !== 'completed') {
+        if (!$status || $status['status'] !== 'completed') {
             abort(404, 'Export not found or not ready');
         }
 
-        $filePath = storage_path("app/{$status['file_path']}");
+        $filePath = storage_path("app/exports/{$status['file_path']}");
 
-        if (! file_exists($filePath)) {
+        if (!file_exists($filePath)) {
             abort(404, 'Export file not found');
         }
 

@@ -156,20 +156,20 @@ class ExportRekapTahunanService
             ->whereIn('master_input_id', $masterInputIds)
             ->whereBetween('year', [$this->fromYear, $this->toYear])
             ->get()
-            ->keyBy(fn ($item) => sprintf(
+            ->keyBy(fn($item) => sprintf(
                 '%d-%d',
                 $item->master_input_id,
                 $item->year
             ))
-            ->map(fn ($item) => $item->nilai)
+            ->map(fn($item) => $item->nilai)
             ->toArray();
     }
 
     private function organizeData(Collection $masterInputs, array $rekapData)
     {
         $reportTypeGruoped = $masterInputs
-            ->groupBy(fn ($item) => $item->aspect?->reportType?->id)
-            ->filter(fn ($item) => $item->first()?->aspect?->reportType !== null)
+            ->groupBy(fn($item) => $item->aspect?->reportType?->id)
+            ->filter(fn($item) => $item->first()?->aspect?->reportType !== null)
             ->map(function ($items) {
                 $firstItem = $items->first();
 
@@ -182,7 +182,7 @@ class ExportRekapTahunanService
 
         $aspectsGrouped = $masterInputs
             ->groupBy('aspect_id')
-            ->filter(fn ($items) => $items->first()->aspect !== null)
+            ->filter(fn($items) => $items->first()->aspect !== null)
             ->map(function ($items) {
                 $firstItem = $items->first();
 
@@ -420,6 +420,11 @@ class ExportRekapTahunanService
     private function getColumnLetter(int $columnIndex): string
     {
         return Coordinate::stringFromColumnIndex($columnIndex);
+    }
+
+    public function getFileName(): string
+    {
+        return $this->fileName;
     }
 
     public function getFilePath(): string

@@ -1,11 +1,12 @@
 import { router } from "@inertiajs/react";
-import { RefreshCwIcon } from "lucide-react";
+import { DownloadIcon, RefreshCwIcon } from "lucide-react";
 import { memo, useEffect, useMemo } from "react";
 import TableTextSearch from "@/components/commons/table-text-search";
 import YearSelectFilter from "@/components/commons/year-select-filter";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useRekapBulananFilters } from "@/hooks/use-rekap-bulanan";
+import { useDownloadPolling } from "@/lib/download_helper";
 import { yearsList } from "@/lib/utils";
 import rekap from "@/routes/rekap";
 import type { RekapBulananFilters } from "@/types/rekap-tahunan";
@@ -15,7 +16,11 @@ interface RekapBulanansFiltersProps {
 }
 
 const RekapBulanansFilters = memo(({ filters }: RekapBulanansFiltersProps) => {
+	const baseUrl = rekap.rekapBulanan.url();
+	const baseExportUrl = "/rekap/export";
+
 	const { updateAndVisit, resetAll } = useRekapBulananFilters();
+	const { exportExcel, isExporting } = useDownloadPolling(baseUrl, baseExportUrl);
 
 	const years = useMemo(() => {
 		const now = new Date();
@@ -66,6 +71,17 @@ const RekapBulanansFilters = memo(({ filters }: RekapBulanansFiltersProps) => {
 					onChange={(v) => updateAndVisit("year", v)}
 					years={years}
 				/>
+
+				<Button
+					type="button"
+					onClick={() => exportExcel(filters)}
+					disabled={isExporting || !filters.year}
+					className="gap-2"
+					aria-label="Download Excel"
+				>
+					<DownloadIcon className="size-4" />
+					{isExporting ? "Downloading..." : "Download Excel"}
+				</Button>
 			</div>
 		</div>
 	);

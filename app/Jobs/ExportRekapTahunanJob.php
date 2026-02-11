@@ -53,7 +53,7 @@ class ExportRekapTahunanJob implements ShouldQueue
             Cache::put("export.{$this->exportId}", [
                 'status' => 'completed',
                 'progress' => 100,
-                'file_path' => $exportService->getFilePath(),
+                'file_path' => $exportService->getFileName(),
                 'file_size' => filesize($exportService->getFilePath()),
                 'updated_at' => now(),
             ], 3600);

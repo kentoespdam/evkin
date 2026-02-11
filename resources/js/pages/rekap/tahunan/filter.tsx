@@ -1,14 +1,22 @@
 import { router } from "@inertiajs/react";
-import { RefreshCwIcon } from "lucide-react";
-import { memo, useCallback, useEffect } from "react";
+import { DownloadIcon, RefreshCwIcon } from "lucide-react";
+import { memo, useEffect } from "react";
 import TableTextSearch from "@/components/commons/table-text-search";
 import YearSelectFilter from "@/components/commons/year-select-filter";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useRekapTahunanFilters } from "@/hooks/use-rekap-tahunan";
+import { useDownloadPolling } from "@/lib/download_helper";
 import rekap from "@/routes/rekap";
 import type { RekapTahunansFiltersProps } from "@/types/rekap-tahunan";
 
-export const RekapTahunansFilters = memo(({ filters, onFilterChange, onReset, years }: RekapTahunansFiltersProps) => {
+export const RekapTahunansFilters = memo(({ filters, years }: RekapTahunansFiltersProps) => {
+	const baseUrl = rekap.rekapTahunan.url();
+	const baseExportUrl = "/rekap/export";
+
+	const { updateAndVisit, resetAll } = useRekapTahunanFilters();
+	const { exportExcel, isExporting } = useDownloadPolling(baseUrl, baseExportUrl);
+
 	useEffect(() => {
 		const params = new URLSearchParams(window.location.search);
 		const hasRequiredParams = params.has("fromYear") && params.has("toYear");
@@ -26,12 +34,6 @@ export const RekapTahunansFilters = memo(({ filters, onFilterChange, onReset, ye
 		}
 	}, [filters.fromYear, filters.toYear]);
 
-	const handleSearchChange = useCallback((value: string) => onFilterChange("search", value), [onFilterChange]);
-
-	const handleFromYearChange = useCallback((value: string) => onFilterChange("fromYear", value), [onFilterChange]);
-
-	const handleToYearChange = useCallback((value: string) => onFilterChange("toYear", value), [onFilterChange]);
-
 	const rangeLabel = `${filters.fromYear} - ${filters.toYear}`;
 
 	return (
@@ -41,7 +43,7 @@ export const RekapTahunansFilters = memo(({ filters, onFilterChange, onReset, ye
 					<p className="text-sm font-medium">Filter Rekap</p>
 					<p className="text-xs text-muted-foreground">Periode {rangeLabel}</p>
 				</div>
-				<Button variant="outline" size="sm" onClick={onReset} className="gap-2" aria-label="Reset filters">
+				<Button variant="outline" size="sm" onClick={resetAll} className="gap-2" aria-label="Reset filters">
 					<RefreshCwIcon className="size-4" />
 					<span>Reset</span>
 				</Button>
@@ -50,7 +52,7 @@ export const RekapTahunansFilters = memo(({ filters, onFilterChange, onReset, ye
 			<div className="flex flex-wrap items-end gap-3">
 				<TableTextSearch
 					params={{ search: filters.search ?? "" }}
-					handleSelectChange={(v) => handleSearchChange(v.search ?? "")}
+					handleSelectChange={(v) => updateAndVisit("search", v.search ?? "")}
 					text="Indikator"
 					className="w-full sm:max-w-sm"
 				/>
@@ -59,7 +61,7 @@ export const RekapTahunansFilters = memo(({ filters, onFilterChange, onReset, ye
 					id="fromYear"
 					label="From"
 					value={filters.fromYear?.toString() ?? ""}
-					onChange={handleFromYearChange}
+					onChange={(v) => updateAndVisit("fromYear", v)}
 					years={years}
 				/>
 
@@ -67,9 +69,20 @@ export const RekapTahunansFilters = memo(({ filters, onFilterChange, onReset, ye
 					id="toYear"
 					label="To"
 					value={filters.toYear?.toString() ?? ""}
-					onChange={handleToYearChange}
+					onChange={(v) => updateAndVisit("toYear", v)}
 					years={years}
 				/>
+
+				<Button
+					type="button"
+					onClick={() => exportExcel(filters)}
+					disabled={isExporting || !filters.fromYear || !filters.toYear}
+					className="gap-2"
+					aria-label="Download Excel"
+				>
+					<DownloadIcon className="size-4" />
+					{isExporting ? "Downloading..." : "Download Excel"}
+				</Button>
 			</div>
 		</div>
 	);
