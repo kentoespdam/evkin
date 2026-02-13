@@ -3,60 +3,83 @@
 namespace App\Services\Excel;
 
 use App\Data\ExcelConfiguration;
+use App\Helpers\CellHelper;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use App\Helpers\CellHelper;
-use Illuminate\Support\Facades\Log;
 
 class ExcelStyleManager
 {
-    public static array $ALIGN_LEFT_CENTER_STYLE = [
+    public const ALIGN_LEFT_CENTER_STYLE = [
         'alignment' => [
             'horizontal' => Alignment::HORIZONTAL_LEFT,
             'vertical' => Alignment::VERTICAL_CENTER,
         ],
     ];
 
-    public static array $ALIGN_RIGHT_CENTER_STYLE = [
+    public const ALIGN_RIGHT_CENTER_STYLE = [
         'alignment' => [
             'horizontal' => Alignment::HORIZONTAL_RIGHT,
             'vertical' => Alignment::VERTICAL_CENTER,
         ],
     ];
 
-    public static array $ALIGN_CENTER_CENTER_STYLE = [
+    public const ALIGN_CENTER_CENTER_STYLE = [
         'alignment' => [
             'horizontal' => Alignment::HORIZONTAL_CENTER,
             'vertical' => Alignment::VERTICAL_CENTER,
         ],
     ];
 
-    public static array $FILL_SOLID_GRAY_STYLE = [
+    public const FILL_SOLID_GRAY_STYLE = [
         'fill' => [
             'fillType' => Fill::FILL_SOLID,
             'color' => ['rgb' => 'D9E1F2'],
         ],
     ];
 
-    public static $FONT_BOLD_12_STYLE = [
+    public const FILL_SOLID_BLUE_GRAY_STYLE = [
+        'fill' => [
+            'fillType' => Fill::FILL_SOLID,
+            'color' => ['rgb' => '366092'],
+        ],
+    ];
+
+    public const FILL_SOLID_LIGHT_YELLOW_STYLE = [
+        'fill' => [
+            'fillType' => Fill::FILL_SOLID,
+            'color' => ['rgb' => 'FFF2CC'],
+        ],
+    ];
+
+    public const FONT_BOLD_11 = [
+        'font' => [
+            'bold' => true,
+            'color' => ['rgb' => 'FFFFFF'],
+            'size' => 11,
+        ],
+    ];
+
+    public const FONT_BOLD_12_STYLE = [
         'font' => [
             'bold' => true,
             'size' => 12,
         ],
     ];
 
-    public static $FONT_BOLD_16_STYLE = [
+    public const FONT_BOLD_16_STYLE = [
         'font' => [
             'bold' => true,
             'size' => 16,
         ],
     ];
 
-    public static array $ALL_BORDER_STYLE = [
+    public const ALL_BORDER_STYLE = [
         'borders' => [
             'allBorders' => [
                 'borderStyle' => Border::BORDER_THIN,
@@ -65,9 +88,9 @@ class ExcelStyleManager
         ],
     ];
 
-    public static array $FORMAT_NUMBER_00_STYLE = [
-        'number_format' => [
-            'format_code' => '0.00',
+    public const FORMAT_NUMBER_00_STYLE = [
+        'numberFormat' => [
+            'format_code' => "0.00",
         ],
     ];
 
@@ -97,63 +120,120 @@ class ExcelStyleManager
         return $merged;
     }
 
-    public static function addCell(Worksheet $sheet, string $cellCoordinate, $value = '', ?array $styleArray = []): void
-    {
-        $cell = $sheet->getCell($cellCoordinate);
-        $cell->setValue($value);
-        if (in_array('number_format', array_keys($styleArray))) {
-            self::applyNumberFormat($sheet, $cellCoordinate, $styleArray['number_format']['format_code']);
+    public static function addCell(
+        Worksheet $sheet,
+        string $cellCoordinate,
+        $value = '',
+        ?array $styleArray = [],
+        ?int $colSpan = 1,
+        ?int $rowSpan = 1,
+        ?bool $wrapText = false
+    ): void {
+        if ($colSpan > 1 || $rowSpan > 1) {
+            self::addCellWithMerge(
+                $sheet,
+                $cellCoordinate,
+                $value,
+                $styleArray,
+                $colSpan,
+                $rowSpan,
+                $wrapText
+            );
+
+            return;
         }
+
+        $cell = $sheet->getCell($cellCoordinate);
+        $row = $cell->getRow();
+        $cell->setValue($value);
+
         if (!empty($styleArray) && $styleArray !== null) {
             $sheet->getStyle($cellCoordinate)->applyFromArray($styleArray);
+            if (in_array('numberFormat', array_keys($styleArray))) {
+                $sheet->getStyle($cellCoordinate)->getNumberFormat()->setFormatCode($styleArray['numberFormat']['format_code']);
+                // self::applyNumberFormat($sheet, $cellCoordinate, $styleArray['number_format']['format_code']);
+            }
+        }
+
+        if ($wrapText) {
+            $sheet->getStyle($cellCoordinate)->getAlignment()->setWrapText(true);
+            $sheet->getRowDimension($row)->setRowHeight(-1);
+        }
+    }
+
+    private static function addCellWithMerge(
+        Worksheet $sheet,
+        string $cellCoordinate,
+        $value = '',
+        ?array $styleArray = [],
+        ?int $colSpan = 1,
+        ?int $rowSpan = 1,
+        ?bool $wrapText = false
+    ) {
+        $currentRow = Coordinate::coordinateFromString($cellCoordinate)[1];
+        $lastColumn = Coordinate::stringFromColumnIndex(
+            Coordinate::columnIndexFromString(Coordinate::coordinateFromString($cellCoordinate)[0]) + $colSpan - 1
+        );
+        $lastRow = $currentRow + $rowSpan - 1;
+
+        if ($colSpan > 1 || $rowSpan > 1) {
+            $sheet->mergeCells("{$cellCoordinate}:{$lastColumn}{$lastRow}");
+            $sheet->getStyle("{$cellCoordinate}:{$lastColumn}{$lastRow}")->applyFromArray($styleArray);
+        } elseif ($colSpan > 1) {
+            $sheet->mergeCells("{$cellCoordinate}:{$lastColumn}{$currentRow}");
+            $sheet->getStyle("{$cellCoordinate}:{$lastColumn}{$currentRow}")->applyFromArray($styleArray);
+        } elseif ($rowSpan > 1) {
+            $sheet->mergeCells("{$cellCoordinate}:{$cellCoordinate[0]}{$lastRow}");
+            $sheet->getStyle("{$cellCoordinate}:{$cellCoordinate[0]}{$lastRow}")->applyFromArray($styleArray);
+        }
+        $sheet->getCell($cellCoordinate)->setValue($value);
+
+        if ($wrapText) {
+            $sheet->getStyle("{$cellCoordinate}:{$lastColumn}{$lastRow}")->getAlignment()->setWrapText(true);
+            for ($r = $currentRow; $r <= $lastRow; $r++) {
+                $sheet->getRowDimension($r)->setRowHeight(-1);
+            }
         }
     }
 
     /**
      * Summary of applyHeaderStyle
-     * @param Worksheet $sheet
-     * @param array<CellHelper> $headers
-     * @param ExcelConfiguration $config
+     *
+     * @param  array<CellHelper>  $headers
      * @return void
      */
     public static function applyHeaderStyle(
         Worksheet $sheet,
         array $headers,
         ExcelConfiguration $config,
-        int $currentRow
+        int $currentRow,
+        ?int $columnIndex = 1
     ) {
         foreach ($headers as $index => $header) {
-            $column = Coordinate::stringFromColumnIndex($index + 1);
-            $styleFormat = array_merge(
-                [
-                    'fill' => [
-                        'fillType' => Fill::FILL_SOLID,
-                        'color' => ['rgb' => '366092'],
-                    ],
-                    'font' => [
-                        'bold' => true,
-                        'color' => ['rgb' => 'FFFFFF'],
-                        'size' => 11,
-                    ],
-                ],
-                self::$ALIGN_CENTER_CENTER_STYLE,
-                self::$ALL_BORDER_STYLE
+            $column = Coordinate::stringFromColumnIndex($columnIndex);
+            // Log::debug("Applying header for column {$column} at row {$currentRow}");
+            $styleFormat = self::mergeStyles(
+                self::FONT_BOLD_11,
+                self::FILL_SOLID_BLUE_GRAY_STYLE,
+                self::ALIGN_CENTER_CENTER_STYLE,
+                self::ALL_BORDER_STYLE
             );
-
             self::addCell(
                 $sheet,
                 "{$column}{$currentRow}",
                 $header->value,
-                $styleFormat
+                $styleFormat,
+                $header->colspan,
+                $header->rowspan,
+                $header->wrapText
             );
             if ($header->width != null) {
-                $sheet->getColumnDimension(Coordinate::stringFromColumnIndex($index + 1))
+                $sheet->getColumnDimension(Coordinate::stringFromColumnIndex($columnIndex))
                     ->setWidth($header->width)
                     ->setAutoSize(false);
             }
+            $columnIndex += $header->colspan;
         }
-
-        $sheet->getRowDimension($currentRow)->setRowHeight($config->headerRowHeight);
     }
 
     private static function applyNumberFormat(Worksheet $sheet, string $cellCoordinate, string $format): void
@@ -213,7 +293,8 @@ class ExcelStyleManager
             $dimension = $sheet->getColumnDimension($columnLetter);
 
             if (isset($config->columnWidths[$col])) {
-                $dimension->setWidth($config->columnWidths[$col])->setAutoSize(false);
+                $dimension->setWidth($config->columnWidths[$col])
+                    ->setAutoSize(false);
             } else {
                 $dimension->setAutoSize(true);
             }
@@ -226,12 +307,12 @@ class ExcelStyleManager
 
         // Set page orientation and size
         $orientationConstant = $config->orientation === 'landscape'
-            ? \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE
-            : \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_PORTRAIT;
+            ? PageSetup::ORIENTATION_LANDSCAPE
+            : PageSetup::ORIENTATION_PORTRAIT;
 
         $sheet->getPageSetup()
             ->setOrientation($orientationConstant)
-            ->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+            ->setPaperSize(PageSetup::PAPERSIZE_A4);
 
         // Set margins
         $sheet->getPageMargins()
@@ -259,4 +340,79 @@ class ExcelStyleManager
         }
     }
 
+    public static function applyConditionalFormatting(
+        Worksheet $sheet,
+        int $row,
+        array $data,
+        ExcelConfiguration $config
+    ): void {
+        if (!$config->enableConditionalFormatting) {
+            return;
+        }
+
+        foreach ($config->conditionalFormattingRules as $rule) {
+            $columnIndex = $rule['column'];
+            $condition = $rule['condition'];
+            $value = $rule['value'];
+            $style = $rule['style'];
+
+            if (!isset($data[$columnIndex - 1])) {
+                continue;
+            }
+
+            $cellValue = $data[$columnIndex - 1];
+            $shouldApply = false;
+
+            switch ($condition) {
+                case '>':
+                    $shouldApply = is_numeric($cellValue) && $cellValue > $value;
+                    break;
+                case '<':
+                    $shouldApply = is_numeric($cellValue) && $cellValue < $value;
+                    break;
+                case '=':
+                    $shouldApply = $cellValue == $value;
+                    break;
+                case '>=':
+                    $shouldApply = is_numeric($cellValue) && $cellValue >= $value;
+                    break;
+                case '<=':
+                    $shouldApply = is_numeric($cellValue) && $cellValue <= $value;
+                    break;
+            }
+
+            if ($shouldApply) {
+                $column = Coordinate::stringFromColumnIndex($columnIndex);
+                $sheet->getStyle($column . $row)->applyFromArray($style);
+            }
+        }
+    }
+
+    public static function setDocumentProperties(Spreadsheet $spreadsheet, ExcelConfiguration $config): void
+    {
+        $properties = $spreadsheet->getProperties();
+
+        $defaultProperties = [
+            'creator' => 'Developer Perumdam Tirta Satria',
+            'lastModifiedBy' => 'Developer Perumdam Tirta Satria',
+            'title' => $config->sheetTitle,
+            'subject' => 'Export from ' . config('app.name'),
+            'description' => 'Generated on ' . now()->format('Y-m-d H:i:s'),
+        ];
+
+        $allProperties = array_merge($defaultProperties, $config->documentProperties);
+
+        foreach ($allProperties as $property => $value) {
+            match ($property) {
+                'creator' => $properties->setCreator($value),
+                'lastModifiedBy' => $properties->setLastModifiedBy($value),
+                'title' => $properties->setTitle($value),
+                'subject' => $properties->setSubject($value),
+                'description' => $properties->setDescription($value),
+                'keywords' => $properties->setKeywords($value),
+                'category' => $properties->setCategory($value),
+                default => null,
+            };
+        }
+    }
 }

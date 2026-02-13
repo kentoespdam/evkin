@@ -3,6 +3,7 @@
 namespace App\Models\Transaksi;
 
 use App\Models\Master\MasterReports;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use RedExplosion\Sqids\Concerns\HasSqids;
@@ -80,11 +81,14 @@ class PerhitunganReports extends Model
             ->orderBy('master_reports.seq');
     }
 
-    public static function getPerhitunganReports(int $year, ?int $reportTypeId, ?string $search, bool $includeLastDecember = false): \Illuminate\Database\Eloquent\Collection
+    public static function getPerhitunganReports(int $year, ?int $reportTypeId, ?string $search, bool $includeLastDecember = false): Collection
     {
         $query = self::with('masterReport')
             ->where('year', $year)
-            ->whereHas('masterReport', fn ($q) => $q->where('report_type_id', $reportTypeId));
+            ->whereHas(
+                'masterReport',
+                fn ($q) => $q->where('report_type_id', $reportTypeId)
+            );
 
         if ($includeLastDecember) {
             $query->orWhere(function ($q) use ($year, $reportTypeId) {
@@ -101,6 +105,21 @@ class PerhitunganReports extends Model
                 fn ($inner) => $inner->where('desc_indicator', 'like', "%{$search}%")
             )
         )
+            ->join('master_reports', 'master_reports.id', '=', 'perhitungan_reports.master_report_id')
+            ->select('perhitungan_reports.*')
+            ->orderBy('master_reports.aspect_id')
+            ->orderBy('master_reports.seq')
+            ->orderBy('master_reports.urut')
+            ->get();
+    }
+
+    public static function getDecemberLastYearReports(int $year, ?int $reportTypeId, ?string $search): Collection
+    {
+        return PerhitunganReports::with('masterReport')
+            ->where('year', $year)
+            ->where('month', 12)
+            ->whereHas('masterReport', fn ($q) => $q->where('report_type_id', $reportTypeId))
+            ->when($search, fn ($q) => $q->whereHas('masterReport', fn ($inner) => $inner->where('desc_indicator', 'like', "%{$search}%")))
             ->get();
     }
 }

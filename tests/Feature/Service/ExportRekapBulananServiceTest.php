@@ -5,21 +5,17 @@ namespace Tests\Feature\Service;
 use App\Data\ExcelConfiguration;
 use App\Helpers\CellHelper;
 use App\Helpers\DateHelper;
-use App\Http\Resources\AspectsResource;
-use App\Http\Resources\MasterInputsResource;
-use App\Http\Resources\ReportTypesResource;
 use App\Models\Master\MasterInputs;
 use App\Models\Transaksi\RekapInputTahunans;
 use App\Models\Transaksi\TransaksiInputs;
+use App\Services\Excel\ExcelStyleManager;
 use App\Services\Excel\PositionTracker;
 use App\Services\Excel\PositionTrackerBuilder;
-use App\Services\Excel\ExcelStyleManager;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -30,18 +26,22 @@ use function PHPUnit\Framework\assertIsString;
 class ExportRekapBulananServiceTest extends TestCase
 {
     private const REKAP_RELATIONS = ['masterInput.masterSource', 'masterInput.aspect.reportType'];
+
     private string $sheetTitle = 'Rekap Bulanan';
+
     private int $year;
+
     private string $fileName;
 
     private Spreadsheet $spreadsheet;
+
     private ExcelConfiguration $excelConfig;
 
     private PositionTracker $positionTracker;
 
     public function test_example(): void
     {
-        $this->positionTracker = (new PositionTrackerBuilder())
+        $this->positionTracker = (new PositionTrackerBuilder)
             ->startRow(1)
             // ->startOrder(1)
             ->build();
@@ -69,6 +69,7 @@ class ExportRekapBulananServiceTest extends TestCase
             ->values();
         $aspectsGrouped = $masterInputs->groupBy('aspect_id')->map(function ($items) {
             $firstItem = $items->first();
+
             return [
                 'aspect_id' => $firstItem->aspect_id,
                 'aspect_name' => $firstItem->aspect->name,
@@ -78,6 +79,7 @@ class ExportRekapBulananServiceTest extends TestCase
 
         $reportTypesGrouped = $masterInputs->groupBy('aspect.report_type_id')->map(function ($items) {
             $firstItem = $items->first();
+
             return [
                 'report_type_id' => $firstItem->aspect->report_type_id,
                 'report_type_name' => $firstItem->aspect->reportType->name,
@@ -95,7 +97,7 @@ class ExportRekapBulananServiceTest extends TestCase
             ->whereIn('master_input_id', $masterIds)
             ->where('year', $this->year)
             ->get()
-            ->sortBy(fn($item) => $item->masterInput->seq)
+            ->sortBy(fn ($item) => $item->masterInput->seq)
             ->values();
 
         $rekapTahunan = RekapInputTahunans::with(self::REKAP_RELATIONS)
@@ -126,7 +128,7 @@ class ExportRekapBulananServiceTest extends TestCase
         return [
             $masterIds,
             $aspects->values(),
-            $reportTypes->values()
+            $reportTypes->values(),
         ];
     }
 
@@ -170,7 +172,7 @@ class ExportRekapBulananServiceTest extends TestCase
             'aspectDataMap' => $aspectDataMap,
             'masterInputMap' => $masterInputMap,
             'rekapDataMap' => $rekapDataMap,
-            'reportTypes' => $reportTypes
+            'reportTypes' => $reportTypes,
         ];
     }
 
@@ -194,7 +196,7 @@ class ExportRekapBulananServiceTest extends TestCase
                 'alignment' => [
                     'horizontal' => Alignment::HORIZONTAL_LEFT,
                     'vertical' => Alignment::VERTICAL_CENTER,
-                ]
+                ],
             ]
         );
         $sheet->mergeCells("{$column}{$currentRow}:{$mergeTo}{$currentRow}");
@@ -220,7 +222,7 @@ class ExportRekapBulananServiceTest extends TestCase
                 $sheet,
                 "{$column}{$currentRow}",
                 $value,
-                ExcelStyleManager::$ALL_BORDER_STYLE
+                ExcelStyleManager::ALL_BORDER_STYLE
             );
         }
         // Rata-Rata / Pencapaian
@@ -232,7 +234,7 @@ class ExportRekapBulananServiceTest extends TestCase
             $sheet,
             "{$avgColumn}{$currentRow}",
             $avgValue,
-            ExcelStyleManager::$ALL_BORDER_STYLE
+            ExcelStyleManager::ALL_BORDER_STYLE
         );
     }
 
@@ -247,44 +249,44 @@ class ExportRekapBulananServiceTest extends TestCase
             // Seq
             ExcelStyleManager::addCell(
                 $sheet,
-                'A' . $currentRow,
+                'A'.$currentRow,
                 $masterInput->seq,
                 array_merge([
                     'alignment' => [
                         'horizontal' => Alignment::HORIZONTAL_RIGHT,
                         'vertical' => Alignment::VERTICAL_CENTER,
-                    ]
-                ], ExcelStyleManager::$ALL_BORDER_STYLE)
+                    ],
+                ], ExcelStyleManager::ALL_BORDER_STYLE)
             );
 
             // Indikator
             ExcelStyleManager::addCell(
                 $sheet,
-                'B' . $currentRow,
+                'B'.$currentRow,
                 $masterInput->description,
-                ExcelStyleManager::$ALL_BORDER_STYLE
+                ExcelStyleManager::ALL_BORDER_STYLE
             );
 
             // Sumber Data
             $sourceName = $masterInput->masterSource ? $masterInput->masterSource->name : '';
             ExcelStyleManager::addCell(
                 $sheet,
-                'C' . $currentRow,
+                'C'.$currentRow,
                 $sourceName,
-                ExcelStyleManager::$ALL_BORDER_STYLE
+                ExcelStyleManager::ALL_BORDER_STYLE
             );
 
             // Satuan
             ExcelStyleManager::addCell(
                 $sheet,
-                'D' . $currentRow,
+                'D'.$currentRow,
                 $masterInput->satuan,
                 array_merge([
                     'alignment' => [
                         'horizontal' => Alignment::HORIZONTAL_CENTER,
                         'vertical' => Alignment::VERTICAL_CENTER,
-                    ]
-                ], ExcelStyleManager::$ALL_BORDER_STYLE)
+                    ],
+                ], ExcelStyleManager::ALL_BORDER_STYLE)
             );
 
             $masterId = $masterInput->id;
@@ -320,8 +322,8 @@ class ExportRekapBulananServiceTest extends TestCase
                             'color' => ['rgb' => 'D9E1F2'],
                         ],
                     ],
-                    ExcelStyleManager::$ALIGN_LEFT_CENTER_STYLE,
-                    ExcelStyleManager::$ALL_BORDER_STYLE
+                    ExcelStyleManager::ALIGN_LEFT_CENTER_STYLE,
+                    ExcelStyleManager::ALL_BORDER_STYLE
                 ));
             $masterInputs = $masterInputMap[$aspect->id] ?? [];
             $this->generateDataRow(
@@ -353,12 +355,11 @@ class ExportRekapBulananServiceTest extends TestCase
         }
     }
 
-
     private function generateConfig(Worksheet $sheet)
     {
         $this->excelConfig = ExcelConfiguration::create()
             ->withHeaders($this->generateHeaderRow())
-            ->withSheetTitle($this->sheetTitle . ' Tahun ' . $this->year)
+            ->withSheetTitle($this->sheetTitle.' Tahun '.$this->year)
             ->withNumberColumns(array_fill(5, 17, '0.00'))
             ->withRightAlignColumns(array_merge([0], range(4, 17)))
             ->withZebraStriping(true);
@@ -368,7 +369,7 @@ class ExportRekapBulananServiceTest extends TestCase
     {
         // Log::debug('Generating Excel file:', ['fileName' => $this->fileName]);
 
-        $this->spreadsheet = new Spreadsheet();
+        $this->spreadsheet = new Spreadsheet;
         $sheet = $this->spreadsheet->getActiveSheet();
         $sheet->setTitle("{$this->sheetTitle} {$this->year}");
 
@@ -386,7 +387,6 @@ class ExportRekapBulananServiceTest extends TestCase
 
         ExcelStyleManager::applySheetConfiguration($sheet, $this->excelConfig);
 
-
         $this->saveExcelFile();
 
     }
@@ -400,7 +400,7 @@ class ExportRekapBulananServiceTest extends TestCase
             new CellHelper(value: 'Satuan', width: 15),
         ];
         $months = array_map(
-            fn($month) => new CellHelper(value: $month, width: 20),
+            fn ($month) => new CellHelper(value: $month, width: 20),
             DateHelper::$monthList
         );
 
@@ -414,7 +414,7 @@ class ExportRekapBulananServiceTest extends TestCase
             'lastModifiedBy' => 'Developer Perumdam Tirta Satria',
             'title' => $this->sheetTitle,
             'subject' => 'Export from Perumdam Tirta Satria',
-            'description' => 'Generated on ' . now()->format('Y-m-d H:i:s'),
+            'description' => 'Generated on '.now()->format('Y-m-d H:i:s'),
         ];
 
         foreach ($defaultProperties as $property => $value) {
@@ -443,7 +443,7 @@ class ExportRekapBulananServiceTest extends TestCase
                 'alignment' => [
                     'horizontal' => Alignment::HORIZONTAL_CENTER,
                     'vertical' => Alignment::VERTICAL_CENTER,
-                ]
+                ],
             ]
         );
         $mergeTo = Coordinate::stringFromColumnIndex(count($this->excelConfig->headers));

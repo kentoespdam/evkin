@@ -3,12 +3,10 @@ import { ArrowLeftIcon, FileTypeIcon, FunctionSquareIcon, InfoIcon, SparklesIcon
 import { memo, useMemo } from "react";
 import ButtonLoading from "@/components/commons/button-loading";
 import ReportTypeSelect from "@/components/commons/form/report-type";
-import FormulaIndicatorTooltip from "@/components/commons/tooltip_formula_indicator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import master from "@/routes/master";
 import type { Aspect } from "@/types/aspect";
@@ -128,36 +126,75 @@ const AspectsForm = ({ data, reportTypes }: AspectsFormProps) => {
 								</Field>
 							</div>
 
-							{/* Section 3: Formula Configuration */}
+							{/* Section 3: Score and Weight Configuration */}
 							<SectionHeader
 								icon={FunctionSquareIcon}
-								title="Konfigurasi Formula"
-								description="Opsional: Tentukan formula khusus untuk perhitungan aspek ini"
+								title="Konfigurasi Skor dan Bobot"
+								description="Tentukan skor maksimal dan bobot untuk aspek ini"
 							/>
-							<div className="pl-11">
-								{/* Formula Aspect Field */}
+							<div className="pl-11 space-y-4">
+								{/* Max Score Field */}
 								<Field>
-									<FieldLabel htmlFor="formula_aspect" className="flex items-center gap-2">
-										Formula Aspect
-										<FormulaIndicatorTooltip />
+									<FieldLabel htmlFor="max_score" className="flex items-center gap-2">
+										Skor Maksimal
+										<span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
 									</FieldLabel>
-									<Textarea
-										id="formula_aspect"
-										name="formula_aspect"
-										defaultValue={data?.formulaAspect ?? ""}
-										placeholder="Contoh: &#10;GTE 80; &#10;LTE 79;"
+									<Input
+										id="max_score"
+										name="max_score"
+										type="number"
+										min="0"
+										defaultValue={data?.maxScore ?? ""}
+										placeholder="Contoh: 100"
 										className={cn(
-											"font-mono text-sm transition-all min-h-[100px]",
-											errors.formula_aspect
+											"transition-all",
+											errors.max_score
 												? "border-destructive focus-visible:ring-destructive"
 												: "focus-visible:ring-purple-500/20",
 										)}
-										rows={4}
 									/>
-									{errors.formula_aspect && (
+									{errors.max_score && (
 										<p className="text-sm text-destructive mt-1.5 flex items-center gap-1">
 											<InfoIcon className="h-3 w-3" />
-											{errors.formula_aspect}
+											{errors.max_score}
+										</p>
+									)}
+									{!errors.max_score && (
+										<p className="text-xs text-muted-foreground mt-1.5">
+											Nilai maksimal yang dapat dicapai untuk aspek ini
+										</p>
+									)}
+								</Field>
+
+								{/* Weight Field */}
+								<Field>
+									<FieldLabel htmlFor="weight" className="flex items-center gap-2">
+										Bobot
+										<span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
+									</FieldLabel>
+									<Input
+										id="weight"
+										name="weight"
+										type="number"
+										min="0"
+										defaultValue={data?.weight ?? ""}
+										placeholder="Contoh: 5"
+										className={cn(
+											"transition-all",
+											errors.weight
+												? "border-destructive focus-visible:ring-destructive"
+												: "focus-visible:ring-purple-500/20",
+										)}
+									/>
+									{errors.weight && (
+										<p className="text-sm text-destructive mt-1.5 flex items-center gap-1">
+											<InfoIcon className="h-3 w-3" />
+											{errors.weight}
+										</p>
+									)}
+									{!errors.weight && (
+										<p className="text-xs text-muted-foreground mt-1.5">
+											Bobot aspek ini dalam perhitungan total
 										</p>
 									)}
 								</Field>

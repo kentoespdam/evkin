@@ -12,7 +12,7 @@ class Aspects extends Model
 
     protected $table = 'aspects';
 
-    protected $fillable = ['name', 'report_type_id', 'formula_aspect'];
+    protected $fillable = ['name', 'report_type_id', 'max_score', 'weight'];
 
     protected $hidden = ['created_at', 'updated_at'];
 

@@ -32,10 +32,16 @@ const AspectsTableHeader = memo(() => {
 						Aspect Name
 					</div>
 				</TableHead>
-				<TableHead className="font-semibold">
-					<div className="flex items-center gap-2">
+				<TableHead className="font-semibold text-center">
+					<div className="flex items-center justify-center gap-2">
 						<FunctionSquareIcon className="h-4 w-4 text-muted-foreground" />
-						Formula Aspect
+						Max Score
+					</div>
+				</TableHead>
+				<TableHead className="font-semibold text-center">
+					<div className="flex items-center justify-center gap-2">
+						<FunctionSquareIcon className="h-4 w-4 text-muted-foreground" />
+						Weight
 					</div>
 				</TableHead>
 				<TableHead className="w-24 text-center font-semibold">Actions</TableHead>
@@ -144,28 +150,28 @@ const AspectsTableBody = memo(({ page, setId, setShowDeleteDialog }: AspectsTabl
 							</div>
 							<div>
 								<p className="font-semibold text-foreground">{item.name}</p>
-								{item.formulaAspect && <p className="text-xs text-muted-foreground mt-0.5">Has custom formula</p>}
+								{(item.maxScore || item.weight) && (
+									<p className="text-xs text-muted-foreground mt-0.5">Configured with score & weight</p>
+								)}
 							</div>
 						</div>
 					</TableCell>
-					<TableCell>
-						{item.formulaAspect ? (
-							<Tooltip>
-								<TooltipTrigger asChild>
-									<div className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-md px-3 py-2 max-w-md">
-										<p className="text-xs font-mono text-emerald-900 dark:text-emerald-100 truncate">
-											{item.formulaAspect}
-										</p>
-									</div>
-								</TooltipTrigger>
-								<TooltipContent className="max-w-md">
-									<p className="font-mono text-xs whitespace-pre-wrap">{item.formulaAspect}</p>
-								</TooltipContent>
-							</Tooltip>
+					<TableCell className="text-center">
+						{item.maxScore ? (
+							<Badge variant="outline" className="font-semibold text-blue-600 dark:text-blue-400">
+								{item.maxScore}
+							</Badge>
 						) : (
-							<div className="bg-muted/50 border border-border rounded-md px-3 py-2">
-								<span className="text-xs text-muted-foreground italic">No formula defined</span>
-							</div>
+							<span className="text-xs text-muted-foreground italic">-</span>
+						)}
+					</TableCell>
+					<TableCell className="text-center">
+						{item.weight ? (
+							<Badge variant="outline" className="font-semibold text-purple-600 dark:text-purple-400">
+								{item.weight}
+							</Badge>
+						) : (
+							<span className="text-xs text-muted-foreground italic">-</span>
 						)}
 					</TableCell>
 					<TableCell>

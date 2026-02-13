@@ -111,8 +111,8 @@ class ExportRekapTahunanService
         );
 
         $syles = ExcelStyleManager::mergeStyles(
-            ExcelStyleManager::$FONT_BOLD_16_STYLE,
-            ExcelStyleManager::$ALIGN_CENTER_CENTER_STYLE
+            ExcelStyleManager::FONT_BOLD_16_STYLE,
+            ExcelStyleManager::ALIGN_CENTER_CENTER_STYLE
         );
 
         ExcelStyleManager::addCell(
@@ -156,20 +156,20 @@ class ExportRekapTahunanService
             ->whereIn('master_input_id', $masterInputIds)
             ->whereBetween('year', [$this->fromYear, $this->toYear])
             ->get()
-            ->keyBy(fn($item) => sprintf(
+            ->keyBy(fn ($item) => sprintf(
                 '%d-%d',
                 $item->master_input_id,
                 $item->year
             ))
-            ->map(fn($item) => $item->nilai)
+            ->map(fn ($item) => $item->nilai)
             ->toArray();
     }
 
     private function organizeData(Collection $masterInputs, array $rekapData)
     {
         $reportTypeGruoped = $masterInputs
-            ->groupBy(fn($item) => $item->aspect?->reportType?->id)
-            ->filter(fn($item) => $item->first()?->aspect?->reportType !== null)
+            ->groupBy(fn ($item) => $item->aspect?->reportType?->id)
+            ->filter(fn ($item) => $item->first()?->aspect?->reportType !== null)
             ->map(function ($items) {
                 $firstItem = $items->first();
 
@@ -182,7 +182,7 @@ class ExportRekapTahunanService
 
         $aspectsGrouped = $masterInputs
             ->groupBy('aspect_id')
-            ->filter(fn($items) => $items->first()->aspect !== null)
+            ->filter(fn ($items) => $items->first()->aspect !== null)
             ->map(function ($items) {
                 $firstItem = $items->first();
 
@@ -243,8 +243,8 @@ class ExportRekapTahunanService
             "A{$currentRow}",
             $reportTypeName,
             ExcelStyleManager::mergeStyles(
-                ExcelStyleManager::$FONT_BOLD_12_STYLE,
-                ExcelStyleManager::$ALIGN_LEFT_CENTER_STYLE
+                ExcelStyleManager::FONT_BOLD_12_STYLE,
+                ExcelStyleManager::ALIGN_LEFT_CENTER_STYLE
             )
         );
 
@@ -283,10 +283,10 @@ class ExportRekapTahunanService
         $sheet->getCell("A{$currentRow}")->setValue($aspectName);
 
         $style = ExcelStyleManager::mergeStyles(
-            ExcelStyleManager::$FONT_BOLD_12_STYLE,
-            ExcelStyleManager::$FILL_SOLID_GRAY_STYLE,
-            ExcelStyleManager::$ALIGN_LEFT_CENTER_STYLE,
-            ExcelStyleManager::$ALL_BORDER_STYLE
+            ExcelStyleManager::FONT_BOLD_12_STYLE,
+            ExcelStyleManager::FILL_SOLID_GRAY_STYLE,
+            ExcelStyleManager::ALIGN_LEFT_CENTER_STYLE,
+            ExcelStyleManager::ALL_BORDER_STYLE
         );
 
         $sheet->getStyle("A{$currentRow}:{$lastColumn}{$currentRow}")->applyFromArray($style);
@@ -320,7 +320,7 @@ class ExportRekapTahunanService
         ];
 
         foreach ($cells as $column => $data) {
-            $style = ExcelStyleManager::$ALL_BORDER_STYLE;
+            $style = ExcelStyleManager::ALL_BORDER_STYLE;
 
             if (isset($data['alignment'])) {
                 $style['alignment'] = [
@@ -343,10 +343,10 @@ class ExportRekapTahunanService
             $column = $this->getColumnLetter(4 + ($year - $this->fromYear + 1));
 
             $style = array_merge(
-                ExcelStyleManager::$ALL_BORDER_STYLE,
+                ExcelStyleManager::ALL_BORDER_STYLE,
                 array_merge(
-                    ExcelStyleManager::$ALIGN_RIGHT_CENTER_STYLE,
-                    ExcelStyleManager::$FORMAT_NUMBER_00_STYLE,
+                    ExcelStyleManager::ALIGN_RIGHT_CENTER_STYLE,
+                    ExcelStyleManager::FORMAT_NUMBER_00_STYLE,
                 )
             );
 

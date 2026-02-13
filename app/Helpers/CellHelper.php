@@ -5,12 +5,18 @@ namespace App\Helpers;
 class CellHelper
 {
     public string|int|float|bool $value;
+
     public int $colspan;
+
     public int $rowspan;
+
     public int $width;
+
     public string $alignment;
+
     public string $format;
 
+    public bool $wrapText;
 
     public function __construct(
         string|int|float|bool $value,
@@ -18,7 +24,8 @@ class CellHelper
         int $rowspan = 1,
         int $width = 0,
         string $alignment = 'left',
-        string $format = ''
+        string $format = '',
+        bool $wrapText = false
     ) {
         $this->value = $value;
         $this->colspan = $colspan;
@@ -26,6 +33,6 @@ class CellHelper
         $this->width = $width;
         $this->alignment = $alignment;
         $this->format = $format;
+        $this->wrapText = $wrapText;
     }
-
 }

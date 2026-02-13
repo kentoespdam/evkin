@@ -3,13 +3,10 @@
 namespace Tests\Feature\Report;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class PerhitunganReportsIndexTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function test_guests_are_redirected_to_login()
     {
         $this->get('/report/perhitungan-reports')->assertRedirect(route('login'));

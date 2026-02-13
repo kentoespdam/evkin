@@ -100,7 +100,7 @@ class HitungPerhitunganReportsHelper
 
             return $results;
         } catch (\Throwable $e) {
-            Log::error('Error in hitungLaporanPerhitungan: ' . $e->getMessage(), [
+            Log::error('Error in hitungLaporanPerhitungan: '.$e->getMessage(), [
                 'year' => $year,
                 'month' => $month,
                 'trace' => $e->getTraceAsString(),
@@ -180,8 +180,9 @@ class HitungPerhitunganReportsHelper
 
     /**
      * Replace kode tokens in formula with actual values for archivement calculation.
-     * @param array $inputs Kode => nilai pairs
-     * @param string $kode Kode to replace
+     *
+     * @param  array  $inputs  Kode => nilai pairs
+     * @param  string  $kode  Kode to replace
      * @return string Replaced value or original kode if not found
      */
     private static function replaceKode(string $kode, array $inputs): string
@@ -194,6 +195,7 @@ class HitungPerhitunganReportsHelper
                 return (string) $value;
             }
         }
+
         return $kode;
     }
 
@@ -227,7 +229,7 @@ class HitungPerhitunganReportsHelper
                 ]
             );
         } catch (\Throwable $e) {
-            Log::error('Error storing HitungPerhitunganReports results: ' . $e->getMessage());
+            Log::error('Error storing HitungPerhitunganReports results: '.$e->getMessage());
         }
     }
 

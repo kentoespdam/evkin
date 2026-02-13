@@ -34,7 +34,8 @@ class ExportRekapBulananServiceTest extends TestCase
         $aspect = Aspects::updateOrCreate([
             'name' => 'Aspek 1',
             'report_type_id' => $reportType->id,
-            'formula_aspect' => 'sum',
+            'max_score' => 100,
+            'weight' => 5,
         ]);
 
         $masterSource = MasterSources::updateOrCreate([

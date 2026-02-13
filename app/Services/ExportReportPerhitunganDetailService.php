@@ -116,8 +116,8 @@ class ExportReportPerhitunganDetailService
         );
 
         $styles = ExcelStyleManager::mergeStyles(
-            ExcelStyleManager::$FONT_BOLD_16_STYLE,
-            ExcelStyleManager::$ALIGN_CENTER_CENTER_STYLE
+            ExcelStyleManager::FONT_BOLD_16_STYLE,
+            ExcelStyleManager::ALIGN_CENTER_CENTER_STYLE
         );
 
         ExcelStyleManager::addCell(
@@ -158,7 +158,7 @@ class ExportReportPerhitunganDetailService
         $currentRow = $this->positionTracker->nextRow();
         $formula = $item->formula;
         if ($item->masterReport->withRules && $item->masterReport->rules) {
-            $formula .= ' (' . $item->masterReport->rules . ')';
+            $formula .= ' ('.$item->masterReport->rules.')';
         }
         $rowCells = [
             'A' => ['value' => $item->masterReport->urut, 'align' => 'right'],
@@ -177,17 +177,17 @@ class ExportReportPerhitunganDetailService
         ];
 
         foreach ($rowCells as $column => $data) {
-            $style = ExcelStyleManager::$ALL_BORDER_STYLE;
+            $style = ExcelStyleManager::ALL_BORDER_STYLE;
             if (isset($data['align'])) {
                 switch ($data['align']) {
                     case 'center':
-                        $alignStyle = ExcelStyleManager::$ALIGN_CENTER_CENTER_STYLE;
+                        $alignStyle = ExcelStyleManager::ALIGN_CENTER_CENTER_STYLE;
                         break;
                     case 'right':
-                        $alignStyle = ExcelStyleManager::$ALIGN_RIGHT_CENTER_STYLE;
+                        $alignStyle = ExcelStyleManager::ALIGN_RIGHT_CENTER_STYLE;
                         break;
                     default:
-                        $alignStyle = ExcelStyleManager::$ALIGN_LEFT_CENTER_STYLE;
+                        $alignStyle = ExcelStyleManager::ALIGN_LEFT_CENTER_STYLE;
                         break;
                 }
                 $style = ExcelStyleManager::mergeStyles($style, $alignStyle);
@@ -236,10 +236,10 @@ class ExportReportPerhitunganDetailService
         $baseFileName = 'perhitungan_detail_';
 
         if ($reportType) {
-            $baseFileName .= $reportType->name . '_';
+            $baseFileName .= $reportType->name.'_';
         }
         if ($aspect) {
-            $baseFileName .= $aspect->name . '_';
+            $baseFileName .= $aspect->name.'_';
         }
         $baseFileName .= sprintf(
             '%d_%d_%d',

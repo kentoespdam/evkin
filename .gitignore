@@ -70,3 +70,4 @@ pnpm-debug.log*
 # Legacy Laravel Tools
 Homestead.json
 Homestead.yaml
+debug.json

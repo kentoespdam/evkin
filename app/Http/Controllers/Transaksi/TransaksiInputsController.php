@@ -31,8 +31,7 @@ class TransaksiInputsController extends Controller
         if ($search) {
             $roleInputsQuery->whereHas(
                 'masterInput',
-                fn($query) =>
-                $query->where('description', 'like', "%{$search}%")
+                fn ($query) => $query->where('description', 'like', "%{$search}%")
             );
         }
 
@@ -48,8 +47,7 @@ class TransaksiInputsController extends Controller
         if ($search) {
             $transaksiInputsQuery->whereHas(
                 'masterInput',
-                fn($query) =>
-                $query->where('description', 'like', "%{$search}%")
+                fn ($query) => $query->where('description', 'like', "%{$search}%")
             );
         }
 
@@ -109,7 +107,7 @@ class TransaksiInputsController extends Controller
         $periode = sprintf('%04d-%02d-01', $year, $month);
 
         return array_map(
-            fn($masterInputId, $nilai) => [
+            fn ($masterInputId, $nilai) => [
                 'periode' => $periode,
                 'year' => $year,
                 'month' => $month,

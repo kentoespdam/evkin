@@ -20,7 +20,7 @@ enum PositionTrackerPreset: string
                 order: 1,
                 rowIncrement: 1
             ),
-            self::WITH_HEADER => (new PositionTrackerBuilder())
+            self::WITH_HEADER => (new PositionTrackerBuilder)
                 ->startRow($startRow + 1) // Lewati header
                 ->build(),
             self::DATA_ONLY => new PositionTracker(

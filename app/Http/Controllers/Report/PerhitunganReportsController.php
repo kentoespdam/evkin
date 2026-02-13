@@ -15,7 +15,6 @@ use App\Models\Master\ReportTypes;
 use App\Models\Transaksi\PerhitunganReports;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -31,11 +30,11 @@ class PerhitunganReportsController extends Controller
         $defaultReportTypeSqid = $this->getDefaultReportTypeSqid();
 
         $masterReports = MasterReports::where('report_type_id', $reportTypeId)
-            ->when($request->filled('search'), fn($query) => $query->where('desc_indicator', 'like', "%{$request->search}%"))
+            ->when($request->filled('search'), fn ($query) => $query->where('desc_indicator', 'like', "%{$request->search}%"))
             ->get();
 
         $reports = PerhitunganReports::getPerhitunganReports($year, $reportTypeId, $request->search, includeLastDecember: true);
-        $reportsDecemberLastYear = $this->getDecemberLastYearReports($year - 1, $reportTypeId, $request->search);
+        $reportsDecemberLastYear = PerhitunganReports::getDecemberLastYearReports($year - 1, $reportTypeId, $request->search);
         $aspects = Aspects::where('report_type_id', $reportTypeId)->get();
 
         return Inertia::render('report/perhitungan_reports/index', [
@@ -92,12 +91,12 @@ class PerhitunganReportsController extends Controller
         $reports = PerhitunganReports::with('masterReport')
             ->where('year', $year)
             ->where('month', $month)
-            ->whereHas('masterReport', fn($q) => $q->where('report_type_id', $reportTypeId))
-            ->when($request->filled('search'), fn($q) => $q->where('desc_indicator', 'like', "%{$request->search}%"))
+            ->whereHas('masterReport', fn ($q) => $q->where('report_type_id', $reportTypeId))
+            ->when($request->filled('search'), fn ($q) => $q->where('desc_indicator', 'like', "%{$request->search}%"))
             ->when($request->filled('aspect_id'), function ($q) use ($request) {
                 $aspectId = $this->getAspectId($request->aspect_id);
                 if ($aspectId) {
-                    return $q->whereHas('masterReport', fn($inner) => $inner->where('aspect_id', $aspectId));
+                    return $q->whereHas('masterReport', fn ($inner) => $inner->where('aspect_id', $aspectId));
                 }
 
                 return $q;
@@ -159,21 +158,11 @@ class PerhitunganReportsController extends Controller
         ]);
     }
 
-    private function getDecemberLastYearReports(int $year, ?int $reportTypeId, ?string $search): Collection
-    {
-        return PerhitunganReports::with('masterReport')
-            ->where('year', $year)
-            ->where('month', 12)
-            ->whereHas('masterReport', fn($q) => $q->where('report_type_id', $reportTypeId))
-            ->when($search, fn($q) => $q->whereHas('masterReport', fn($inner) => $inner->where('desc_indicator', 'like', "%{$search}%")))
-            ->get();
-    }
-
     public function exportStatus(string $exportId): JsonResponse
     {
         $status = Cache::get("export.{$exportId}");
 
-        if (!$status) {
+        if (! $status) {
             return response()->json([
                 'status' => 'not_found',
                 'message' => 'Export not found or expired',
@@ -187,7 +176,7 @@ class PerhitunganReportsController extends Controller
     {
         $status = Cache::get("export.{$exportId}");
 
-        if (!$status || $status['status'] !== 'completed') {
+        if (! $status || $status['status'] !== 'completed') {
             abort(404, message: 'Export not found or not ready');
         }
 
@@ -195,7 +184,7 @@ class PerhitunganReportsController extends Controller
 
         $filePath = storage_path("app/exports/{$status['file_path']}");
 
-        if (!file_exists($filePath)) {
+        if (! file_exists($filePath)) {
             abort(404, 'Export file not found');
         }
 

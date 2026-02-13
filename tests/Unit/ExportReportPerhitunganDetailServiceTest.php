@@ -26,7 +26,8 @@ class ExportReportPerhitunganDetailServiceTest extends TestCase
         $aspect = Aspects::updateOrCreate([
             'name' => 'Aspek A',
             'report_type_id' => $reportType->id,
-            'formula_aspect' => 'sum',
+            'max_score' => 100,
+            'weight' => 5,
         ]);
 
         $masterReportA = MasterReports::updateOrCreate([

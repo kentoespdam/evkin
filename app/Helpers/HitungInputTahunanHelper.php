@@ -53,7 +53,7 @@ class HitungInputTahunanHelper
 
             return $results;
         } catch (\Throwable $e) {
-            Log::error('Error in hitungTotalTahunan: ' . $e->getMessage());
+            Log::error('Error in hitungTotalTahunan: '.$e->getMessage());
 
             return [];
         }
@@ -104,7 +104,7 @@ class HitungInputTahunanHelper
                 ['seq', 'kode', 'description', 'satuan', 'master_source_id', 'nilai']
             );
         } catch (\Throwable $e) {
-            Log::error('Error storing HitungInputTahunan results: ' . $e->getMessage());
+            Log::error('Error storing HitungInputTahunan results: '.$e->getMessage());
         }
     }
 

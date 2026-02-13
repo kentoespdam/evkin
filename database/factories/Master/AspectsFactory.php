@@ -23,7 +23,8 @@ class AspectsFactory extends Factory
         return [
             'name' => fake()->words(3, true),
             'report_type_id' => ReportTypes::factory(),
-            'formula_aspect' => fake()->randomElement(['sum', 'avg', 'max', null]),
+            'max_score' => fake()->numberBetween(50, 100),
+            'weight' => fake()->numberBetween(1, 10),
         ];
     }
 }

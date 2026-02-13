@@ -289,8 +289,8 @@ class ExportRekapBulananService
             "A{$currentRow}",
             $reportTypeName,
             ExcelStyleManager::mergeStyles(
-                ExcelStyleManager::$FONT_BOLD_12_STYLE,
-                ExcelStyleManager::$ALIGN_LEFT_CENTER_STYLE
+                ExcelStyleManager::FONT_BOLD_12_STYLE,
+                ExcelStyleManager::ALIGN_LEFT_CENTER_STYLE
             )
         );
 
@@ -329,10 +329,10 @@ class ExportRekapBulananService
         $sheet->getCell("A{$currentRow}")->setValue($aspectName);
 
         $style = ExcelStyleManager::mergeStyles(
-            ExcelStyleManager::$FONT_BOLD_12_STYLE,
-            ExcelStyleManager::$FILL_SOLID_GRAY_STYLE,
-            ExcelStyleManager::$ALIGN_LEFT_CENTER_STYLE,
-            ExcelStyleManager::$ALL_BORDER_STYLE
+            ExcelStyleManager::FONT_BOLD_12_STYLE,
+            ExcelStyleManager::FILL_SOLID_GRAY_STYLE,
+            ExcelStyleManager::ALIGN_LEFT_CENTER_STYLE,
+            ExcelStyleManager::ALL_BORDER_STYLE
         );
 
         $sheet->getStyle("A{$currentRow}:{$lastColumn}{$currentRow}")->applyFromArray($style);
@@ -369,7 +369,7 @@ class ExportRekapBulananService
         ];
 
         foreach ($cells as $column => $data) {
-            $style = ExcelStyleManager::$ALL_BORDER_STYLE;
+            $style = ExcelStyleManager::ALL_BORDER_STYLE;
 
             if (isset($data['alignment'])) {
                 $style['alignment'] = [
@@ -392,10 +392,10 @@ class ExportRekapBulananService
             $column = $this->getColumnLetter(4 + $month);
 
             $style = array_merge(
-                ExcelStyleManager::$ALL_BORDER_STYLE,
+                ExcelStyleManager::ALL_BORDER_STYLE,
                 array_merge(
-                    ExcelStyleManager::$ALIGN_RIGHT_CENTER_STYLE,
-                    ExcelStyleManager::$FORMAT_NUMBER_00_STYLE,
+                    ExcelStyleManager::ALIGN_RIGHT_CENTER_STYLE,
+                    ExcelStyleManager::FORMAT_NUMBER_00_STYLE,
                 )
             );
 
@@ -416,10 +416,10 @@ class ExportRekapBulananService
         $column = $this->getColumnLetter(self::RATA_RATA_COLUMN_INDEX);
 
         $style = array_merge(
-            ExcelStyleManager::$ALL_BORDER_STYLE,
+            ExcelStyleManager::ALL_BORDER_STYLE,
             array_merge(
-                ExcelStyleManager::$ALIGN_RIGHT_CENTER_STYLE,
-                ExcelStyleManager::$FORMAT_NUMBER_00_STYLE,
+                ExcelStyleManager::ALIGN_RIGHT_CENTER_STYLE,
+                ExcelStyleManager::FORMAT_NUMBER_00_STYLE,
             )
         );
 

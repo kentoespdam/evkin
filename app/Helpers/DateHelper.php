@@ -2,11 +2,8 @@
 
 namespace App\Helpers;
 
-use Illuminate\Support\Facades\Log;
-
 class DateHelper
 {
-
     public static $monthList = [
         1 => 'January',
         2 => 'February',

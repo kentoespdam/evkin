@@ -2,14 +2,14 @@
 
 namespace App\Jobs;
 
-use App\Services\ExportReportPerhitunganDetailService;
+use App\Services\ExportReportPerhitunganService;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
-class ExportReportDetailJob implements ShouldQueue
+class ExportReportJob implements ShouldQueue
 {
     use Dispatchable, Queueable;
 
@@ -19,38 +19,24 @@ class ExportReportDetailJob implements ShouldQueue
 
     private int $year;
 
-    private int $month;
-
     private string $report_type_id;
-
-    private ?string $aspect_id;
 
     private ?string $search;
 
-    /**
-     * Create a new job instance.
-     */
     public function __construct(
         int $userId,
         string $exportId,
         int $year,
-        int $month,
         string $report_type_id,
-        ?string $aspect_id = null,
         ?string $search = null
     ) {
         $this->userId = $userId;
         $this->exportId = $exportId;
         $this->year = $year;
-        $this->month = $month;
         $this->report_type_id = $report_type_id;
-        $this->aspect_id = $aspect_id;
         $this->search = $search;
     }
 
-    /**
-     * Execute the job.
-     */
     public function handle(): void
     {
         try {
@@ -62,11 +48,9 @@ class ExportReportDetailJob implements ShouldQueue
             ], 3600);
 
             // Generate and save the file based on export type
-            $exportService = new ExportReportPerhitunganDetailService(
+            $exportService = new ExportReportPerhitunganService(
                 $this->year,
-                $this->month,
                 $this->report_type_id,
-                $this->aspect_id,
                 $this->search
             );
             $exportService->generateAndStore();

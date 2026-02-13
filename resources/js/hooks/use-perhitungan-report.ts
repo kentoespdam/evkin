@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { parseAspectFormula } from "@/lib/math_parser";
 import type { Aspect } from "@/types/aspect";
 import type { PerhitunganReportDetail } from "@/types/perhitungan-reports";
 import type { Report } from "@/types/report";
@@ -7,7 +6,8 @@ import type { Report } from "@/types/report";
 export interface GroupedDataKepmendagri {
 	aspectId: string;
 	aspectName: string;
-	aspectFormula: string;
+	maxScore: number;
+	weight: number;
 	masterReports: Report[];
 	tahunLaluMap: Map<string, PerhitunganReportDetail>;
 	monthlyTotals: Map<
@@ -105,7 +105,8 @@ export const usePerhitunganDataKepmendagri = (
 						totalBobot += Number(detail?.nilaiBobot ?? 0);
 					});
 
-					const nilaiKinerja = parseAspectFormula(aspect.formulaAspect || "", totalNilaiIndicator);
+					const nilaiKinerja =
+						aspect.maxScore && aspect.maxScore > 0 ? (totalNilaiIndicator / aspect.maxScore) * (aspect.weight || 1) : 0;
 					monthlyTotals.set(month, {
 						totalNilaiIndicator,
 						totalBobot,
@@ -123,12 +124,14 @@ export const usePerhitunganDataKepmendagri = (
 					0,
 				);
 
-				const nilaiKinerjaTahunLalu = parseAspectFormula(aspect.formulaAspect || "", totalTahunLalu);
+				const nilaiKinerjaTahunLalu =
+					aspect.maxScore && aspect.maxScore > 0 ? (totalTahunLalu / aspect.maxScore) * (aspect.weight || 1) : 0;
 				// const nilaiBobotTahunLalu=
 				return {
 					aspectId: aspect.id,
 					aspectName: aspect.name,
-					aspectFormula: aspect.formulaAspect || "",
+					maxScore: aspect.maxScore || 0,
+					weight: aspect.weight || 0,
 					masterReports: masterReportsList,
 					tahunLaluMap: aspectTahunLaluMap,
 					monthlyTotals,
@@ -151,7 +154,8 @@ export const usePerhitunganDataKepmendagri = (
 export interface GroupedDataPupr {
 	aspectId: string;
 	aspectName: string;
-	aspectFormula: string;
+	maxScore: number;
+	weight: number;
 	masterReports: Report[];
 	tahunLaluMap: Map<string, PerhitunganReportDetail>;
 	monthlyTotals: Map<
@@ -245,7 +249,8 @@ export const usePerhitunganDataPupr = (
 						totalBobot += detail?.nilaiBobot || 0;
 					});
 
-					const nilaiKinerja = parseAspectFormula(aspect.formulaAspect || "", totalNilaiIndicator);
+					const nilaiKinerja =
+						aspect.maxScore && aspect.maxScore > 0 ? (totalNilaiIndicator / aspect.maxScore) * (aspect.weight || 1) : 0;
 					monthlyTotals.set(month, {
 						totalNilaiIndicator,
 						totalBobot,
@@ -258,11 +263,13 @@ export const usePerhitunganDataPupr = (
 					0,
 				);
 
-				const nilaiKinerjaTahunLalu = parseAspectFormula(aspect.formulaAspect || "", totalTahunLalu);
+				const nilaiKinerjaTahunLalu =
+					aspect.maxScore && aspect.maxScore > 0 ? (totalTahunLalu / aspect.maxScore) * (aspect.weight || 1) : 0;
 				return {
 					aspectId: aspect.id,
 					aspectName: aspect.name,
-					aspectFormula: aspect.formulaAspect || "",
+					maxScore: aspect.maxScore || 0,
+					weight: aspect.weight || 0,
 					masterReports: masterReportsList,
 					tahunLaluMap: aspectTahunLaluMap,
 					monthlyTotals,

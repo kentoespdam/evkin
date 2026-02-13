@@ -16,17 +16,15 @@ class ExcelStyleManager
     {
         $cell = $sheet->getCell($cellCoordinate);
         $cell->setValue($value);
-        if (!empty($styleArray)) {
+        if (! empty($styleArray)) {
             $sheet->getStyle($cellCoordinate)->applyFromArray($styleArray);
         }
     }
 
     /**
      * Summary of applyHeaderStyle
-     * @param Worksheet $sheet
-     * @param array<CellHelper> $headers
-     * @param ExcelConfiguration $config
-     * @return void
+     *
+     * @param  array<CellHelper>  $headers
      */
     public static function applyHeaderStyle(Worksheet $sheet, array $headers, ExcelConfiguration $config, int $startRow = 1): void
     {
@@ -79,7 +77,7 @@ class ExcelStyleManager
         $value,
         ExcelConfiguration $config
     ): void {
-        $style = $sheet->getStyle($column . $row);
+        $style = $sheet->getStyle($column.$row);
 
         // Number formatting for numeric columns
         if (in_array($colIndex + 1, $config->numberColumns)) {
@@ -132,7 +130,7 @@ class ExcelStyleManager
         array $data,
         ExcelConfiguration $config
     ): void {
-        if (!$config->enableConditionalFormatting) {
+        if (! $config->enableConditionalFormatting) {
             return;
         }
 
@@ -142,7 +140,7 @@ class ExcelStyleManager
             $value = $rule['value'];
             $style = $rule['style'];
 
-            if (!isset($data[$columnIndex - 1])) {
+            if (! isset($data[$columnIndex - 1])) {
                 continue;
             }
 
@@ -169,7 +167,7 @@ class ExcelStyleManager
 
             if ($shouldApply) {
                 $column = Coordinate::stringFromColumnIndex($columnIndex);
-                $sheet->getStyle($column . $row)->applyFromArray($style);
+                $sheet->getStyle($column.$row)->applyFromArray($style);
             }
         }
     }
@@ -221,11 +219,11 @@ class ExcelStyleManager
         $properties = $spreadsheet->getProperties();
 
         $defaultProperties = [
-            'creator' => config('app.name'),
-            'lastModifiedBy' => config('app.name'),
+            'creator' => 'Developer Perumdam Tirta Satria',
+            'lastModifiedBy' => 'Developer Perumdam Tirta Satria',
             'title' => $config->sheetTitle,
-            'subject' => 'Export from ' . config('app.name'),
-            'description' => 'Generated on ' . now()->format('Y-m-d H:i:s'),
+            'subject' => 'Export from '.config('app.name'),
+            'description' => 'Generated on '.now()->format('Y-m-d H:i:s'),
         ];
 
         $allProperties = array_merge($defaultProperties, $config->documentProperties);
