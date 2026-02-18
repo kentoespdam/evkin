@@ -57,6 +57,19 @@ class ExcelStyleManager
         ],
     ];
 
+    public const FILL_SOLID_LIGHT_PINK_STYLE = [
+        'fill' => [
+            'fillType' => Fill::FILL_SOLID,
+            'color' => ['rgb' => 'F8CBAD'],
+        ],
+    ];
+
+    public const FONT_COLOR_RED_STYLE = [
+        'font' => [
+            'color' => ['rgb' => 'FF0000'],
+        ],
+    ];
+
     public const FONT_BOLD_11 = [
         'font' => [
             'bold' => true,
@@ -337,54 +350,6 @@ class ExcelStyleManager
         for ($row = 2; $row <= $lastRow; $row += 2) {
             $range = "A{$row}:{$lastColumnLetter}{$row}";
             $sheet->getStyle($range)->applyFromArray($zebraStyle);
-        }
-    }
-
-    public static function applyConditionalFormatting(
-        Worksheet $sheet,
-        int $row,
-        array $data,
-        ExcelConfiguration $config
-    ): void {
-        if (!$config->enableConditionalFormatting) {
-            return;
-        }
-
-        foreach ($config->conditionalFormattingRules as $rule) {
-            $columnIndex = $rule['column'];
-            $condition = $rule['condition'];
-            $value = $rule['value'];
-            $style = $rule['style'];
-
-            if (!isset($data[$columnIndex - 1])) {
-                continue;
-            }
-
-            $cellValue = $data[$columnIndex - 1];
-            $shouldApply = false;
-
-            switch ($condition) {
-                case '>':
-                    $shouldApply = is_numeric($cellValue) && $cellValue > $value;
-                    break;
-                case '<':
-                    $shouldApply = is_numeric($cellValue) && $cellValue < $value;
-                    break;
-                case '=':
-                    $shouldApply = $cellValue == $value;
-                    break;
-                case '>=':
-                    $shouldApply = is_numeric($cellValue) && $cellValue >= $value;
-                    break;
-                case '<=':
-                    $shouldApply = is_numeric($cellValue) && $cellValue <= $value;
-                    break;
-            }
-
-            if ($shouldApply) {
-                $column = Coordinate::stringFromColumnIndex($columnIndex);
-                $sheet->getStyle($column . $row)->applyFromArray($style);
-            }
         }
     }
 
