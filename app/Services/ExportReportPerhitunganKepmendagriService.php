@@ -23,43 +23,74 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
+
+/**
+ * Service to generate and export the "Perhitungan Kepmendagri" report as an Excel file.
+ *
+ * This service builds a spreadsheet based on report type, year, and optional search filter.
+ * It organizes data, applies styles, and stores the file in the exports directory.
+ *
+ * @author 2026
+ */
 class ExportReportPerhitunganKepmendagriService
 {
+    /** @var string Directory where exports are stored */
     private const EXPORTS_DIRECTORY = 'exports';
 
+    /** @var int Number of title rows */
     private const TITLE_ROW_HEIGHT = 2;
 
+    /** @var int Number of months in a year */
     private const MONTH_COUNT = 12;
 
+    /** @var int The year for the report */
     private int $year;
 
+    /** @var string The report type identifier */
     private string $report_type_id;
 
+    /** @var string|null Optional search filter */
     private ?string $search;
 
+    /** @var ReportTypes|null The report type model */
     private ?ReportTypes $reportType = null;
 
+    /** @var string The generated file name */
     public string $fileName;
 
+    /** @var Spreadsheet The spreadsheet instance */
     private Spreadsheet $spreadsheet;
 
+    /** @var ExcelConfiguration The Excel configuration */
     private ExcelConfiguration $excelConfig;
 
+    /** @var PositionTracker Tracks the current row position */
     private PositionTracker $positionTracker;
 
+    /** @var array Header cell definitions */
     private array $headerCells = [];
 
+    /** @var int The last input month in the year */
     private int $lastInputMonth;
 
+    /**
+     * Constructor.
+     *
+     * @param int $year
+     * @param string $report_type_id
+     * @param string|null $search
+     */
     public function __construct(int $year, string $report_type_id, ?string $search = null)
     {
         $this->year = $year;
         $this->report_type_id = $report_type_id;
         $this->search = $search;
-
         $this->initializeService();
     }
 
+    /**
+     * Initialize the service: set up position tracker, base data, file name, headers, and Excel config.
+     */
     private function initializeService(): void
     {
         $this->positionTracker = (new PositionTrackerBuilder)
@@ -71,33 +102,41 @@ class ExportReportPerhitunganKepmendagriService
         $this->createExcelConfiguration();
     }
 
+    /**
+     * Generate the report and store the Excel file.
+     *
+     * @return string The file path of the saved Excel file
+     */
     public function generateAndStore(): string
     {
         $this->initializeSpreadsheet();
         $this->addTitleRow();
         $this->addDataRows();
-
         return $this->saveExcelFile();
     }
 
+    /**
+     * Initialize the spreadsheet and set document properties.
+     */
     private function initializeSpreadsheet(): void
     {
-        $this->spreadsheet = new Spreadsheet;
+        $this->spreadsheet = new Spreadsheet();
         ExcelStyleManager::setDocumentProperties($this->spreadsheet, $this->excelConfig);
-
         $sheet = $this->spreadsheet->getActiveSheet();
         $sheet->setTitle($this->excelConfig->sheetTitle);
     }
 
+    /**
+     * Add the title rows to the spreadsheet.
+     */
     private function addTitleRow(): void
     {
         $sheet = $this->spreadsheet->getActiveSheet();
-        $title = [
+        $titles = [
             sprintf('PROYEKSI PENILAIAN KINERJA PERUMDAM TIRTA SATRIA TAHUN %d', $this->year),
             'BERDASARKAN FORMULASI KEPMENDAGRI NO. 47 TAHUN 1999',
         ];
-
-        foreach ($title as $line) {
+        foreach ($titles as $line) {
             $currentRow = $this->positionTracker->nextRow();
             ExcelStyleManager::addCell(
                 $sheet,
@@ -111,17 +150,16 @@ class ExportReportPerhitunganKepmendagriService
             $lastColumn = $this->getLastColumnIndex();
             $sheet->mergeCells("A{$currentRow}:{$lastColumn}{$currentRow}");
         }
-
-        $this->positionTracker = $this->positionTracker->advanceRows(
-            self::TITLE_ROW_HEIGHT
-        );
+        $this->positionTracker = $this->positionTracker->advanceRows(self::TITLE_ROW_HEIGHT);
     }
 
+    /**
+     * Add all data rows and sections to the spreadsheet.
+     */
     private function addDataRows(): void
     {
         $data = $this->prepareData();
         $this->generateReportTypeSections($data);
-
         foreach (range('A', 'E') as $col) {
             $this->spreadsheet->getActiveSheet()
                 ->getColumnDimension($col)
@@ -129,12 +167,16 @@ class ExportReportPerhitunganKepmendagriService
         }
     }
 
-    private function prepareData()
+
+    /**
+     * Prepare and organize all data needed for the report.
+     *
+     * @return array Organized data for report generation
+     */
+    private function prepareData(): array
     {
         $masterReports = $this->getMasterReports();
-
         $reports = $this->getReports();
-
         $archivementData = $reports
             ->filter(fn($report) => $report->month == $this->lastInputMonth)
             ->keyBy('master_report_id')
@@ -144,13 +186,9 @@ class ExportReportPerhitunganKepmendagriService
                 'nilai_archivement' => $report->nilai_archivement,
                 'nilai_archivement_indicator' => $report->nilai_archivement_indicator,
             ]);
-
         $reportsDecemberLastYear = $this->getReportsDecemberLastYear();
-
         $reportData = $reports->merge($reportsDecemberLastYear);
-
         $aspects = $this->getAspects();
-
         return $this->organizeData(
             $masterReports,
             $reportData,
@@ -159,7 +197,13 @@ class ExportReportPerhitunganKepmendagriService
         );
     }
 
-    private function getMasterReports()
+
+    /**
+     * Get all master reports for the current report type.
+     *
+     * @return Collection
+     */
+    private function getMasterReports(): Collection
     {
         return MasterReports::where('report_type_id', $this->reportType->id)
             ->orderBy('aspect_id')
@@ -168,19 +212,29 @@ class ExportReportPerhitunganKepmendagriService
             ->get();
     }
 
-    private function getReports()
+
+    /**
+     * Get all reports for the current year and report type.
+     *
+     * @return Collection
+     */
+    private function getReports(): Collection
     {
-        $result = PerhitunganReports::getPerhitunganReports(
+        return PerhitunganReports::getPerhitunganReports(
             $this->year,
             $this->reportType->id,
             $this->search,
             true
         );
-
-        return $result;
     }
 
-    private function getReportsDecemberLastYear()
+
+    /**
+     * Get December reports from the previous year for the current report type.
+     *
+     * @return Collection
+     */
+    private function getReportsDecemberLastYear(): Collection
     {
         return PerhitunganReports::getDecemberLastYearReports(
             $this->year - 1,
@@ -189,37 +243,48 @@ class ExportReportPerhitunganKepmendagriService
         );
     }
 
-    private function getRekapInputTahunans()
+
+    /**
+     * Get RekapInputTahunans for the current year and report type.
+     *
+     * @return Collection
+     */
+    private function getRekapInputTahunans(): Collection
     {
         return RekapInputTahunans::where('year', $this->year)
             ->where('report_type_id', $this->reportType->id)
             ->get();
     }
 
-    private function getAspects()
+
+    /**
+     * Get all aspects for the current report type.
+     *
+     * @return Collection
+     */
+    private function getAspects(): Collection
     {
         return Aspects::where('report_type_id', $this->reportType->id)
             ->get(['id', 'name', 'max_score', 'weight']);
     }
 
-    private function organizeData(Collection $masterReports, Collection $reportData, Collection $aspects, Collection $archivementData)
+
+    /**
+     * Organize and group all report data for easier spreadsheet generation.
+     *
+     * @param Collection $masterReports
+     * @param Collection $reportData
+     * @param Collection $aspects
+     * @param Collection $archivementData
+     * @return array
+     */
+    private function organizeData(Collection $masterReports, Collection $reportData, Collection $aspects, Collection $archivementData): array
     {
-        $groupedMasterReports = $masterReports
-            ->groupBy('aspect_id');
-
+        $groupedMasterReports = $masterReports->groupBy('aspect_id');
         $groupedReports = $reportData
-            ->groupBy(function ($item) {
-                return $item->masterReport->aspect_id;
-            })
-            ->map(function ($aspectGroup) {
-                return $aspectGroup->groupBy('master_report_id')
-                    ->map(function ($masterReportGroup) {
-                        return $masterReportGroup->keyBy(function ($item) {
-                            return sprintf('%d-%d', $item->year, $item->month);
-                        });
-                    });
-            });
-
+            ->groupBy(fn($item) => $item->masterReport->aspect_id)
+            ->map(fn($aspectGroup) => $aspectGroup->groupBy('master_report_id')
+                ->map(fn($masterReportGroup) => $masterReportGroup->keyBy(fn($item) => sprintf('%d-%d', $item->year, $item->month))));
         $groupedArchivementByAspect = $archivementData
             ->groupBy('aspect_id')
             ->map(fn($group) => $group->keyBy('master_report_id'));
@@ -228,49 +293,33 @@ class ExportReportPerhitunganKepmendagriService
         $totalArchivementByAspect = [];
         $totalNilaiKinerjaByAspect = [];
         $totalNilaiArchivementByAspect = [];
-        $totalNilaiPerformanceByYearMonth = [];
         foreach ($aspects as $aspect) {
             $aspectId = $aspect->id;
             $maxScore = $aspect->max_score ?? 0;
             $weight = $aspect->weight ?? 0;
             $grouped = $reportData
                 ->where(fn($item) => $item->masterReport->aspect_id == $aspectId)
-                ->groupBy(
-                    fn($item) => sprintf('%d-%d', $item->year, $item->month)
-                )->map(
-                    fn($subGroup) => $subGroup->sum('nilai_indicator')
-                );
+                ->groupBy(fn($item) => sprintf('%d-%d', $item->year, $item->month))
+                ->map(fn($subGroup) => $subGroup->sum('nilai_indicator'));
             $groupedArchivement = $archivementData
                 ->where(fn($item) => $item['aspect_id'] == $aspectId)
                 ->sum('nilai_archivement_indicator');
-
             $totalNilaiByAspect[$aspectId] = $grouped;
             $totalArchivementByAspect[$aspectId] = $groupedArchivement;
-
             $totalNilaiKinerjaByAspect[$aspectId] = $grouped
                 ->map(function ($item) use ($maxScore, $weight) {
-                    $formula = sprintf(
-                        $item && $item > 0 ? "( %d / %d ) * %d" : '0',
-                        $item,
-                        $maxScore,
-                        $weight
-                    );
+                    $formula = $item && $item > 0 ? sprintf('( %d / %d ) * %d', $item, $maxScore, $weight) : '0';
                     return FormulaHelper::evaluateFormula($formula);
                 });
-
-            $formulaArchivement = sprintf(
-                $groupedArchivement && $groupedArchivement > 0 ? "( %d / %d ) * %d" : '0',
-                $groupedArchivement,
-                $maxScore,
-                $weight
-            );
+            $formulaArchivement = $groupedArchivement && $groupedArchivement > 0
+                ? sprintf('( %d / %d ) * %d', $groupedArchivement, $maxScore, $weight)
+                : '0';
             $totalNilaiArchivementByAspect[$aspectId] = FormulaHelper::evaluateFormula($formulaArchivement);
         }
 
-
+        // Aggregate total performance by year-month
         $totalNilaiPerformanceByYearMonth = collect($totalNilaiKinerjaByAspect)
-            ->map(fn($nilaiKinerjaByYearMonth) => $nilaiKinerjaByYearMonth)
-            ->reduce(function ($carry, $nilaiKinerjaByYearMonth) use ($totalNilaiPerformanceByYearMonth) {
+            ->reduce(function ($carry, $nilaiKinerjaByYearMonth) {
                 foreach ($nilaiKinerjaByYearMonth as $yearMonth => $nilaiKinerja) {
                     if (!isset($carry[$yearMonth])) {
                         $carry[$yearMonth] = ['total' => 0];
@@ -280,20 +329,13 @@ class ExportReportPerhitunganKepmendagriService
                 return $carry;
             }, []);
 
-
         $formulaPerformance = $this->reportType->formula_performance ?? '';
-        # add nilaiPerformance to totalNilaiPerformanceByYearMonth
         foreach ($totalNilaiPerformanceByYearMonth as $yearMonth => $data) {
             $nilaiPerformance = FormulaPerformanceHelper::evaluateFormulaWithVariables($formulaPerformance, $data['total']);
             $totalNilaiPerformanceByYearMonth[$yearMonth]['nilaiPerformance'] = $nilaiPerformance;
         }
 
-        $archivementTotal = collect($totalNilaiArchivementByAspect)
-            ->reduce(function ($carry, $nilaiArchivement) use ($formulaPerformance) {
-                $nilai = $carry + $nilaiArchivement;
-                return $nilai;
-            }, 0);
-
+        $archivementTotal = collect($totalNilaiArchivementByAspect)->sum();
         $totalNilaiPerformanceByYearMonth["{$this->year}-00"]['total'] = $archivementTotal;
         $totalNilaiPerformanceByYearMonth["{$this->year}-00"]['nilaiPerformance'] = FormulaPerformanceHelper::evaluateFormulaWithVariables($formulaPerformance, $archivementTotal);
 
@@ -310,10 +352,15 @@ class ExportReportPerhitunganKepmendagriService
         ];
     }
 
-    private function generateReportTypeSections(array $data)
+
+    /**
+     * Generate all report sections for each aspect and add them to the spreadsheet.
+     *
+     * @param array $data
+     */
+    private function generateReportTypeSections(array $data): void
     {
         $sheet = $this->spreadsheet->getActiveSheet();
-
         foreach ($data['aspects'] as $aspect) {
             $aspectId = $aspect['id'];
             $dataRow = $data['masterReports'][$aspectId] ?? collect();
@@ -338,9 +385,8 @@ class ExportReportPerhitunganKepmendagriService
             );
             $this->positionTracker = $this->positionTracker->advanceRows(1);
         }
-
-        $this->addNilaiPerformaRow($sheet, $data['totalNilaiPerformanceByYearMonth'] ?? collect(), "total");
-        $this->addNilaiPerformaRow($sheet, $data['totalNilaiPerformanceByYearMonth'] ?? collect(), "nilaiPerformance");
+        $this->addNilaiPerformaRow($sheet, $data['totalNilaiPerformanceByYearMonth'] ?? collect(), 'total');
+        $this->addNilaiPerformaRow($sheet, $data['totalNilaiPerformanceByYearMonth'] ?? collect(), 'nilaiPerformance');
     }
 
     private function addTableHeader(Worksheet $sheet)
@@ -780,10 +826,19 @@ class ExportReportPerhitunganKepmendagriService
             ->max();
     }
 
+
+    /**
+     * Generate a unique file name for the export.
+     */
     private function generateFileName(): void
     {
         $timestamp = now()->format('Ymd_His');
-        $this->fileName = "Report_Perhitungan_{$this->reportType->name}_{$this->year}_{$timestamp}.xlsx";
+        $this->fileName = sprintf(
+            'Report_Perhitungan_%s_%d_%s.xlsx',
+            $this->reportType->name,
+            $this->year,
+            $timestamp
+        );
     }
 
     private function generateHeaders()
@@ -881,15 +936,24 @@ class ExportReportPerhitunganKepmendagriService
         return Coordinate::stringFromColumnIndex($columnIndex);
     }
 
+
+    /**
+     * Get the generated file name.
+     *
+     * @return string
+     */
     public function getFileName(): string
     {
         return $this->fileName;
     }
 
+    /**
+     * Get the relative file path for the export.
+     *
+     * @return string
+     */
     public function getFilePath(): string
     {
-        $filePath = sprintf('%s/%s', self::EXPORTS_DIRECTORY, $this->fileName);
-
-        return $filePath;
+        return sprintf('%s/%s', self::EXPORTS_DIRECTORY, $this->fileName);
     }
 }
