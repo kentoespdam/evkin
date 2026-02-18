@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Services\ExportReportPerhitunganService;
+use App\Services\ExportReportPerhitunganKepmendagriService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -48,7 +48,7 @@ class ExportReportJob implements ShouldQueue
             ], 3600);
 
             // Generate and save the file based on export type
-            $exportService = new ExportReportPerhitunganService(
+            $exportService = new ExportReportPerhitunganKepmendagriService(
                 $this->year,
                 $this->report_type_id,
                 $this->search

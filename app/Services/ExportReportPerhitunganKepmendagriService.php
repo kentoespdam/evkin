@@ -6,6 +6,7 @@ use App\Data\ExcelConfiguration;
 use App\Helpers\CellHelper;
 use App\Helpers\DateHelper;
 use App\Helpers\FormulaHelper;
+use App\Helpers\FormulaPerformanceHelper;
 use App\Models\Master\Aspects;
 use App\Models\Master\MasterReports;
 use App\Models\Master\ReportTypes;
@@ -22,7 +23,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-class ExportReportPerhitunganService
+class ExportReportPerhitunganKepmendagriService
 {
     private const EXPORTS_DIRECTORY = 'exports';
 
@@ -227,6 +228,7 @@ class ExportReportPerhitunganService
         $totalArchivementByAspect = [];
         $totalNilaiKinerjaByAspect = [];
         $totalNilaiArchivementByAspect = [];
+        $totalNilaiPerformanceByYearMonth = [];
         foreach ($aspects as $aspect) {
             $aspectId = $aspect->id;
             $maxScore = $aspect->max_score ?? 0;
@@ -266,7 +268,34 @@ class ExportReportPerhitunganService
         }
 
 
-        Log::debug('grouped', ['totalArchivementByAspect' => $totalNilaiKinerjaByAspect]);
+        $totalNilaiPerformanceByYearMonth = collect($totalNilaiKinerjaByAspect)
+            ->map(fn($nilaiKinerjaByYearMonth) => $nilaiKinerjaByYearMonth)
+            ->reduce(function ($carry, $nilaiKinerjaByYearMonth) use ($totalNilaiPerformanceByYearMonth) {
+                foreach ($nilaiKinerjaByYearMonth as $yearMonth => $nilaiKinerja) {
+                    if (!isset($carry[$yearMonth])) {
+                        $carry[$yearMonth] = ['total' => 0];
+                    }
+                    $carry[$yearMonth]['total'] += $nilaiKinerja;
+                }
+                return $carry;
+            }, []);
+
+
+        $formulaPerformance = $this->reportType->formula_performance ?? '';
+        # add nilaiPerformance to totalNilaiPerformanceByYearMonth
+        foreach ($totalNilaiPerformanceByYearMonth as $yearMonth => $data) {
+            $nilaiPerformance = FormulaPerformanceHelper::evaluateFormulaWithVariables($formulaPerformance, $data['total']);
+            $totalNilaiPerformanceByYearMonth[$yearMonth]['nilaiPerformance'] = $nilaiPerformance;
+        }
+
+        $archivementTotal = collect($totalNilaiArchivementByAspect)
+            ->reduce(function ($carry, $nilaiArchivement) use ($formulaPerformance) {
+                $nilai = $carry + $nilaiArchivement;
+                return $nilai;
+            }, 0);
+
+        $totalNilaiPerformanceByYearMonth["{$this->year}-00"]['total'] = $archivementTotal;
+        $totalNilaiPerformanceByYearMonth["{$this->year}-00"]['nilaiPerformance'] = FormulaPerformanceHelper::evaluateFormulaWithVariables($formulaPerformance, $archivementTotal);
 
         return [
             'masterReports' => $groupedMasterReports,
@@ -277,14 +306,13 @@ class ExportReportPerhitunganService
             'totalArchivementByAspect' => $totalArchivementByAspect,
             'totalNilaiKinerjaByAspect' => $totalNilaiKinerjaByAspect,
             'totalNilaiArchivementByAspect' => $totalNilaiArchivementByAspect,
+            'totalNilaiPerformanceByYearMonth' => collect($totalNilaiPerformanceByYearMonth),
         ];
     }
 
     private function generateReportTypeSections(array $data)
     {
         $sheet = $this->spreadsheet->getActiveSheet();
-
-        // Log::debug('grouped', ['data' => $data['groupedArchivement']]);
 
         foreach ($data['aspects'] as $aspect) {
             $aspectId = $aspect['id'];
@@ -308,9 +336,11 @@ class ExportReportPerhitunganService
                 $data['totalNilaiKinerjaByAspect'][$aspectId] ?? 0,
                 $data['totalNilaiArchivementByAspect'][$aspectId] ?? 0
             );
-            // Log::debug('total Nilai Kinerja', ['total' => $data['totalNilaiKinerjaByAspect'][$aspectId] ?? 0]);
             $this->positionTracker = $this->positionTracker->advanceRows(1);
         }
+
+        $this->addNilaiPerformaRow($sheet, $data['totalNilaiPerformanceByYearMonth'] ?? collect(), "total");
+        $this->addNilaiPerformaRow($sheet, $data['totalNilaiPerformanceByYearMonth'] ?? collect(), "nilaiPerformance");
     }
 
     private function addTableHeader(Worksheet $sheet)
@@ -546,8 +576,9 @@ class ExportReportPerhitunganService
      * @param Worksheet $sheet
      * @param int $rowIndex
      * @param int $columnIndex
-     * @param int|float | null  $value
+     * @param int|float|string|null $value
      * @param array $styleLabel
+     * @param int|null $colSpan
      * @return void
      */
 
@@ -555,25 +586,26 @@ class ExportReportPerhitunganService
         Worksheet $sheet,
         int $rowIndex,
         int $columnIndex,
-        int|float|null $value,
+        int|float|string|null $value,
         array $styleLabel,
+        ?int $colSpan = 1
     ) {
-        $styles = ExcelStyleManager::mergeStyles(
-            $styleLabel,
-            ExcelStyleManager::ALIGN_RIGHT_CENTER_STYLE
-        );
+        if ($colSpan == 1) {
+            ExcelStyleManager::addCell(
+                $sheet,
+                Coordinate::stringFromColumnIndex($columnIndex) . ($rowIndex),
+                '',
+                $styleLabel
+            );
+        }
+
+        $columnIndex = $colSpan > 1 ? $columnIndex : $columnIndex + 1;
         ExcelStyleManager::addCell(
             $sheet,
             Coordinate::stringFromColumnIndex($columnIndex) . ($rowIndex),
-            '',
-            $styles
-        );
-
-        ExcelStyleManager::addCell(
-            $sheet,
-            Coordinate::stringFromColumnIndex($columnIndex + 1) . ($rowIndex),
             $value,
-            $styles
+            $styleLabel,
+            $colSpan
         );
     }
 
@@ -581,7 +613,7 @@ class ExportReportPerhitunganService
         Worksheet $sheet,
         string $aspectName,
         Collection $nilaiKinerja,
-        int|float $totalArchivementByMasterReport
+        int|float|string|null $totalArchivementByMasterReport
     ) {
 
         $currentRow = $this->positionTracker->nextRow();
@@ -599,7 +631,6 @@ class ExportReportPerhitunganService
         foreach (range(1, self::MONTH_COUNT) as $month) {
             $key = sprintf('%d-%d', $this->year, $month);
             $value = $nilaiKinerja[$key] ?? null;
-            Log::debug('nilai kinerja', ['key' => $key, 'value' => $value]);
             $this->addTotalRowForAspectByMonth(
                 $sheet,
                 $currentRow,
@@ -662,6 +693,81 @@ class ExportReportPerhitunganService
             "(Jumlah Perolehan Nilai : Nilai Maksimal) x Bobot",
             $styles,
             colSpan: 3
+        );
+    }
+
+    private function addNilaiPerformaRow(Worksheet $sheet, Collection $totalNilaiPerformanceByYearMonth, string $fieldKey)
+    {
+        $currentRow = $this->positionTracker->nextRow();
+
+        $styleLabel = ExcelStyleManager::mergeStyles(
+            ExcelStyleManager::ALL_BORDER_STYLE,
+            ExcelStyleManager::FONT_BOLD_12_STYLE,
+            ExcelStyleManager::FILL_SOLID_LIGHT_YELLOW_STYLE,
+            ExcelStyleManager::ALIGN_LEFT_CENTER_STYLE
+        );
+
+        $label = $fieldKey === "total" ? "NILAI KINERJA TOTAL" : "KINERJA";
+
+        ExcelStyleManager::addCell(
+            $sheet,
+            'A' . $currentRow,
+            $label,
+            $styleLabel,
+            colSpan: 5
+        );
+
+        $styleAlign = $fieldKey === "total" ?
+            ExcelStyleManager::ALIGN_RIGHT_CENTER_STYLE :
+            ExcelStyleManager::ALIGN_CENTER_CENTER_STYLE;
+        $styleFormatNumber = $fieldKey === "total" ?
+            ExcelStyleManager::FORMAT_NUMBER_00_STYLE : [];
+        $styleLabel = ExcelStyleManager::mergeStyles(
+            ExcelStyleManager::ALL_BORDER_STYLE,
+            ExcelStyleManager::FONT_BOLD_12_STYLE,
+            ExcelStyleManager::FILL_SOLID_LIGHT_YELLOW_STYLE,
+            $styleAlign,
+            $styleFormatNumber,
+        );
+
+        $columnIndex = 6;
+        $colspan = $fieldKey === "total" ? 1 : 2;
+        foreach (range(1, self::MONTH_COUNT) as $month) {
+            $key = sprintf('%d-%d', $this->year, $month);
+            $value = $totalNilaiPerformanceByYearMonth[$key][$fieldKey] ?? null;
+
+            $this->addTotalRowForAspectByMonth(
+                $sheet,
+                $currentRow,
+                $columnIndex,
+                $value,
+                $styleLabel,
+                $colspan
+            );
+            $columnIndex += 2;
+        }
+
+        $value = $totalNilaiPerformanceByYearMonth["{$this->year}-00"][$fieldKey] ?? null;
+        $this->addTotalRowForAspectByMonth(
+            $sheet,
+            $currentRow,
+            $columnIndex,
+            $value,
+            $styleLabel,
+            $colspan
+        );
+
+        $columnIndex += 2;
+
+        $key = sprintf('%d-%d', $this->year - 1, 12);
+        $value = $totalNilaiPerformanceByYearMonth[$key][$fieldKey] ?? null;
+        $this->addTotalRowForAspectByMonth(
+            $sheet,
+            $currentRow,
+            $columnIndex,
+            $value,
+            $styleLabel,
+            $colspan
         );
     }
 
