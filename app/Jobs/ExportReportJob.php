@@ -2,7 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Services\ExportReportPerhitunganKepmendagriService;
+use App\Models\Master\ReportTypes;
+use App\Services\PerhitunganReport\Kepmendagri\ExportReportPerhitunganKepmendagriService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -20,6 +21,7 @@ class ExportReportJob implements ShouldQueue
     private int $year;
 
     private string $report_type_id;
+    private ReportTypes $reportType;
 
     private ?string $search;
 
@@ -35,7 +37,11 @@ class ExportReportJob implements ShouldQueue
         $this->year = $year;
         $this->report_type_id = $report_type_id;
         $this->search = $search;
+
+        $this->reportType = ReportTypes::whereSqid($report_type_id)->firstOrFail();
     }
+
+
 
     public function handle(): void
     {
@@ -47,12 +53,16 @@ class ExportReportJob implements ShouldQueue
                 'updated_at' => now(),
             ], 3600);
 
-            // Generate and save the file based on export type
-            $exportService = new ExportReportPerhitunganKepmendagriService(
-                $this->year,
-                $this->report_type_id,
-                $this->search
-            );
+            if ($this->reportType->template_name == "TEMPLATE_KEPMENDAGRI") {
+                // Generate and save the file based on export type
+                $exportService = new ExportReportPerhitunganKepmendagriService(
+                    $this->year,
+                    $this->report_type_id,
+                    $this->search
+                );
+            } else {
+
+            }
             $exportService->generateAndStore();
 
             $filePath = storage_path("app/{$exportService->getFilePath()}");

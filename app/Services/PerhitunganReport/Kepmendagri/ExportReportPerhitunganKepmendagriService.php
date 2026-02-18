@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\PerhitunganReport\Kepmendagri;
 
 use App\Services\PerhitunganReport\Kepmendagri\PerhitunganReportDataProvider;
 use App\Services\PerhitunganReport\Kepmendagri\PerhitunganReportExcelBuilder;
