@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Master\ReportTypes;
 use App\Services\PerhitunganReport\Kepmendagri\ExportReportPerhitunganKepmendagriService;
+use App\Services\PerhitunganReport\Pupr\ExportReportPerhitunganPuprService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -21,7 +22,6 @@ class ExportReportJob implements ShouldQueue
     private int $year;
 
     private string $report_type_id;
-    private ReportTypes $reportType;
 
     private ?string $search;
 
@@ -38,13 +38,12 @@ class ExportReportJob implements ShouldQueue
         $this->report_type_id = $report_type_id;
         $this->search = $search;
 
-        $this->reportType = ReportTypes::whereSqid($report_type_id)->firstOrFail();
     }
-
-
 
     public function handle(): void
     {
+        $reportType = ReportTypes::whereSqid($this->report_type_id)->first();
+
         try {
             // Update status to processing
             Cache::put("export.{$this->exportId}", [
@@ -53,15 +52,21 @@ class ExportReportJob implements ShouldQueue
                 'updated_at' => now(),
             ], 3600);
 
-            if ($this->reportType->template_name == "TEMPLATE_KEPMENDAGRI") {
+            if ($reportType->template_name == 'TEMPLATE_KEPMENDAGRI') {
                 // Generate and save the file based on export type
                 $exportService = new ExportReportPerhitunganKepmendagriService(
                     $this->year,
                     $this->report_type_id,
                     $this->search
                 );
+            } elseif ($reportType->template_name == 'TEMPLATE_PUPR') {
+                $exportService = new ExportReportPerhitunganPuprService(
+                    $this->year,
+                    $this->report_type_id,
+                    $this->search
+                );
             } else {
-
+                throw new \Exception("Unsupported report template: {$reportType->template_name}");
             }
             $exportService->generateAndStore();
 

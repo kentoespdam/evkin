@@ -1,10 +1,13 @@
 <?php
 
-namespace App\Services\PerhitunganReport\Kepmendagri;
+namespace App\Services\PerhitunganReport\Pupr;
 
 use App\Data\ExcelConfiguration;
 use App\Helpers\CellHelper;
 use App\Helpers\DateHelper;
+use App\Models\Master\Aspects;
+use App\Models\Master\MasterReports;
+use App\Models\Transaksi\PerhitunganReports;
 use App\Services\Excel\ExcelStyleManager;
 use App\Services\Excel\PositionTracker;
 use App\Services\Excel\PositionTrackerBuilder;
@@ -13,9 +16,6 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-/**
- * Builds the Perhitungan Kepmendagri Excel report from organised data.
- */
 class PerhitunganReportExcelBuilder
 {
     private const TITLE_ROW_HEIGHT = 2;
@@ -26,11 +26,12 @@ class PerhitunganReportExcelBuilder
 
     private const MONTH_DATA_START_COL = 6; // F
 
-    private const ARCHIVEMENT_COL = 30; // AD
+    private const ARCHIVEMENT_COL = 42; // AP
 
-    private const ARCHIVEMENT_INDICATOR_COL = 31; // AE
+    private const ARCHIVEMENT_INDICATOR_COL = 43; // AQ
+    private const ARCHIVEMENT_BOBOT_COL = 44; // AR
 
-    private const TOTAL_COLUMNS = 33; // up to column AG (for merging)
+    private const TOTAL_COLUMNS = 47; // up to column AU (for merging)
 
     private Spreadsheet $spreadsheet;
 
@@ -56,9 +57,6 @@ class PerhitunganReportExcelBuilder
         $this->createExcelConfiguration();
     }
 
-    /**
-     * Build the spreadsheet with the provided data.
-     */
     public function build(array $data): Spreadsheet
     {
         $this->initializeSpreadsheet();
@@ -69,9 +67,6 @@ class PerhitunganReportExcelBuilder
         return $this->spreadsheet;
     }
 
-    /**
-     * Initialise the spreadsheet and set document properties.
-     */
     private function initializeSpreadsheet(): void
     {
         $this->spreadsheet = new Spreadsheet;
@@ -80,22 +75,19 @@ class PerhitunganReportExcelBuilder
         $sheet->setTitle($this->excelConfig->sheetTitle);
     }
 
-    /**
-     * Add the title rows.
-     */
     private function addTitleRow(): void
     {
         $sheet = $this->spreadsheet->getActiveSheet();
         $titles = [
-            sprintf('PROYEKSI PENILAIAN KINERJA PERUMDAM TIRTA SATRIA TAHUN %d', $this->year),
-            'BERDASARKAN FORMULASI KEPMENDAGRI NO. 47 TAHUN 1999',
+            'PROYEKSI PENILAIAN KINERJA PERUMDAM TIRTA SATRIA',
+            sprintf('TAHUN %d BERDASARKAN FORMULASI PUPR', $this->year),
         ];
 
         foreach ($titles as $line) {
             $currentRow = $this->positionTracker->nextRow();
             ExcelStyleManager::addCell(
                 $sheet,
-                'A'.$currentRow,
+                'A' . $currentRow,
                 $line,
                 ExcelStyleManager::mergeStyles(
                     ExcelStyleManager::FONT_BOLD_16_STYLE,
@@ -109,17 +101,11 @@ class PerhitunganReportExcelBuilder
         $this->positionTracker = $this->positionTracker->advanceRows(self::TITLE_ROW_HEIGHT);
     }
 
-    /**
-     * Add all data rows and sections.
-     */
     private function addDataRows(array $data): void
     {
         $this->generateReportTypeSections($data);
     }
 
-    /**
-     * Adjust column widths (disable auto-size for A-E as per original).
-     */
     private function adjustColumnWidths(): void
     {
         foreach (range('A', 'E') as $col) {
@@ -129,9 +115,6 @@ class PerhitunganReportExcelBuilder
         }
     }
 
-    /**
-     * Generate all sections per aspect.
-     */
     private function generateReportTypeSections(array $data): void
     {
         $sheet = $this->spreadsheet->getActiveSheet();
@@ -146,18 +129,12 @@ class PerhitunganReportExcelBuilder
                 $sheet,
                 $dataRow,
                 $data['reports'][$aspectId] ?? collect(),
-                $data['groupedArchivement'][$aspectId] ?? collect()
+                $data['groupedArchivementByAspect'][$aspectId] ?? collect()
             );
             $this->addTotalRowForAspect(
                 $sheet,
                 $data['totalNilaiByAspect'][$aspectId] ?? collect(),
-                $data['totalArchivementByAspect'][$aspectId] ?? null
-            );
-            $this->addTotalKinerjaRowForAspect(
-                $sheet,
-                $aspect['name'],
-                $data['totalNilaiKinerjaByAspect'][$aspectId] ?? collect(),
-                $data['totalNilaiArchivementByAspect'][$aspectId] ?? null
+                $data['totalArchivementByAspect'][$aspectId] ?? collect(),
             );
 
             $this->positionTracker = $this->positionTracker->advanceRows(1);
@@ -168,96 +145,23 @@ class PerhitunganReportExcelBuilder
     }
 
     /**
-     * Add the main table header (three rows).
-     */
-    private function addTableHeader(Worksheet $sheet): void
-    {
-        ExcelStyleManager::applyHeaderStyle(
-            $sheet,
-            $this->headerCells[0],
-            $this->excelConfig,
-            $this->positionTracker->nextRow()
-        );
-
-        $column = Coordinate::stringFromColumnIndex(self::ARCHIVEMENT_COL);
-        $coordinate = "{$column}{$this->positionTracker->nextRow()}";
-        ExcelStyleManager::addCell(
-            $sheet,
-            $coordinate,
-            $this->headerCells[1][0]->value,
-            ExcelStyleManager::mergeStyles(
-                ExcelStyleManager::FONT_BOLD_11,
-                ExcelStyleManager::FILL_SOLID_BLUE_GRAY_STYLE,
-                ExcelStyleManager::ALIGN_CENTER_CENTER_STYLE,
-                ExcelStyleManager::ALL_BORDER_STYLE
-            ),
-            2
-        );
-
-        ExcelStyleManager::applyHeaderStyle(
-            $sheet,
-            $this->headerCells[2],
-            $this->excelConfig,
-            $this->positionTracker->nextRow(),
-            6
-        );
-    }
-
-    /**
-     * Add a row for an aspect (colored, merged).
-     *
-     * @param  \App\Models\Master\Aspects  $aspect
-     */
-    private function addAspectRow(Worksheet $sheet, $aspect): void
-    {
-        $currentRow = $this->positionTracker->nextRow();
-        $styles = ExcelStyleManager::mergeStyles(
-            ExcelStyleManager::ALL_BORDER_STYLE,
-            ExcelStyleManager::FONT_BOLD_12_STYLE,
-            ExcelStyleManager::FILL_SOLID_LIGHT_YELLOW_STYLE,
-            ExcelStyleManager::ALIGN_LEFT_CENTER_STYLE,
-        );
-
-        ExcelStyleManager::addCell(
-            $sheet,
-            'A'.$currentRow,
-            $aspect->name,
-            $styles,
-            colSpan: self::TOTAL_COLUMNS
-        );
-    }
-
-    /**
      * Add all data rows for a given aspect.
      */
-    private function addDataRowsForAspect(
-        Worksheet $sheet,
-        Collection $dataRows,
-        Collection $groupedReports,
-        Collection $groupedArchivement
-    ): void {
+    private function addDataRowsForAspect(Worksheet $sheet, Collection $dataRows, Collection $groupedReports, Collection $groupedArchivement): void
+    {
         foreach ($dataRows as $masterReport) {
             $masterReportId = $masterReport->id;
             $this->addReportRows(
                 $sheet,
                 $masterReport,
                 $groupedReports[$masterReportId] ?? collect(),
-                collect($groupedArchivement[$masterReportId]) ?? collect()
+                $groupedArchivement[$masterReportId] ?? collect()
             );
         }
     }
 
-    /**
-     * Add a single report row (basic info + monthly data + achievement).
-     *
-     * @param  \App\Models\Master\MasterReports  $masterReport
-     */
-    private function addReportRows(
-        Worksheet $sheet,
-        $masterReport,
-        Collection $reports,
-        Collection $archivements
-    ): void {
+    private function addReportRows(Worksheet $sheet, MasterReports $masterReport, Collection $reports, Collection $archivements): void
+    {
         $currentRow = $this->positionTracker->nextRow();
 
         $this->addBasicInfoCells($sheet, $currentRow, $masterReport);
@@ -265,12 +169,7 @@ class PerhitunganReportExcelBuilder
         $this->addArchivementCells($sheet, $currentRow, $archivements);
     }
 
-    /**
-     * Add basic info columns (A–E).
-     *
-     * @param  \App\Models\Master\MasterReports  $masterReport
-     */
-    private function addBasicInfoCells(Worksheet $sheet, int $row, $masterReport): void
+    private function addBasicInfoCells(Worksheet $sheet, int $row, MasterReports $masterReport): void
     {
         $bobot = (float) $masterReport->weight;
         $cells = [
@@ -289,16 +188,13 @@ class PerhitunganReportExcelBuilder
         foreach ($cells as $column => $value) {
             ExcelStyleManager::addCell(
                 $sheet,
-                $column.$row,
+                $column . $row,
                 (string) $value,
                 $style
             );
         }
     }
 
-    /**
-     * Add monthly data columns (two per month) for the current year and last December.
-     */
     private function addMonthlyDataCells(Worksheet $sheet, int $row, Collection $reports): void
     {
         $columnIndex = self::MONTH_DATA_START_COL;
@@ -308,25 +204,21 @@ class PerhitunganReportExcelBuilder
             $key = sprintf('%d-%d', $this->year, $month);
             $report = $reports[$key] ?? null;
             $this->addDetailCellsForMonth($sheet, $row, $columnIndex, $report);
-            $columnIndex += 2;
+            $columnIndex += 3;
         }
 
-        $columnIndex += 2; // skip two columns? (original code had extra +2 after loop, then another +2 before last year)
+        $columnIndex += 3; // skip three columns? (original code had extra +2 after loop, then another +2 before last year)
 
         // December of previous year
         $reportDecemberLastYear = $reports[sprintf('%d-%d', $this->year - 1, 12)] ?? null;
         $this->addDetailCellsForMonth($sheet, $row, $columnIndex, $reportDecemberLastYear);
     }
 
-    /**
-     * Add two cells for a single month (Nilai and Nilai Indikator).
-     *
-     * @param  \App\Models\Transaksi\PerhitunganReports|null  $report
-     */
-    private function addDetailCellsForMonth(Worksheet $sheet, int $row, int $columnIndex, $report): void
+    private function addDetailCellsForMonth(Worksheet $sheet, int $row, int $columnIndex, ?PerhitunganReports $report): void
     {
         $nilai = $report->nilai ?? null;
         $nilaiIndicator = $report->nilai_indicator ?? null;
+        $nilai_bobot = $report->nilai_bobot ?? null;
 
         $styleFillPink = [];
         $styleTextRed = [];
@@ -350,26 +242,83 @@ class PerhitunganReportExcelBuilder
 
         ExcelStyleManager::addCell(
             $sheet,
-            Coordinate::stringFromColumnIndex($columnIndex).$row,
+            Coordinate::stringFromColumnIndex($columnIndex) . $row,
             is_numeric($nilai) ? number_format($nilai, 2) : '-',
             $baseSytle
         );
 
         ExcelStyleManager::addCell(
             $sheet,
-            Coordinate::stringFromColumnIndex($columnIndex + 1).$row,
+            Coordinate::stringFromColumnIndex($columnIndex + 1) . $row,
             is_numeric($nilaiIndicator) ? number_format($nilaiIndicator, 2) : '-',
             $indicatorStyle
         );
+
+        ExcelStyleManager::addCell(
+            $sheet,
+            Coordinate::stringFromColumnIndex($columnIndex + 2) . $row,
+            is_numeric($nilai_bobot) ? number_format($nilai_bobot, 2) : '-',
+            $baseSytle
+        );
     }
 
-    /**
-     * Add achievement cells (columns AD and AE).
-     */
+    private function addTableHeader(Worksheet $sheet): void
+    {
+        ExcelStyleManager::applyHeaderStyle(
+            $sheet,
+            $this->headerCells[0],
+            $this->excelConfig,
+            $this->positionTracker->nextRow()
+        );
+
+        $column = Coordinate::stringFromColumnIndex(self::ARCHIVEMENT_COL);
+        $coordinate = "{$column}{$this->positionTracker->nextRow()}";
+        ExcelStyleManager::addCell(
+            $sheet,
+            $coordinate,
+            $this->headerCells[1][0]->value,
+            ExcelStyleManager::mergeStyles(
+                ExcelStyleManager::FONT_BOLD_11,
+                ExcelStyleManager::FILL_SOLID_BLUE_GRAY_STYLE,
+                ExcelStyleManager::ALIGN_CENTER_CENTER_STYLE,
+                ExcelStyleManager::ALL_BORDER_STYLE
+            ),
+            3
+        );
+
+        ExcelStyleManager::applyHeaderStyle(
+            $sheet,
+            $this->headerCells[2],
+            $this->excelConfig,
+            $this->positionTracker->nextRow(),
+            6
+        );
+    }
+
+    private function addAspectRow(Worksheet $sheet, Aspects $aspect): void
+    {
+        $currentRow = $this->positionTracker->nextRow();
+        $styles = ExcelStyleManager::mergeStyles(
+            ExcelStyleManager::ALL_BORDER_STYLE,
+            ExcelStyleManager::FONT_BOLD_12_STYLE,
+            ExcelStyleManager::FILL_SOLID_LIGHT_YELLOW_STYLE,
+            ExcelStyleManager::ALIGN_LEFT_CENTER_STYLE,
+        );
+
+        ExcelStyleManager::addCell(
+            $sheet,
+            'A' . $currentRow,
+            $aspect->name,
+            $styles,
+            colSpan: self::TOTAL_COLUMNS
+        );
+    }
+
     private function addArchivementCells(Worksheet $sheet, int $row, Collection $archivement): void
     {
         $nilaiArchivement = $archivement['nilai_archivement'] ?? null;
         $nilaiArchivementIndicator = $archivement['nilai_archivement_indicator'] ?? null;
+        $nilaiBobotArchivement = $archivement['nilai_bobot_archivement'] ?? null;
 
         $styleFillPink = [];
         $styleTextRed = [];
@@ -394,28 +343,30 @@ class PerhitunganReportExcelBuilder
 
         ExcelStyleManager::addCell(
             $sheet,
-            Coordinate::stringFromColumnIndex(self::ARCHIVEMENT_COL).$row,
+            Coordinate::stringFromColumnIndex(self::ARCHIVEMENT_COL) . $row,
             is_numeric($nilaiArchivement) ? number_format($nilaiArchivement, 2) : '-',
             $style
         );
 
         ExcelStyleManager::addCell(
             $sheet,
-            Coordinate::stringFromColumnIndex(self::ARCHIVEMENT_INDICATOR_COL).$row,
+            Coordinate::stringFromColumnIndex(self::ARCHIVEMENT_INDICATOR_COL) . $row,
             is_numeric($nilaiArchivementIndicator) ? number_format($nilaiArchivementIndicator, 2) : '-',
             $indicatorStyle
         );
+
+        ExcelStyleManager::addCell(
+            $sheet,
+            Coordinate::stringFromColumnIndex(self::ARCHIVEMENT_BOBOT_COL) . $row,
+            is_numeric($nilaiBobotArchivement) ? number_format($nilaiBobotArchivement, 2) : '-',
+            $style
+        );
     }
 
-    /**
-     * Add a total row for an aspect (sum of monthly values).
-     *
-     * @param  int|float|null  $totalArchivementByMasterReport
-     */
     private function addTotalRowForAspect(
         Worksheet $sheet,
         Collection $totalNilaiByMasterReport,
-        $totalArchivementByMasterReport
+        int|float|null $totalArchivementByMasterReport
     ): void {
         $startColumnIndex = self::MONTH_DATA_START_COL;
         $currentRow = $this->positionTracker->nextRow();
@@ -427,7 +378,13 @@ class PerhitunganReportExcelBuilder
             ExcelStyleManager::ALIGN_CENTER_CENTER_STYLE
         );
 
-        $this->addJumlahRowForAspect($sheet, $currentRow, 'Jumlah Nilai yang Diperoleh', $styleLabel);
+        ExcelStyleManager::addCell(
+            $sheet,
+            'A' . $currentRow,
+            'NILAI KINERJA ASPEK KEUANGAN',
+            $styleLabel,
+            colSpan: self::BASIC_INFO_COLUMNS
+        );
 
         // Current year months
         foreach (range(1, self::MONTH_COUNT) as $month) {
@@ -440,7 +397,7 @@ class PerhitunganReportExcelBuilder
                 $value,
                 $styleLabel
             );
-            $startColumnIndex += 2;
+            $startColumnIndex += 3;
         }
 
         // Achievement column
@@ -452,7 +409,7 @@ class PerhitunganReportExcelBuilder
             $styleLabel
         );
 
-        $startColumnIndex += 2;
+        $startColumnIndex += 3;
 
         // December previous year
         $keyDecemberLastYear = sprintf('%d-%d', $this->year - 1, 12);
@@ -466,35 +423,11 @@ class PerhitunganReportExcelBuilder
         );
     }
 
-    /**
-     * Add the "Jumlah" label row (merged A–E).
-     */
-    private function addJumlahRowForAspect(Worksheet $sheet, int $rowIndex, string $label, array $styleLabel): void
-    {
-        $styles = ExcelStyleManager::mergeStyles(
-            $styleLabel,
-            ExcelStyleManager::ALIGN_LEFT_CENTER_STYLE
-        );
-
-        ExcelStyleManager::addCell(
-            $sheet,
-            'A'.$rowIndex,
-            $label,
-            $styles,
-            colSpan: self::BASIC_INFO_COLUMNS
-        );
-    }
-
-    /**
-     * Add a single cell for a total value (with optional colspan).
-     *
-     * @param  int|float|string|null  $value
-     */
     private function addTotalRowForAspectByMonth(
         Worksheet $sheet,
         int $rowIndex,
         int $columnIndex,
-        $value,
+        int|float|string|null $value,
         array $styleLabel,
         int $colSpan = 1
     ): void {
@@ -502,134 +435,32 @@ class PerhitunganReportExcelBuilder
             // Empty cell for the first column of the month pair
             ExcelStyleManager::addCell(
                 $sheet,
-                Coordinate::stringFromColumnIndex($columnIndex).$rowIndex,
+                Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex,
+                '',
+                $styleLabel
+            );
+
+            ExcelStyleManager::addCell(
+                $sheet,
+                Coordinate::stringFromColumnIndex($columnIndex + 1) . $rowIndex,
                 '',
                 $styleLabel
             );
         }
 
-        $columnIndex = $colSpan > 1 ? $columnIndex : $columnIndex + 1;
+        $columnIndex = $colSpan > 1 ? $columnIndex : $columnIndex + 2; // Move to the next month if not spanning
         ExcelStyleManager::addCell(
             $sheet,
-            Coordinate::stringFromColumnIndex($columnIndex).$rowIndex,
+            Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex,
             $value,
             $styleLabel,
             $colSpan
         );
     }
 
-    /**
-     * Add the "Total Kinerja" row for an aspect.
-     *
-     * @param  int|float|null  $totalArchivementByMasterReport
-     */
-    private function addTotalKinerjaRowForAspect(
-        Worksheet $sheet,
-        string $aspectName,
-        Collection $nilaiKinerja,
-        $totalArchivementByMasterReport
-    ): void {
-        $currentRow = $this->positionTracker->nextRow();
-        $this->totalKinerjaCell1($sheet, $currentRow, $aspectName);
-        $this->totalKinerjaCell2($sheet, $currentRow);
-
-        $startColumnIndex = self::MONTH_DATA_START_COL;
-        $styleLabel = ExcelStyleManager::mergeStyles(
-            ExcelStyleManager::ALL_BORDER_STYLE,
-            ExcelStyleManager::FORMAT_NUMBER_00_STYLE,
-            ExcelStyleManager::FONT_BOLD_12_STYLE,
-            ExcelStyleManager::FILL_SOLID_LIGHT_YELLOW_STYLE,
-            ExcelStyleManager::FONT_COLOR_RED_STYLE,
-            ExcelStyleManager::ALIGN_CENTER_CENTER_STYLE
-        );
-
-        // Current year months
-        foreach (range(1, self::MONTH_COUNT) as $month) {
-            $key = sprintf('%d-%d', $this->year, $month);
-            $value = $nilaiKinerja[$key] ?? null;
-            $this->addTotalRowForAspectByMonth(
-                $sheet,
-                $currentRow,
-                $startColumnIndex,
-                $value,
-                $styleLabel
-            );
-            $startColumnIndex += 2;
-        }
-
-        // Achievement
-        $this->addTotalRowForAspectByMonth(
-            $sheet,
-            $currentRow,
-            $startColumnIndex,
-            $totalArchivementByMasterReport,
-            $styleLabel
-        );
-
-        $startColumnIndex += 2;
-
-        // December previous year
-        $keyDecemberLastYear = sprintf('%d-%d', $this->year - 1, 12);
-        $value = $nilaiKinerja[$keyDecemberLastYear] ?? null;
-        $this->addTotalRowForAspectByMonth(
-            $sheet,
-            $currentRow,
-            $startColumnIndex,
-            $value,
-            $styleLabel
-        );
-    }
-
-    /**
-     * Add the left part of the Total Kinerja row (merged A–B).
-     */
-    private function totalKinerjaCell1(Worksheet $sheet, int $rowIndex, string $aspectName): void
-    {
-        $styles = ExcelStyleManager::mergeStyles(
-            ExcelStyleManager::ALL_BORDER_STYLE,
-            ExcelStyleManager::FONT_BOLD_12_STYLE,
-            ExcelStyleManager::FILL_SOLID_LIGHT_YELLOW_STYLE,
-            ExcelStyleManager::ALIGN_LEFT_CENTER_STYLE
-        );
-        $shortName = explode('.', $aspectName)[1] ?? $aspectName;
-        $title = sprintf('Total Kinerja %s', $shortName);
-        ExcelStyleManager::addCell(
-            $sheet,
-            'A'.$rowIndex,
-            $title,
-            $styles,
-            colSpan: 2
-        );
-    }
-
-    /**
-     * Add the description cell (C–E) for the Total Kinerja row.
-     */
-    private function totalKinerjaCell2(Worksheet $sheet, int $rowIndex): void
-    {
-        $styles = ExcelStyleManager::mergeStyles(
-            ExcelStyleManager::ALL_BORDER_STYLE,
-            ExcelStyleManager::FILL_SOLID_LIGHT_YELLOW_STYLE,
-            ExcelStyleManager::ALIGN_CENTER_CENTER_STYLE
-        );
-
-        ExcelStyleManager::addCell(
-            $sheet,
-            'C'.$rowIndex,
-            '(Jumlah Perolehan Nilai : Nilai Maksimal) x Bobot',
-            $styles,
-            colSpan: 3
-        );
-    }
-
-    /**
-     * Add the final performance rows (NILAI KINERJA TOTAL and KINERJA).
-     *
-     * @param  string  $fieldKey  'total' or 'nilaiPerformance'
-     */
     private function addNilaiPerformaRow(
         Worksheet $sheet,
-        Collection $totalNilaiPerformanceByYearMonth,
+        Collection $totalNilaiBobotArchivementByMonth,
         string $fieldKey
     ): void {
         $currentRow = $this->positionTracker->nextRow();
@@ -645,7 +476,7 @@ class PerhitunganReportExcelBuilder
 
         ExcelStyleManager::addCell(
             $sheet,
-            'A'.$currentRow,
+            'A' . $currentRow,
             $label,
             $styleLabel,
             colSpan: self::BASIC_INFO_COLUMNS
@@ -661,12 +492,12 @@ class PerhitunganReportExcelBuilder
         );
 
         $columnIndex = self::MONTH_DATA_START_COL;
-        $colspan = $fieldKey === 'total' ? 1 : 2;
+        $colspan = $fieldKey === 'total' ? 1 : 3;
 
         // Current year months
         foreach (range(1, self::MONTH_COUNT) as $month) {
             $key = sprintf('%d-%d', $this->year, $month);
-            $value = $totalNilaiPerformanceByYearMonth[$key][$fieldKey] ?? null;
+            $value = $totalNilaiBobotArchivementByMonth[$key][$fieldKey] ?? null;
             $this->addTotalRowForAspectByMonth(
                 $sheet,
                 $currentRow,
@@ -675,11 +506,11 @@ class PerhitunganReportExcelBuilder
                 $styleValue,
                 $colspan
             );
-            $columnIndex += 2;
+            $columnIndex += 3;
         }
 
         // Achievement (year-00)
-        $value = $totalNilaiPerformanceByYearMonth["{$this->year}-00"][$fieldKey] ?? null;
+        $value = $totalNilaiBobotArchivementByMonth["{$this->year}-00"][$fieldKey] ?? null;
         $this->addTotalRowForAspectByMonth(
             $sheet,
             $currentRow,
@@ -689,11 +520,11 @@ class PerhitunganReportExcelBuilder
             $colspan
         );
 
-        $columnIndex += 2;
+        $columnIndex += 3;
 
         // December previous year
         $key = sprintf('%d-%d', $this->year - 1, 12);
-        $value = $totalNilaiPerformanceByYearMonth[$key][$fieldKey] ?? null;
+        $value = $totalNilaiBobotArchivementByMonth[$key][$fieldKey] ?? null;
         $this->addTotalRowForAspectByMonth(
             $sheet,
             $currentRow,
@@ -704,9 +535,6 @@ class PerhitunganReportExcelBuilder
         );
     }
 
-    /**
-     * Generate the three-row header structure.
-     */
     private function generateHeaders(): void
     {
         $mainHeaders = [
@@ -714,33 +542,44 @@ class PerhitunganReportExcelBuilder
             new CellHelper(value: 'Indikator', width: 50, rowspan: 3),
             new CellHelper(value: 'Rumus', width: 75, rowspan: 3),
             new CellHelper(value: 'Satuan', width: 12, rowspan: 3),
-            new CellHelper(value: 'Bobot', width: 10, rowspan: 3),
+            new CellHelper(value: 'Bobot (%)', width: 10, rowspan: 3),
         ];
 
         $monthHeaders = array_map(
-            fn ($month) => new CellHelper(value: "{$month} {$this->year}", colspan: 2, rowspan: 2),
+            fn($month) => new CellHelper(
+                value: "{$month} {$this->year}",
+                colspan: 3,
+                rowspan: 2
+            ),
             DateHelper::$monthList
         );
 
         $pencapaianHeaders = [
-            new CellHelper(value: 'Pencapaian Total', colspan: 2, wrapText: true),
-            new CellHelper(value: sprintf('Pencapaian Tahun %d', $this->year - 1), colspan: 2, rowspan: 2, wrapText: true),
+            new CellHelper(value: 'Pencapaian Total', colspan: 3, wrapText: true),
+            new CellHelper(
+                value: sprintf('Pencapaian Tahun %d', $this->year - 1),
+                colspan: 3,
+                rowspan: 2,
+                wrapText: true
+            ),
         ];
 
         $sdBulan = [
             new CellHelper(
                 value: sprintf(
-                    'Sd. Bulan %s',
-                    DateHelper::getMonthName($this->lastInputMonth)
+                    'Sd. Bulan %s %d',
+                    DateHelper::getMonthName($this->lastInputMonth),
+                    $this->year
                 ),
-                colspan: 2,
+                colspan: 3,
                 wrapText: true
             ),
         ];
 
         $childNilaiHeader = [
             new CellHelper(value: 'Nilai Pencapaian', width: 12, wrapText: true),
-            new CellHelper(value: 'Nilai Indikator', width: 10, wrapText: true),
+            new CellHelper(value: 'Nilai Indikator', width: 12, wrapText: true),
+            new CellHelper(value: 'Hasil', width: 12, wrapText: true),
         ];
 
         $nilaiHeader = array_fill(0, self::MONTH_COUNT + 2, $childNilaiHeader);
@@ -752,9 +591,6 @@ class PerhitunganReportExcelBuilder
         ];
     }
 
-    /**
-     * Create the Excel configuration object.
-     */
     private function createExcelConfiguration(): void
     {
         $this->excelConfig = ExcelConfiguration::create()
@@ -763,9 +599,6 @@ class PerhitunganReportExcelBuilder
             ->withZebraStriping(true);
     }
 
-    /**
-     * Convert column index to letter.
-     */
     private function getColumnLetter(int $columnIndex): string
     {
         return Coordinate::stringFromColumnIndex($columnIndex);

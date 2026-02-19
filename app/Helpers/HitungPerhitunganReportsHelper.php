@@ -79,6 +79,10 @@ class HitungPerhitunganReportsHelper
                     $nilaiArchivement
                 );
 
+                // New: formula_nilai_bobot_archivement & nilai_bobot_archivement
+                $formulaNilaiBobotArchivement = "( $bobot * $nilaiArchivementIndicator )";
+                $nilaiBobotArchivement = FormulaHelper::evaluateFormula($formulaNilaiBobotArchivement);
+
                 // Build result array
                 $results[] = [
                     'master_report_id' => $masterReport->id,
@@ -95,12 +99,14 @@ class HitungPerhitunganReportsHelper
                     'formula_archivement_value' => $formulaArchivementValue,
                     'nilai_archivement' => $nilaiArchivement,
                     'nilai_archivement_indicator' => $nilaiArchivementIndicator,
+                    'formula_nilai_bobot_archivement' => $formulaNilaiBobotArchivement,
+                    'nilai_bobot_archivement' => $nilaiBobotArchivement,
                 ];
             }
 
             return $results;
         } catch (\Throwable $e) {
-            Log::error('Error in hitungLaporanPerhitungan: '.$e->getMessage(), [
+            Log::error('Error in hitungLaporanPerhitungan: ' . $e->getMessage(), [
                 'year' => $year,
                 'month' => $month,
                 'trace' => $e->getTraceAsString(),
@@ -226,10 +232,12 @@ class HitungPerhitunganReportsHelper
                     'formula_archivement_value',
                     'nilai_archivement',
                     'nilai_archivement_indicator',
+                    'formula_nilai_bobot_archivement',
+                    'nilai_bobot_archivement',
                 ]
             );
         } catch (\Throwable $e) {
-            Log::error('Error storing HitungPerhitunganReports results: '.$e->getMessage());
+            Log::error('Error storing HitungPerhitunganReports results: ' . $e->getMessage());
         }
     }
 

@@ -29,6 +29,9 @@ class PerhitunganReportsResource extends JsonResource
             'formulaArchivement' => $this->formula_archivement,
             'formulaArchivementValue' => $this->formula_archivement_value,
             'nilaiArchivement' => $this->nilai_archivement,
+            'nilaiArchivementIndicator' => $this->nilai_archivement_indicator,
+            'formulaNilaiBobotArchivement' => $this->formula_nilai_bobot_archivement,
+            'nilaiBobotArchivement' => $this->nilai_bobot_archivement,
         ];
     }
 }
