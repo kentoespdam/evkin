@@ -1,6 +1,7 @@
 import { Head } from "@inertiajs/react";
 import { useMemo } from "react";
-import TemplateBuilder from "@/components/reports/table/perhitungan_report_builder";
+import PerhitunganReports from "@/components/reports/table/perhitungan_report";
+// import TemplateBuilder from "@/components/reports/table/perhitungan_report_builder";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AppLayout from "@/layouts/app-layout";
 import type { BreadcrumbItem } from "@/types";
@@ -13,7 +14,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const ReportPerhitungan = ({ masterReports, reportTypes, aspects, reports, filters }: PerhitunganReportProps) => {
-	const jenisReport = useMemo(() => reportTypes.find((rt) => rt.id === filters.report_type_id), [filters, reportTypes]);
+	const jenisReport = useMemo(() => reportTypes.find((rt) => rt.id === filters.report_type_id) ?? reportTypes[0], [filters, reportTypes]);
 
 	return (
 		<AppLayout breadcrumbs={breadcrumbs}>
@@ -35,13 +36,20 @@ const ReportPerhitungan = ({ masterReports, reportTypes, aspects, reports, filte
 					</CardHeader>
 					<CardContent className="space-y-6">
 						<PerhitunganReportIndexFilter filters={filters} reportTypes={reportTypes} />
-						<TemplateBuilder
+						{/* <TemplateBuilder
 							masterReports={masterReports}
 							reportTypes={reportTypes}
 							aspects={aspects}
 							reports={reports}
 							filters={filters}
 							templateName={jenisReport?.templateName ?? "TEMPLATE_KEPMENDAGRI"}
+						/> */}
+						<PerhitunganReports
+							aspects={aspects}
+							masterReports={masterReports}
+							reportTypes={jenisReport}
+							reports={reports}
+							year={filters.year}
 						/>
 					</CardContent>
 				</Card>

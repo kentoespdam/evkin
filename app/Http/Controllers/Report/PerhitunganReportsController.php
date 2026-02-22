@@ -9,6 +9,7 @@ use App\Http\Resources\MasterReportsCollection;
 use App\Http\Resources\PerhitunganReportsCollection;
 use App\Http\Resources\ReportTypesCollection;
 use App\Jobs\ExportReportDetailJob;
+use App\Jobs\ExportReportJob;
 use App\Models\Master\Aspects;
 use App\Models\Master\MasterReports;
 use App\Models\Master\ReportTypes;
@@ -30,11 +31,10 @@ class PerhitunganReportsController extends Controller
         $defaultReportTypeSqid = $this->getDefaultReportTypeSqid();
 
         $masterReports = MasterReports::where('report_type_id', $reportTypeId)
-            ->when($request->filled('search'), fn ($query) => $query->where('desc_indicator', 'like', "%{$request->search}%"))
+            ->when($request->filled('search'), fn($query) => $query->where('desc_indicator', 'like', "%{$request->search}%"))
             ->get();
 
         $reports = PerhitunganReports::getPerhitunganReports($year, $reportTypeId, $request->search, includeLastDecember: true);
-        $reportsDecemberLastYear = PerhitunganReports::getDecemberLastYearReports($year - 1, $reportTypeId, $request->search);
         $aspects = Aspects::where('report_type_id', $reportTypeId)->get();
 
         return Inertia::render('report/perhitungan_reports/index', [
@@ -42,7 +42,6 @@ class PerhitunganReportsController extends Controller
             'reportTypes' => new ReportTypesCollection(ReportTypes::all()),
             'aspects' => new AspectsCollection($aspects),
             'reports' => new PerhitunganReportsCollection($reports),
-            'reportsDecemberLastYear' => new PerhitunganReportsCollection($reportsDecemberLastYear),
             'filters' => [
                 'report_type_id' => $request->report_type_id ?? $defaultReportTypeSqid,
                 'aspect_id' => $request->aspect_id ?? '',
@@ -52,10 +51,12 @@ class PerhitunganReportsController extends Controller
         ]);
     }
 
-    public function exportIndex(ExportIndexRequest $request): JsonResponse
+    public function exportIndex(Request $request): JsonResponse
     {
         $exportId = Str::uuid()->toString();
-        $filters = $request->validated();
+        $year = (int) ($request->year ?? date('Y'));
+        $reportTypeId = $request->report_type_id ?? $this->getDefaultReportTypeSqid();
+        $search = $request->search ?? null;
 
         // Initialize cache with pending status
         Cache::put("export.{$exportId}", [
@@ -65,13 +66,18 @@ class PerhitunganReportsController extends Controller
         ], 3600);
 
         $authId = (int) auth($request->user)->id();
+        Log::info($authId);
 
         // Dispatch job
-        // ProcessExportDetailJob::dispatch($exportId, $filters, $authId, 'index');
+        ExportReportJob::dispatch($authId, $exportId, $year, $reportTypeId, $search);
 
         Log::info('Export Index Queued', [
             'export_id' => $exportId,
-            'filters' => $filters,
+            'filters' => [
+                'year' => $year,
+                'report_type_id' => $reportTypeId,
+                'search' => $search,
+            ],
         ]);
 
         return response()->json([
@@ -91,12 +97,12 @@ class PerhitunganReportsController extends Controller
         $reports = PerhitunganReports::with('masterReport')
             ->where('year', $year)
             ->where('month', $month)
-            ->whereHas('masterReport', fn ($q) => $q->where('report_type_id', $reportTypeId))
-            ->when($request->filled('search'), fn ($q) => $q->where('desc_indicator', 'like', "%{$request->search}%"))
+            ->whereHas('masterReport', fn($q) => $q->where('report_type_id', $reportTypeId))
+            ->when($request->filled('search'), fn($q) => $q->where('desc_indicator', 'like', "%{$request->search}%"))
             ->when($request->filled('aspect_id'), function ($q) use ($request) {
                 $aspectId = $this->getAspectId($request->aspect_id);
                 if ($aspectId) {
-                    return $q->whereHas('masterReport', fn ($inner) => $inner->where('aspect_id', $aspectId));
+                    return $q->whereHas('masterReport', fn($inner) => $inner->where('aspect_id', $aspectId));
                 }
 
                 return $q;
@@ -162,7 +168,7 @@ class PerhitunganReportsController extends Controller
     {
         $status = Cache::get("export.{$exportId}");
 
-        if (! $status) {
+        if (!$status) {
             return response()->json([
                 'status' => 'not_found',
                 'message' => 'Export not found or expired',
@@ -176,7 +182,7 @@ class PerhitunganReportsController extends Controller
     {
         $status = Cache::get("export.{$exportId}");
 
-        if (! $status || $status['status'] !== 'completed') {
+        if (!$status || $status['status'] !== 'completed') {
             abort(404, message: 'Export not found or not ready');
         }
 
@@ -184,7 +190,7 @@ class PerhitunganReportsController extends Controller
 
         $filePath = storage_path("app/exports/{$status['file_path']}");
 
-        if (! file_exists($filePath)) {
+        if (!file_exists($filePath)) {
             abort(404, 'Export file not found');
         }
 

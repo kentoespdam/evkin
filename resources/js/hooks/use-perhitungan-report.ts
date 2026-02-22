@@ -1,288 +1,191 @@
 import { useMemo } from "react";
+import { totalKinerjaToKinerja } from "@/lib/math_parser";
 import type { Aspect } from "@/types/aspect";
 import type { PerhitunganReportDetail } from "@/types/perhitungan-reports";
 import type { Report } from "@/types/report";
+import type { ReportType } from "@/types/report-type";
 
-export interface GroupedDataKepmendagri {
-	aspectId: string;
-	aspectName: string;
-	maxScore: number;
-	weight: number;
+/**
+ * Data perhitungan yang telah dikelompokkan berdasarkan aspek
+ * Grouped calculation data by aspect
+ */
+export interface GroupedPerhitunganData {
+	/** Aspek yang terkait dengan data perhitungan */
+	aspect: Aspect;
+	/** Daftar master report yang termasuk dalam aspek ini */
 	masterReports: Report[];
-	tahunLaluMap: Map<string, PerhitunganReportDetail>;
-	monthlyTotals: Map<
-		number,
-		{
-			totalNilaiIndicator: number;
-			totalBobot: number;
-			nilaiKinerja: number;
-		}
-	>;
-	totalTahunLalu: number;
-	nilaiKinerjaTahunLalu: number;
-	nilaiBobotTahunLalu: number;
+	/** Total nilai per bulan dan tahun dengan key: "aspectId-year-month" */
+	totalNilaiByMonthAndYear: Map<string, number>;
+	/** Total nilai kinerja per bulan dan tahun dengan key: "aspectId-year-month" */
+	totalKinerjaByMonthAndYear: Map<string, number>;
+	/** Total nilai capaian untuk bulan terakhir */
+	totalNilaiArchivement: number;
+	/** Total nilai kinerja capaian untuk bulan terakhir */
+	totalKinerjaArchivement: number;
 }
 
-export const usePerhitunganDataKepmendagri = (
+/**
+ * Hook untuk memproses dan mengelompokkan data perhitungan report berdasarkan aspek
+ * Calculates performance metrics by aspect, month, and year
+ *
+ * @param masterReports - Daftar master report yang akan diproses
+ * @param aspects - Daftar aspek yang digunakan untuk pengelompokan
+ * @param reports - Detail perhitungan report untuk setiap master report
+ * @param year - Tahun yang sedang dihitung
+ * @param jenisReport - Jenis report (menentukan template dan formula yang digunakan)
+ *
+ * @returns Object berisi:
+ * - lastMonth: Bulan terakhir yang memiliki data
+ * - groupedData: Data yang dikelompokkan per aspek
+ * - reportsByKey: Map untuk akses cepat ke report detail (key: "masterReportId-year-month")
+ * - nilaiKinerjaTotalByMonthAndYear: Total nilai kinerja per bulan (key: "year-month")
+ * - nilaiKinerjaTotalArchivement: Total nilai kinerja capaian
+ * - performanceByMonthAndYear: Penilaian kinerja per bulan (key: "year-month")
+ * - performanceArchivement: Penilaian kinerja capaian
+ */
+export const usePerhitunganData = (
 	masterReports: Report[],
 	aspects: Aspect[],
 	reports: PerhitunganReportDetail[],
 	year: number,
+	jenisReport: ReportType,
 ) => {
 	return useMemo(() => {
-		// 1. Index masterReports by aspectId
-		const masterReportsByAspect = new Map<string, Report[]>();
-		const uniqueReportIds = new Set<string>();
+		// Tentukan template dan formula yang digunakan berdasarkan jenis report
+		// Determine template and formula based on report type
+		const templateName = jenisReport.templateName ?? "TEMPLATE_KEPMENDAGRI";
+		const formulaPerformance = jenisReport.formulaPerformance;
+		const groupedMasterReportsByAspect = new Map<string, GroupedPerhitunganData>();
 
-		// Pre-index master reports
-		masterReports.forEach((report) => {
-			if (!uniqueReportIds.has(report.id)) {
-				uniqueReportIds.add(report.id);
-				const aspectReports = masterReportsByAspect.get(report.aspect.id) || [];
-				aspectReports.push(report);
-				masterReportsByAspect.set(report.aspect.id, aspectReports);
-			}
+		// Cari bulan terakhir yang memiliki data pada tahun yang dipilih
+		// Find the last month that has data for the selected year
+		const lastMonth = reports.length > 0 ? Math.max(...reports.filter((r) => r.year === year).map((r) => r.month)) : 0;
+
+		// Loop setiap aspek untuk menghitung total nilai dan kinerja
+		// Loop through each aspect to calculate total values and performance
+		aspects.forEach((aspect) => {
+			const aspectKey = aspect.id;
+			const maxScore = aspect.maxScore || 0;
+			const weight = aspect.weight || 0;
+
+			// Filter dan urutkan master reports berdasarkan aspek ini
+			// Filter and sort master reports by this aspect
+			const groupedMasterReports = masterReports
+				.filter((mr) => mr.aspect.id === aspect.id)
+				.sort((a, b) => a.seq - b.seq);
+
+			// Hitung total nilai per bulan dan tahun untuk aspek ini
+			// Calculate total value by month and year for this aspect
+			const totalNilaiByMonthAndYear = new Map<string, number>();
+			groupedMasterReports.forEach((mr) => {
+				reports.forEach((report) => {
+					if (report.masterReport.id === mr.id) {
+						const key = `${aspectKey}-${report.year}-${report.month}`;
+						// Gunakan nilaiIndicator untuk KEPMENDAGRI, nilaiBobot untuk template lain
+						const nilai =
+							templateName === "TEMPLATE_KEPMENDAGRI" ? Number(report.nilaiIndicator) : Number(report.nilaiBobot);
+						totalNilaiByMonthAndYear.set(key, (totalNilaiByMonthAndYear.get(key) || 0) + nilai);
+					}
+				});
+			});
+
+			// Konversi total nilai menjadi nilai kinerja (dengan bobot)
+			// Convert total value to performance value (with weight)
+			const totalKinerjaByMonthAndYear = new Map<string, number>();
+			totalNilaiByMonthAndYear.forEach((totalNilai, key) => {
+				const [_, yearStr, monthStr] = key.split("-");
+				const month = parseInt(monthStr, 10);
+				const year = parseInt(yearStr, 10);
+				// Untuk KEPMENDAGRI: (nilai/maxScore) * bobot, untuk lainnya: nilai langsung
+				const nilaiKinerja =
+					templateName === "TEMPLATE_KEPMENDAGRI" ? (maxScore > 0 ? (totalNilai / maxScore) * weight : 0) : totalNilai;
+				totalKinerjaByMonthAndYear.set(`${aspectKey}-${year}-${month}`, nilaiKinerja);
+			});
+
+			// Hitung total nilai capaian untuk bulan terakhir
+			// Calculate total achievement value for the last month
+			const totalNilaiArchivement = reports
+				.filter(
+					(report) => report.masterReport.aspect.id === aspect.id && report.year === year && report.month === lastMonth,
+				)
+				.reduce(
+					(sum, report) =>
+						sum +
+						(templateName === "TEMPLATE_KEPMENDAGRI"
+							? Number(report.nilaiIndicator)
+							: Number(report.nilaiBobotArchivement)),
+					0,
+				);
+
+			// Konversi nilai capaian menjadi kinerja capaian
+			// Convert achievement value to achievement performance
+			const totalKinerjaArchivement =
+				templateName === "TEMPLATE_KEPMENDAGRI"
+					? maxScore > 0
+						? (totalNilaiArchivement / maxScore) * weight
+						: 0
+					: totalNilaiArchivement;
+
+			groupedMasterReportsByAspect.set(aspectKey, {
+				aspect: aspect,
+				masterReports: groupedMasterReports,
+				totalNilaiByMonthAndYear,
+				totalKinerjaByMonthAndYear,
+				totalNilaiArchivement,
+				totalKinerjaArchivement,
+			});
 		});
 
-		// 2. Index reports
+		// Buat index/map untuk akses cepat ke report detail berdasarkan key
+		// Create index/map for quick access to report details by key
 		const reportsByKey = new Map<string, PerhitunganReportDetail>();
-		const tahunLaluByAspect = new Map<string, Map<string, PerhitunganReportDetail>>();
-		const totalKinerjaByMonth = new Map<string, number>();
-		const totalBobotByMonth = new Map<string, number>();
-
 		reports.forEach((report) => {
 			const key = `${report.masterReport.id}-${report.year}-${report.month}`;
-
-			if (report.year === year) {
-				reportsByKey.set(key, report);
-
-				const monthKey = `${report.year}-${report.month}`;
-				totalKinerjaByMonth.set(monthKey, (totalKinerjaByMonth.get(monthKey) || 0) + (report.nilaiIndicator || 0));
-				totalBobotByMonth.set(monthKey, (totalBobotByMonth.get(monthKey) || 0) + Number(report.nilaiBobot ?? 0));
-			} else if (report.year === year - 1 && report.month === 12) {
-				const aspectId = report.masterReport.aspect.id;
-				if (!tahunLaluByAspect.has(aspectId)) {
-					tahunLaluByAspect.set(aspectId, new Map());
-				}
-				tahunLaluByAspect.get(aspectId)?.set(report.masterReport.id, report);
-
-				const lastYearKey = `${report.year}-${report.month}`;
-				totalKinerjaByMonth.set(
-					lastYearKey,
-					(totalKinerjaByMonth.get(lastYearKey) || 0) + (report.nilaiIndicator || 0),
-				);
-				totalBobotByMonth.set(lastYearKey, (totalBobotByMonth.get(lastYearKey) || 0) + Number(report.nilaiBobot ?? 0));
-			}
+			reportsByKey.set(key, report);
 		});
 
-		// 3. Build grouped data
-		const groupedData = aspects
-			.map((aspect) => {
-				const masterReportsList = masterReportsByAspect.get(aspect.id) || [];
-				if (masterReportsList.length === 0) return null;
+		// Hitung total nilai kinerja keseluruhan (gabungan semua aspek)
+		// Calculate total overall performance values (combined all aspects)
+		const nilaiKinerjaTotalByMonthAndYear = new Map<string, number>();
+		let nilaiKinerjaTotalArchivement = 0;
 
-				const aspectTahunLaluMap = tahunLaluByAspect.get(aspect.id) || new Map();
+		// Map untuk menyimpan penilaian/predikat kinerja (Sangat Baik, Baik, dll)
+		// Map to store performance ratings (Excellent, Good, etc.)
+		const performanceByMonthAndYear = new Map<string, string>();
 
-				const monthlyTotals = new Map<
-					number,
-					{
-						totalNilaiIndicator: number;
-						totalBobot: number;
-						nilaiKinerja: number;
-					}
-				>();
-
-				const months = Array.from({ length: 12 }, (_, i) => i + 1);
-
-				months.forEach((month) => {
-					let totalNilaiIndicator = 0;
-					let totalBobot = 0;
-
-					masterReportsList.forEach((mr) => {
-						const key = `${mr.id}-${year}-${month}`;
-						const detail = reportsByKey.get(key);
-						totalNilaiIndicator += detail?.nilaiIndicator || 0;
-						totalBobot += Number(detail?.nilaiBobot ?? 0);
-					});
-
-					const nilaiKinerja =
-						aspect.maxScore && aspect.maxScore > 0 ? (totalNilaiIndicator / aspect.maxScore) * (aspect.weight || 1) : 0;
-					monthlyTotals.set(month, {
-						totalNilaiIndicator,
-						totalBobot,
-						nilaiKinerja,
-					});
-				});
-
-				const totalTahunLalu = Array.from(aspectTahunLaluMap.values()).reduce(
-					(sum, detail) => sum + (detail.nilaiIndicator || 0),
-					0,
+		// Agregasi nilai kinerja dari semua aspek
+		// Aggregate performance values from all aspects
+		groupedMasterReportsByAspect.forEach((data) => {
+			data.totalKinerjaByMonthAndYear.forEach((nilaiKinerja, key) => {
+				// Ubah key dari "aspectId-year-month" menjadi "year-month"
+				const splitKey = key.split("-");
+				const newKey = `${splitKey[1]}-${splitKey[2]}`;
+				// Akumulasi nilai kinerja untuk bulan yang sama
+				nilaiKinerjaTotalByMonthAndYear.set(
+					newKey,
+					(nilaiKinerjaTotalByMonthAndYear.get(newKey) || 0) + Number(nilaiKinerja),
 				);
+				// Konversi nilai kinerja menjadi predikat (misal: 90-100 = Sangat Baik)
+				const penilaian = totalKinerjaToKinerja(Number(nilaiKinerja), formulaPerformance);
+				performanceByMonthAndYear.set(newKey, penilaian);
+			});
+			// Akumulasi total kinerja capaian dari semua aspek
+			nilaiKinerjaTotalArchivement += data.totalKinerjaArchivement;
+		});
 
-				const nilaiBobotTahunLalu = Array.from(aspectTahunLaluMap.values()).reduce(
-					(sum, detail) => sum + Number(detail.nilaiBobot ?? 0),
-					0,
-				);
-
-				const nilaiKinerjaTahunLalu =
-					aspect.maxScore && aspect.maxScore > 0 ? (totalTahunLalu / aspect.maxScore) * (aspect.weight || 1) : 0;
-				// const nilaiBobotTahunLalu=
-				return {
-					aspectId: aspect.id,
-					aspectName: aspect.name,
-					maxScore: aspect.maxScore || 0,
-					weight: aspect.weight || 0,
-					masterReports: masterReportsList,
-					tahunLaluMap: aspectTahunLaluMap,
-					monthlyTotals,
-					totalTahunLalu,
-					nilaiKinerjaTahunLalu,
-					nilaiBobotTahunLalu,
-				};
-			})
-			.filter(Boolean) as GroupedDataKepmendagri[];
+		// Hitung predikat kinerja untuk capaian keseluruhan
+		// Calculate performance rating for overall achievement
+		const performanceArchivement = totalKinerjaToKinerja(nilaiKinerjaTotalArchivement, formulaPerformance);
+		performanceByMonthAndYear.set(`${year}-${lastMonth}`, performanceArchivement);
 
 		return {
-			groupedData,
+			lastMonth,
+			groupedData: Array.from(groupedMasterReportsByAspect.values()),
 			reportsByKey,
-			totalKinerjaByMonth,
-			totalBobotByMonth,
+			nilaiKinerjaTotalByMonthAndYear,
+			nilaiKinerjaTotalArchivement,
+			performanceByMonthAndYear,
+			performanceArchivement,
 		};
-	}, [masterReports, aspects, reports, year]);
-};
-
-export interface GroupedDataPupr {
-	aspectId: string;
-	aspectName: string;
-	maxScore: number;
-	weight: number;
-	masterReports: Report[];
-	tahunLaluMap: Map<string, PerhitunganReportDetail>;
-	monthlyTotals: Map<
-		number,
-		{
-			totalNilaiIndicator: number;
-			totalBobot: number;
-			nilaiKinerja: number;
-		}
-	>;
-	totalTahunLalu: number;
-	nilaiKinerjaTahunLalu: number;
-}
-
-export const usePerhitunganDataPupr = (
-	masterReports: Report[],
-	aspects: Aspect[],
-	reports: PerhitunganReportDetail[],
-	year: number,
-) => {
-	return useMemo(() => {
-		// 1. Index masterReports by aspectId
-		const masterReportsByAspect = new Map<string, Report[]>();
-		const uniqueReportIds = new Set<string>();
-
-		// Pre-index master reports
-		masterReports.forEach((report) => {
-			if (!uniqueReportIds.has(report.id)) {
-				uniqueReportIds.add(report.id);
-				const aspectReports = masterReportsByAspect.get(report.aspect.id) || [];
-				aspectReports.push(report);
-				masterReportsByAspect.set(report.aspect.id, aspectReports);
-			}
-		});
-
-		// 2. Index reports
-		const reportsByKey = new Map<string, PerhitunganReportDetail>();
-		const tahunLaluByAspect = new Map<string, Map<string, PerhitunganReportDetail>>();
-		const totalKinerjaByMonth = new Map<string, number>();
-
-		reports.forEach((report) => {
-			const key = `${report.masterReport.id}-${report.year}-${report.month}`;
-
-			if (report.year === year) {
-				reportsByKey.set(key, report);
-
-				const monthKey = `${report.year}-${report.month}`;
-				totalKinerjaByMonth.set(monthKey, (totalKinerjaByMonth.get(monthKey) || 0) + (report.nilaiIndicator || 0));
-			} else if (report.year === year - 1 && report.month === 12) {
-				const aspectId = report.masterReport.aspect.id;
-				if (!tahunLaluByAspect.has(aspectId)) {
-					tahunLaluByAspect.set(aspectId, new Map());
-				}
-				tahunLaluByAspect.get(aspectId)?.set(report.masterReport.id, report);
-
-				const lastYearKey = `${report.year}-${report.month}`;
-				totalKinerjaByMonth.set(
-					lastYearKey,
-					(totalKinerjaByMonth.get(lastYearKey) || 0) + (report.nilaiIndicator || 0),
-				);
-			}
-		});
-
-		// 3. Build grouped data
-		const groupedData = aspects
-			.map((aspect) => {
-				const masterReportsList = masterReportsByAspect.get(aspect.id) || [];
-				if (masterReportsList.length === 0) return null;
-
-				const aspectTahunLaluMap = tahunLaluByAspect.get(aspect.id) || new Map();
-
-				const monthlyTotals = new Map<
-					number,
-					{
-						totalNilaiIndicator: number;
-						totalBobot: number;
-						nilaiKinerja: number;
-					}
-				>();
-
-				const months = Array.from({ length: 12 }, (_, i) => i + 1);
-
-				months.forEach((month) => {
-					let totalNilaiIndicator = 0;
-					let totalBobot = 0;
-
-					masterReportsList.forEach((mr) => {
-						const key = `${mr.id}-${year}-${month}`;
-						const detail = reportsByKey.get(key);
-						totalNilaiIndicator += detail?.nilaiBobot || 0;
-						totalBobot += detail?.nilaiBobot || 0;
-					});
-
-					const nilaiKinerja =
-						aspect.maxScore && aspect.maxScore > 0 ? (totalNilaiIndicator / aspect.maxScore) * (aspect.weight || 1) : 0;
-					monthlyTotals.set(month, {
-						totalNilaiIndicator,
-						totalBobot,
-						nilaiKinerja,
-					});
-				});
-
-				const totalTahunLalu = Array.from(aspectTahunLaluMap.values()).reduce(
-					(sum, detail) => sum + (detail.nilaiIndicator || 0),
-					0,
-				);
-
-				const nilaiKinerjaTahunLalu =
-					aspect.maxScore && aspect.maxScore > 0 ? (totalTahunLalu / aspect.maxScore) * (aspect.weight || 1) : 0;
-				return {
-					aspectId: aspect.id,
-					aspectName: aspect.name,
-					maxScore: aspect.maxScore || 0,
-					weight: aspect.weight || 0,
-					masterReports: masterReportsList,
-					tahunLaluMap: aspectTahunLaluMap,
-					monthlyTotals,
-					totalTahunLalu,
-					nilaiKinerjaTahunLalu,
-				};
-			})
-			.filter(Boolean) as GroupedDataPupr[];
-
-		return {
-			groupedData,
-			reportsByKey,
-			totalKinerjaByMonth,
-		};
-	}, [masterReports, aspects, reports, year]);
+	}, [masterReports, aspects, reports, year, jenisReport]);
 };

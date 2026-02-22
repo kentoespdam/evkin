@@ -3,7 +3,7 @@ import type { ReportType } from "./report-type";
 
 export interface Report {
 	id: string;
-	seq?: number;
+	seq: number;
 	urut: number;
 	reportType: ReportType;
 	aspect: Aspect;

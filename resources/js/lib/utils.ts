@@ -47,6 +47,11 @@ export const monthsList = (): { value: number; label: string }[] => {
 };
 export type MonthOption = ReturnType<typeof monthsList>[number];
 
+export const getMonthName = (monthValue: number): string => {
+	const month = monthsList().find((m) => m.value === monthValue);
+	return month ? month.label : "Unknown";
+};
+
 export const createUrlSearchParams = (): URLSearchParams => {
 	return IS_CLIENT ? new URLSearchParams(window.location.search) : new URLSearchParams();
 };

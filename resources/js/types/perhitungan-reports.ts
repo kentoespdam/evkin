@@ -27,6 +27,8 @@ export interface PerhitunganReportDetail {
 	formulaArchivement: string;
 	formulaArchivementValue: string;
 	nilaiArchivement: number;
+	nilaiArchivementIndicator: number;
+	nilaiBobotArchivement: number;
 }
 
 export interface PerhitunganReportProps {
