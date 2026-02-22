@@ -12,11 +12,11 @@ const ReportTypeSelect = ({ value, reportTypes, errors, onValueChange }: ReportT
 	return (
 		<Field>
 			<FieldLabel htmlFor="report_type_id">
-				Report Type <span className="text-destructive">*</span>
+				Tipe Laporan <span className="text-destructive">*</span>
 			</FieldLabel>
 			<Select name="report_type_id" defaultValue={value} onValueChange={onValueChange}>
 				<SelectTrigger>
-					<SelectValue placeholder="Select Report Type" />
+					<SelectValue placeholder="Pilih Tipe Laporan" />
 				</SelectTrigger>
 				<SelectContent>
 					{reportTypes.map((item) => (

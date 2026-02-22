@@ -27,7 +27,7 @@ export const RoleTableHeader = memo(() => {
 		<TableHeader>
 			<TableRow className="hover:bg-transparent">
 				<TableHead className="w-16 text-center">#</TableHead>
-				<TableHead>Role Name</TableHead>
+				<TableHead>Nama Peran</TableHead>
 			</TableRow>
 		</TableHeader>
 	);
@@ -107,12 +107,12 @@ const TableAction = memo(({ row, setId, setShowDeleteDialog, isSelected }: Table
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end" className="w-40">
-				<DropdownMenuLabel>Actions</DropdownMenuLabel>
+				<DropdownMenuLabel>Aksi</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				<DropdownMenuItem asChild className="text-blue-500 font-bold">
 					<Link href={master.roles.edit.url(row.id)} className="flex items-center gap-2">
 						<PencilIcon className="size-4 text-blue-500" />
-						Edit
+						Ubah
 					</Link>
 				</DropdownMenuItem>
 				<DropdownMenuItem
@@ -120,7 +120,7 @@ const TableAction = memo(({ row, setId, setShowDeleteDialog, isSelected }: Table
 					onClick={handleDelete}
 				>
 					<TrashIcon className="size-4 text-destructive" />
-					Delete
+					Hapus
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
@@ -130,7 +130,7 @@ TableAction.displayName = "TableAction";
 
 const RoleTable = memo(({ page, setId, setShowDeleteDialog }: RoleTableProps) => {
 	if (page.meta.total === 0) {
-		return <TableEmpty tableName="Role" />;
+		return <TableEmpty tableName="Data Peran" />;
 	}
 
 	return (

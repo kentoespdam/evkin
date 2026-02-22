@@ -37,9 +37,9 @@ export const UserTableHeader = memo(() => {
 		<TableHeader>
 			<TableRow className="hover:bg-transparent">
 				<TableHead className="w-16 text-center">#</TableHead>
-				<TableHead>User</TableHead>
+				<TableHead>Pengguna</TableHead>
 				<TableHead>Email</TableHead>
-				<TableHead>Role</TableHead>
+				<TableHead>Peran</TableHead>
 			</TableRow>
 		</TableHeader>
 	);
@@ -99,17 +99,17 @@ const TableAction = memo(({ row, setId, setShowDeleteDialog }: TableActionProps)
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<Button variant="ghost" size="icon" className="size-8 opacity-0 group-hover:opacity-100 transition-opacity">
-					<span className="sr-only">Open menu</span>
+					<span className="sr-only">Buka menu</span>
 					<MoreHorizontal className="size-4" />
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end" className="w-40">
-				<DropdownMenuLabel>Actions</DropdownMenuLabel>
+				<DropdownMenuLabel>Aksi</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				<DropdownMenuItem asChild className="text-blue-500 font-bold">
 					<Link href={`/master/users/${row.id}/edit`} className="flex items-center gap-2">
 						<PencilIcon className="size-4 text-blue-500" />
-						Edit
+						Ubah
 					</Link>
 				</DropdownMenuItem>
 				<DropdownMenuItem
@@ -117,7 +117,7 @@ const TableAction = memo(({ row, setId, setShowDeleteDialog }: TableActionProps)
 					onClick={handleDelete}
 				>
 					<TrashIcon className="size-4 text-destructive" />
-					Delete
+					Hapus
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
@@ -127,7 +127,7 @@ TableAction.displayName = "TableAction";
 
 const UserTable = memo(({ page, setId, setShowDeleteDialog }: UserTableProps) => {
 	if (page.meta.total === 0) {
-		return <TableEmpty tableName="Master Users" />;
+		return <TableEmpty tableName="Data Pengguna" />;
 	}
 
 	return (

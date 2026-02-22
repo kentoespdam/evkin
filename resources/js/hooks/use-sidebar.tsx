@@ -41,7 +41,7 @@ export const useSidebarConfig = (): SidebarConfig => {
 	return useMemo(() => {
 		const mainItems: NavItem[] = [
 			{
-				title: "Dashboard",
+				title: "Beranda",
 				href: dashboard(),
 				icon: MemoizedIcons.LayoutGrid,
 			},
@@ -54,15 +54,15 @@ export const useSidebarConfig = (): SidebarConfig => {
 
 		const adminGroups: NavGroup[] = [
 			{
-				title: "Master Data",
+				title: "Data Master",
 				items: [
 					{
-						title: "Roles",
+						title: "Peran",
 						href: master.roles().url,
 						icon: MemoizedIcons.Network,
 					},
 					{
-						title: "Users",
+						title: "Pengguna",
 						href: master.users().url,
 						icon: MemoizedIcons.Users2,
 					},
@@ -72,27 +72,27 @@ export const useSidebarConfig = (): SidebarConfig => {
 						icon: MemoizedIcons.GitPullRequestArrow,
 					},
 					{
-						title: "Master Inputs",
+						title: "Master Input",
 						href: master.inputs().url,
 						icon: MemoizedIcons.TextCursorInputIcon,
 					},
 					{
-						title: "Role Inputs",
+						title: "Peran Indikator",
 						href: master.roleInputs().url,
 						icon: MemoizedIcons.KeyIcon,
 					},
 					{
-						title: "Report Types",
+						title: "Tipe Laporan",
 						href: master.reportTypes().url,
 						icon: MemoizedIcons.FileTypeIcon,
 					},
 					{
-						title: "Aspects",
+						title: "Aspek",
 						href: master.aspects().url,
 						icon: MemoizedIcons.GroupIcon,
 					},
 					{
-						title: "Reports",
+						title: "Laporan",
 						href: master.reports().url,
 						icon: MemoizedIcons.FileTextIcon,
 					},
@@ -105,12 +105,12 @@ export const useSidebarConfig = (): SidebarConfig => {
 				title: "Laporan",
 				items: [
 					{
-						title: "Laporan Perhitungan Detail",
+						title: "Detail Perhitungan",
 						href: report.perhitunganReports.detail().url,
 						icon: MemoizedIcons.FileCodeIcon,
 					},
 					{
-						title: "Laporan Perhitungan",
+						title: "Perhitungan",
 						href: report.perhitunganReports().url,
 						icon: MemoizedIcons.FileDigitIcon,
 					},

@@ -193,18 +193,18 @@ const RoleInputForm = ({ roles, inputs, data }: RoleInputFormProps) => {
 								<div className="flex items-center gap-2 pb-2 border-b">
 									<KeyIcon className="h-4 w-4 text-muted-foreground" />
 									<h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">
-										Role Input Information
+										Informasi Role & Input
 									</h3>
 								</div>
 
 								{/* Role Field */}
 								<Field>
 									<FieldLabel htmlFor="role_id">
-										Role <StarRequired />
+										Peran <StarRequired />
 									</FieldLabel>
 									<Select name="role_id" defaultValue={data?.role?.id} onValueChange={goto}>
 										<SelectTrigger>
-											<SelectValue placeholder="Select role" className={errors.role_id ? "border-destructive" : ""} />
+											<SelectValue placeholder="Pilih peran" className={errors.role_id ? "border-destructive" : ""} />
 										</SelectTrigger>
 										<SelectContent>
 											{roles.map((item) => (
@@ -232,13 +232,12 @@ const RoleInputForm = ({ roles, inputs, data }: RoleInputFormProps) => {
 										onClick={handleToggleAll}
 										className="mb-3"
 									>
-										{isAllChecked ? "Uncheck All" : "Check All"}
+										{isAllChecked ? "Hilangkan Semua Centang" : "Centang Semua"}
 									</Button>
 
 									<div
-										className={`border rounded-md p-4 max-h-120 overflow-y-auto space-y-3 ${
-											errors.master_input_ids ? "border-destructive" : ""
-										}`}
+										className={`border rounded-md p-4 max-h-120 overflow-y-auto space-y-3 ${errors.master_input_ids ? "border-destructive" : ""
+											}`}
 									>
 										{renderCheckboxList}
 									</div>
@@ -252,7 +251,7 @@ const RoleInputForm = ({ roles, inputs, data }: RoleInputFormProps) => {
 							<Button type="button" variant="ghost" asChild>
 								<Link href={master.roleInputs().url} className="gap-2">
 									<ArrowLeftIcon className="h-4 w-4" />
-									Cancel
+									Batal
 								</Link>
 							</Button>
 							<ButtonLoading processing={processing} />

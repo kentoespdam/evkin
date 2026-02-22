@@ -14,7 +14,7 @@ const YearSelectFilter = memo(({ label, value, onChange, years }: YearSelectProp
 		<Label className="text-xs text-muted-foreground whitespace-nowrap">{label}</Label>
 		<Select value={value} onValueChange={onChange}>
 			<SelectTrigger className="w-[140px]">
-				<SelectValue placeholder="Select year" />
+				<SelectValue placeholder="Pilih tahun" />
 			</SelectTrigger>
 			<SelectContent>
 				{years.map((year) => (

@@ -24,7 +24,7 @@ const ReportTypesTableHeader = memo(() => {
 				<TableHead className="font-semibold">
 					<div className="flex items-center gap-2">
 						<TagIcon className="h-4 w-4 text-muted-foreground" />
-						Report Type Name
+						Nama Tipe Laporan
 					</div>
 				</TableHead>
 				<TableHead className="font-semibold">
@@ -36,10 +36,10 @@ const ReportTypesTableHeader = memo(() => {
 				<TableHead className="font-semibold">
 					<div className="flex items-center gap-2">
 						<FunctionSquareIcon className="h-4 w-4 text-muted-foreground" />
-						Performance Formula
+						Formula Kinerja
 					</div>
 				</TableHead>
-				<TableHead className="w-24 text-center font-semibold">Actions</TableHead>
+				<TableHead className="w-24 text-center font-semibold">Aksi</TableHead>
 			</TableRow>
 		</TableHeader>
 	);
@@ -73,7 +73,7 @@ const ReportTypesTableActions = memo(({ row, setId, setShowDeleteDialog }: Repor
 						</Link>
 					</Button>
 				</TooltipTrigger>
-				<TooltipContent>Edit Report Type</TooltipContent>
+				<TooltipContent>Ubah Tipe Laporan</TooltipContent>
 			</Tooltip>
 			<Tooltip>
 				<TooltipTrigger asChild>
@@ -86,7 +86,7 @@ const ReportTypesTableActions = memo(({ row, setId, setShowDeleteDialog }: Repor
 						<TrashIcon className="size-4" />
 					</Button>
 				</TooltipTrigger>
-				<TooltipContent>Delete Report Type</TooltipContent>
+				<TooltipContent>Hapus Tipe Laporan</TooltipContent>
 			</Tooltip>
 		</div>
 	);
@@ -141,7 +141,7 @@ const ReportTypesTableBody = memo(({ page, setId, setShowDeleteDialog }: ReportT
 							</Tooltip>
 						) : (
 							<div className="bg-muted/50 border border-border rounded-md px-3 py-2">
-								<span className="text-xs text-muted-foreground italic">No formula defined</span>
+								<span className="text-xs text-muted-foreground italic">Belum ada formula</span>
 							</div>
 						)}
 					</TableCell>

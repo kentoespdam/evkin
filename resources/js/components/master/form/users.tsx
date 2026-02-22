@@ -46,14 +46,14 @@ const UserForm = ({ roles, user }: UserFormProps) => {
 								<div className="flex items-center gap-2 pb-2 border-b">
 									<UserIcon className="h-4 w-4 text-muted-foreground" />
 									<h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">
-										Personal Information
+										Informasi Pribadi
 									</h3>
 								</div>
 
 								{/* Name Field */}
 								<Field>
 									<FieldLabel htmlFor="name">
-										Full Name <span className="text-destructive">*</span>
+										Nama Lengkap <span className="text-destructive">*</span>
 									</FieldLabel>
 									<Input
 										id="name"

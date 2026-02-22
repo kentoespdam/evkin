@@ -95,7 +95,7 @@ const AspectsForm = ({ data, reportTypes }: AspectsFormProps) => {
 								{/* Name Field */}
 								<Field>
 									<FieldLabel htmlFor="name" className="flex items-center gap-2">
-										Aspect Name <span className="text-destructive">*</span>
+										Nama Aspek <span className="text-destructive">*</span>
 										<span className="text-xs text-muted-foreground font-normal">(Wajib diisi)</span>
 									</FieldLabel>
 									<Input

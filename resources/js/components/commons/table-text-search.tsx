@@ -36,11 +36,11 @@ const TableTextSearch = memo(({ params, handleSelectChange, text, className }: T
 				ref={inputRef}
 				type="text"
 				name="search"
-				placeholder={text ? `Search ${text}...` : "Search..."}
+				placeholder={text ? `Cari ${text}...` : "Cari..."}
 				defaultValue={search}
 				className="pl-9 pr-9"
 				onChange={debouncedSearch}
-				aria-label={text ? `Search ${text}` : "Search"}
+				aria-label={text ? `Cari ${text}` : "Cari"}
 			/>
 			{search && (
 				<Button
@@ -49,7 +49,7 @@ const TableTextSearch = memo(({ params, handleSelectChange, text, className }: T
 					type="button"
 					onClick={handleClear}
 					className="absolute right-3 top-1/2 size-6 -translate-y-1/2 rounded-full"
-					aria-label="Clear search"
+					aria-label="Bersihkan pencarian"
 				>
 					<XIcon className="size-4" />
 				</Button>

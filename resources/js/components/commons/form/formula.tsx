@@ -21,7 +21,7 @@ const FormulaTextArea = memo(({ availableCode, errors, value }: FormulaTextAreaP
 					id="formula"
 					name="formula"
 					defaultValue={value}
-					placeholder="Enter input formula"
+					placeholder="Masukkan formula input"
 					className={errors.formula ? "border-destructive" : ""}
 					ref={formulaRef}
 				/>

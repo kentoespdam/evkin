@@ -27,7 +27,7 @@ const SourcesTableHeader = memo(() => {
 		<TableHeader>
 			<TableRow>
 				<TableHead className="w-16 text-center">#</TableHead>
-				<TableHead>Source Name</TableHead>
+				<TableHead>Nama Sumber</TableHead>
 			</TableRow>
 		</TableHeader>
 	);
@@ -96,12 +96,12 @@ const SourcesTableAction = memo(({ row, setId, setShowDeleteDialog, isSelected }
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end" className="w-40">
-				<DropdownMenuLabel>Actions</DropdownMenuLabel>
+				<DropdownMenuLabel>Aksi</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				<DropdownMenuItem asChild className="text-blue-500 font-bold">
 					<Link href={master.sources.edit.url(row.id)} className="flex items-center gap-2">
 						<PencilIcon className="size-4 text-blue-500" />
-						Edit
+						Ubah
 					</Link>
 				</DropdownMenuItem>
 				<DropdownMenuItem
@@ -109,7 +109,7 @@ const SourcesTableAction = memo(({ row, setId, setShowDeleteDialog, isSelected }
 					onClick={handleDelete}
 				>
 					<TrashIcon className="size-4 text-destructive" />
-					Delete
+					Hapus
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
@@ -119,7 +119,7 @@ SourcesTableAction.displayName = "SourcesTableAction";
 
 const SourcesTable = memo(({ page, setId, setShowDeleteDialog }: SourcesTableProps) => {
 	if (page.meta.total === 0) {
-		return <TableEmpty tableName="Master Sources" />;
+		return <TableEmpty tableName="Data Sumber" />;
 	}
 
 	return (

@@ -30,8 +30,8 @@ const FormHeader = memo(() => (
 			<SparklesIcon className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
 		</div>
 		<div>
-			<h3 className="font-semibold text-lg text-foreground">Master Input Configuration</h3>
-			<p className="text-sm text-muted-foreground">Configure input indicators and data sources for reporting</p>
+			<h3 className="font-semibold text-lg text-foreground">Konfigurasi Master Input</h3>
+			<p className="text-sm text-muted-foreground">Atur indikator input dan sumber data untuk pelaporan</p>
 		</div>
 	</div>
 ));

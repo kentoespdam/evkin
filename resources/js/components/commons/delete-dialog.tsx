@@ -24,10 +24,9 @@ const DeleteDialog = ({ formAction, showDeleteDialog, setShowDeleteDialog }: Del
 	return (
 		<Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
 			<DialogContent>
-				<DialogTitle>Are you sure you want to delete this role?</DialogTitle>
+				<DialogTitle>Apakah Anda yakin ingin menghapus peran ini?</DialogTitle>
 				<DialogDescription>
-					Once this role is deleted, all of its resources and data will also be permanently deleted. Please enter{" "}
-					<code>DELETE</code> to confirm you would like to permanently delete this role.
+					Setelah peran ini dihapus, semua sumber daya dan data terkait juga akan dihapus secara permanen. Silakan ketik <code>DELETE</code> untuk mengonfirmasi penghapusan permanen peran ini.
 				</DialogDescription>
 
 				<Form
@@ -44,7 +43,7 @@ const DeleteDialog = ({ formAction, showDeleteDialog, setShowDeleteDialog }: Del
 					{({ resetAndClearErrors, processing, errors }) => (
 						<>
 							<div className="grid gap-2">
-								<Label htmlFor="confirmation">Type DELETE to confirm</Label>
+								<Label htmlFor="confirmation">Ketik DELETE untuk konfirmasi</Label>
 
 								<Input
 									id="confirmation"
@@ -61,12 +60,12 @@ const DeleteDialog = ({ formAction, showDeleteDialog, setShowDeleteDialog }: Del
 							<DialogFooter className="gap-2">
 								<DialogClose asChild>
 									<Button variant="secondary" onClick={() => resetAndClearErrors()}>
-										Cancel
+										Batal
 									</Button>
 								</DialogClose>
 
 								<Button type="submit" variant="destructive" disabled={processing}>
-									Delete Role
+									Hapus Peran
 								</Button>
 							</DialogFooter>
 						</>

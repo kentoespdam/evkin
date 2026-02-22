@@ -30,7 +30,7 @@ const InputsTableHeader = memo(() => {
 		<TableHeader>
 			<TableRow className="bg-muted/50">
 				<TableHead className="w-16 text-center font-semibold">#</TableHead>
-				<TableHead className="w-24 text-center font-semibold">Actions</TableHead>
+				<TableHead className="w-24 text-center font-semibold">Aksi</TableHead>
 				<TableHead className="font-semibold">
 					<div className="flex items-center gap-2">
 						<SparklesIcon className="h-4 w-4 text-muted-foreground" />
@@ -187,7 +187,7 @@ const InputTableActions = memo(({ row, setId, setShowDeleteDialog }: InputTableA
 						</Link>
 					</Button>
 				</TooltipTrigger>
-				<TooltipContent>Edit Master Input</TooltipContent>
+				<TooltipContent>Ubah Master Input</TooltipContent>
 			</Tooltip>
 			<Tooltip>
 				<TooltipTrigger asChild>
@@ -200,7 +200,7 @@ const InputTableActions = memo(({ row, setId, setShowDeleteDialog }: InputTableA
 						<TrashIcon className="size-4" />
 					</Button>
 				</TooltipTrigger>
-				<TooltipContent>Delete Master Input</TooltipContent>
+				<TooltipContent>Hapus Master Input</TooltipContent>
 			</Tooltip>
 		</div>
 	);
@@ -209,7 +209,7 @@ InputTableActions.displayName = "InputTableActions";
 
 const InputsTable = memo(({ page, setId, setShowDeleteDialog }: InputsTableProps) => {
 	if (page.meta.total === 0) {
-		return <TableEmpty tableName="Master Input" />;
+		return <TableEmpty tableName="Data Master Input" />;
 	}
 	return (
 		<div className="overflow-x-auto">

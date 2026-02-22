@@ -5,7 +5,7 @@ import { Spinner } from "../ui/spinner";
 
 const ButtonLoading = memo(({ processing }: { processing: boolean }) => {
 	const icon = processing ? <Spinner /> : <SaveIcon className="h-4 w-4" />;
-	const text = processing ? "Saving..." : "Save Changes";
+	const text = processing ? "Menyimpan..." : "Simpan Perubahan";
 	return (
 		<Button type="submit" disabled={processing} className="gap-2 min-w-32">
 			{icon}

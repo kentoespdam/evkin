@@ -23,28 +23,28 @@ const AspectsTableHeader = memo(() => {
 				<TableHead className="font-semibold">
 					<div className="flex items-center gap-2">
 						<FileTypeIcon className="h-4 w-4 text-muted-foreground" />
-						Report Type
+						Tipe Laporan
 					</div>
 				</TableHead>
 				<TableHead className="font-semibold">
 					<div className="flex items-center gap-2">
 						<SparklesIcon className="h-4 w-4 text-muted-foreground" />
-						Aspect Name
+						Nama Aspek
 					</div>
 				</TableHead>
 				<TableHead className="font-semibold text-center">
 					<div className="flex items-center justify-center gap-2">
 						<FunctionSquareIcon className="h-4 w-4 text-muted-foreground" />
-						Max Score
+						Skor Maksimal
 					</div>
 				</TableHead>
 				<TableHead className="font-semibold text-center">
 					<div className="flex items-center justify-center gap-2">
 						<FunctionSquareIcon className="h-4 w-4 text-muted-foreground" />
-						Weight
+						Bobot
 					</div>
 				</TableHead>
-				<TableHead className="w-24 text-center font-semibold">Actions</TableHead>
+				<TableHead className="w-24 text-center font-semibold">Aksi</TableHead>
 			</TableRow>
 		</TableHeader>
 	);
@@ -77,7 +77,7 @@ const AspectsTableActions = memo(({ row, setId, setShowDeleteDialog }: AspectsTa
 						</Link>
 					</Button>
 				</TooltipTrigger>
-				<TooltipContent>Edit Aspect</TooltipContent>
+				<TooltipContent>Ubah Aspek</TooltipContent>
 			</Tooltip>
 			<Tooltip>
 				<TooltipTrigger asChild>
@@ -90,7 +90,7 @@ const AspectsTableActions = memo(({ row, setId, setShowDeleteDialog }: AspectsTa
 						<TrashIcon className="size-4" />
 					</Button>
 				</TooltipTrigger>
-				<TooltipContent>Delete Aspect</TooltipContent>
+				<TooltipContent>Hapus Aspek</TooltipContent>
 			</Tooltip>
 		</div>
 	);
@@ -140,7 +140,7 @@ const AspectsTableBody = memo(({ page, setId, setShowDeleteDialog }: AspectsTabl
 								</div>
 							</div>
 						) : (
-							<Badge variant="secondary">No Report Type</Badge>
+							<Badge variant="secondary">Tidak Ada Tipe Laporan</Badge>
 						)}
 					</TableCell>
 					<TableCell>
@@ -151,7 +151,7 @@ const AspectsTableBody = memo(({ page, setId, setShowDeleteDialog }: AspectsTabl
 							<div>
 								<p className="font-semibold text-foreground">{item.name}</p>
 								{(item.maxScore || item.weight) && (
-									<p className="text-xs text-muted-foreground mt-0.5">Configured with score & weight</p>
+									<p className="text-xs text-muted-foreground mt-0.5">Sudah diatur skor & bobot</p>
 								)}
 							</div>
 						</div>

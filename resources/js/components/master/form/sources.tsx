@@ -45,13 +45,13 @@ const SourcesForm = ({ data }: SourcesFormProps) => {
 								<div className="flex items-center gap-2 pb-2 border-b">
 									<NetworkIcon className="h-4 w-4 text-muted-foreground" />
 									<h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">
-										Source Information
+										Informasi Sumber Data
 									</h3>
 								</div>
 
 								{/* Name Field */}
 								<Field>
-									<FieldLabel htmlFor="name">Source Name {StarRequired()}</FieldLabel>
+									<FieldLabel htmlFor="name">Nama Sumber {StarRequired()}</FieldLabel>
 									<Input
 										id="name"
 										name="name"

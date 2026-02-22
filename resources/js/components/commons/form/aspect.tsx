@@ -24,7 +24,7 @@ const AspectSelect = ({ aspects, errors, value, reportTypeId }: AspectSelectProp
 			</FieldLabel>
 			<Select name="aspect_id" defaultValue={value}>
 				<SelectTrigger>
-					<SelectValue placeholder="Select Aspect" />
+					<SelectValue placeholder="Pilih Aspek" />
 				</SelectTrigger>
 				<SelectContent>
 					{rows.map((item) => (

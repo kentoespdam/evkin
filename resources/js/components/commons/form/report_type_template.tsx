@@ -10,11 +10,11 @@ const ReportTypeTemplateSelect = ({ value, errors }: ReportTypeTemplateSelectPro
 	return (
 		<Field>
 			<FieldLabel htmlFor="template_name">
-				Report Template <span className="text-destructive">*</span>
+				Template Laporan <span className="text-destructive">*</span>
 			</FieldLabel>
 			<Select name="template_name" defaultValue={value}>
 				<SelectTrigger>
-					<SelectValue placeholder="Select Report Template" />
+					<SelectValue placeholder="Pilih Template Laporan" />
 				</SelectTrigger>
 				<SelectContent>
 					{ReportTypeTemplate.map((item) => (

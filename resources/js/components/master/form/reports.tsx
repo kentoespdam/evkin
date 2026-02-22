@@ -107,8 +107,8 @@ const FormHeader = memo(() => (
 			<FileTextIcon className="h-5 w-5 text-primary" />
 		</div>
 		<div>
-			<h3 className="font-semibold text-lg text-foreground">Master Report Information</h3>
-			<p className="text-sm text-muted-foreground">Configure report settings and formulas</p>
+			<h3 className="font-semibold text-lg text-foreground">Konfigurasi Master Laporan</h3>
+			<p className="text-sm text-muted-foreground">Atur pengaturan laporan dan formula</p>
 		</div>
 	</div>
 ));
@@ -189,40 +189,6 @@ const RulesSwitchField = memo(({ withRules, onChange, error }: RulesSwitchFieldP
 });
 RulesSwitchField.displayName = "RulesSwitchField";
 
-// interface FormulaIndicatorProps {
-// 	errors: Record<string, string>;
-// 	value?: string;
-// }
-// const FormulaIndicator = memo(({ errors, value }: FormulaIndicatorProps) => {
-// 	return (
-// 		<Field>
-// 			<FieldLabel htmlFor={"formula_indicator"}>
-// 				Formula Indikator <StarRequired />
-// 				<FormulaIndicatorTooltip />
-// 			</FieldLabel>
-// 			<Textarea
-// 				id="formula_indicator"
-// 				name="formula_indicator"
-// 				defaultValue={value}
-// 				placeholder="Contoh: &#10;GTE 80; &#10;LTE 79;"
-// 				className={cn(
-// 					"font-mono text-sm transition-all",
-// 					errors.formulaIndicator
-// 						? "border-destructive focus-visible:ring-destructive"
-// 						: "focus-visible:ring-primary/20",
-// 				)}
-// 				rows={4}
-// 			/>
-// 			{errors.formulaIndicator && (
-// 				<p className="text-sm text-destructive mt-1.5 flex items-center gap-1">
-// 					<InfoIcon className="h-3 w-3" />
-// 					{errors.formulaIndicator}
-// 				</p>
-// 			)}
-// 		</Field>
-// 	);
-// });
-// FormulaIndicator.displayName = "FormulaIndicator";
 interface FormulaArchivementProps {
 	errors: Record<string, string>;
 	value?: string;
@@ -377,7 +343,7 @@ const ReportsForm = memo(({ reportTypes, availableCode, aspects, data }: Reports
 					<CardContent className="pt-6">
 						<FormHeader />
 
-						{/* Section 1: Basic Information */}
+						{/* Bagian 1: Informasi Dasar */}
 						<div className="space-y-6">
 							<SectionHeader
 								icon={ListOrderedIcon}
@@ -385,11 +351,11 @@ const ReportsForm = memo(({ reportTypes, availableCode, aspects, data }: Reports
 								description="Pengaturan urutan dan kategori laporan"
 							/>
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-6 pl-11">
-								{/* Seq Field */}
+								{/* Field Urutan (Sequence) */}
 								<InputFormFieldBuilder
 									id="seq"
 									name="seq"
-									label="Sequence"
+									label="Urutan (Sequence)"
 									required={false}
 									defaultValue={data?.seq?.toString() ?? "0"}
 									placeholder="0"
@@ -398,11 +364,11 @@ const ReportsForm = memo(({ reportTypes, availableCode, aspects, data }: Reports
 									className="w-full"
 								/>
 
-								{/* Urut Field */}
+								{/* Field Urut */}
 								<InputFormFieldBuilder
 									id="urut"
 									name="urut"
-									label="Urutan"
+									label="Urutan Tampilan"
 									required
 									defaultValue={defaultValues.urut}
 									placeholder="1"
@@ -411,7 +377,7 @@ const ReportsForm = memo(({ reportTypes, availableCode, aspects, data }: Reports
 									className="w-full"
 								/>
 
-								{/* Report Type Field */}
+								{/* Field Tipe Laporan */}
 								<div className="md:col-span-2">
 									<ReportTypeSelect
 										value={reportTypeId}
@@ -421,7 +387,7 @@ const ReportsForm = memo(({ reportTypes, availableCode, aspects, data }: Reports
 									/>
 								</div>
 
-								{/* Aspect Field */}
+								{/* Field Aspek */}
 								{reportTypeId && (
 									<div className="md:col-span-2">
 										<AspectSelect
@@ -435,15 +401,15 @@ const ReportsForm = memo(({ reportTypes, availableCode, aspects, data }: Reports
 							</div>
 						</div>
 
-						{/* Section 2: Description & Details */}
+						{/* Bagian 2: Deskripsi & Detail */}
 						<div className="space-y-6">
 							<SectionHeader
 								icon={TypeIcon}
 								title="Deskripsi & Detail"
-								description="Informasi indikator, rumus, satuan dan bobot"
+								description="Informasi indikator, rumus, satuan, dan bobot"
 							/>
 							<div className="space-y-6 pl-11">
-								{/* Description Indicator Field */}
+								{/* Field Indikator */}
 								<InputFormFieldBuilder
 									id="desc_indicator"
 									name="desc_indicator"
@@ -456,11 +422,11 @@ const ReportsForm = memo(({ reportTypes, availableCode, aspects, data }: Reports
 									rows={3}
 								/>
 
-								{/* Description Formula Field */}
+								{/* Field Rumus */}
 								<InputFormFieldBuilder
 									id="desc_formula"
 									name="desc_formula"
-									label="Rumus"
+									label="Deskripsi Rumus"
 									required
 									defaultValue={defaultValues.descFormula}
 									placeholder="Masukkan deskripsi rumus"
@@ -470,7 +436,7 @@ const ReportsForm = memo(({ reportTypes, availableCode, aspects, data }: Reports
 								/>
 
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-									{/* Satuan Field */}
+									{/* Field Satuan */}
 									<InputFormFieldBuilder
 										id="unit"
 										name="unit"
@@ -481,7 +447,7 @@ const ReportsForm = memo(({ reportTypes, availableCode, aspects, data }: Reports
 										error={errors.unit}
 									/>
 
-									{/* Bobot Field */}
+									{/* Field Bobot */}
 									<InputFormFieldBuilder
 										id="weight"
 										name="weight"
@@ -499,7 +465,7 @@ const ReportsForm = memo(({ reportTypes, availableCode, aspects, data }: Reports
 							</div>
 						</div>
 
-						{/* Section 3: Rules Configuration */}
+						{/* Bagian 3: Konfigurasi Rules */}
 						<div className="space-y-6">
 							<SectionHeader
 								icon={SettingsIcon}
@@ -507,15 +473,15 @@ const ReportsForm = memo(({ reportTypes, availableCode, aspects, data }: Reports
 								description="Pengaturan rules spesifik untuk perhitungan"
 							/>
 							<div className="space-y-6 pl-11">
-								{/* With Rules Switch */}
+								{/* Switch Rules */}
 								<RulesSwitchField withRules={withRules} onChange={handleWithRulesChange} error={errors.with_rules} />
 
-								{/* Conditional Rules Field */}
+								{/* Field Rules Kondisional */}
 								<ConditionalRulesField withRules={withRules} defaultValue={defaultValues.rules} error={errors.rules} />
 							</div>
 						</div>
 
-						{/* Section 4: Formula Configuration */}
+						{/* Bagian 4: Konfigurasi Formula */}
 						<div className="space-y-6">
 							<SectionHeader
 								icon={FunctionSquareIcon}
@@ -523,7 +489,7 @@ const ReportsForm = memo(({ reportTypes, availableCode, aspects, data }: Reports
 								description="Pengaturan formula indikator dan formula perhitungan"
 							/>
 							<div className="space-y-6 pl-11">
-								{/* Formula Indikator Field */}
+								{/* Field Formula Indikator */}
 								<FormulaIndicator
 									id="formula_indicator"
 									label="Formula Indikator"
@@ -531,10 +497,10 @@ const ReportsForm = memo(({ reportTypes, availableCode, aspects, data }: Reports
 									value={defaultValues.formulaIndicator}
 								/>
 
-								{/* Formula Text Area */}
+								{/* Field Formula (Text Area) */}
 								<FormulaTextArea availableCode={availableCode} errors={errors} value={defaultValues.formula} />
 
-								{/* Formula Archivement Field */}
+								{/* Field Formula Pencapaian */}
 								<InputFormFieldBuilder
 									id="formula_archivement"
 									name="formula_archivement"
@@ -548,7 +514,7 @@ const ReportsForm = memo(({ reportTypes, availableCode, aspects, data }: Reports
 							</div>
 						</div>
 
-						{/* Form Actions */}
+						{/* Aksi Form */}
 						<FormActions processing={processing} errors={errors} />
 					</CardContent>
 				</Card>

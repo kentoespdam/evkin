@@ -43,13 +43,13 @@ const RoleForm = memo(({ role }: RoleFormProps) => {
 								<div className="flex items-center gap-2 pb-2 border-b">
 									<NetworkIcon className="h-4 w-4 text-muted-foreground" />
 									<h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">
-										Role Information
+										Informasi Role
 									</h3>
 								</div>
 
 								{/* Name Field */}
 								<Field>
-									<FieldLabel htmlFor="name">Role Name {StarRequired()}</FieldLabel>
+									<FieldLabel htmlFor="name">Nama Role {StarRequired()}</FieldLabel>
 									<Input
 										id="name"
 										name="name"

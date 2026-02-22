@@ -61,7 +61,7 @@ interface TotalPageProps {
 
 const TotalPage = memo(({ meta }: TotalPageProps) => (
 	<span className="text-sm font-medium text-muted-foreground">
-		{meta.from} - {meta.to} of {meta.total}
+		{meta.from} - {meta.to} dari {meta.total}
 	</span>
 ));
 TotalPage.displayName = "TotalPage";
@@ -75,7 +75,7 @@ interface PageSizeProps {
 
 const PageSize = memo(({ meta, handleSelectChange }: PageSizeProps) => (
 	<span className="flex items-center gap-2">
-		<span className="text-sm font-medium text-muted-foreground">Size:</span>
+		<span className="text-sm font-medium text-muted-foreground">Jumlah baris:</span>
 		<Select value={meta.per_page.toString()} onValueChange={(value) => handleSelectChange({ per_page: value })}>
 			<SelectTrigger className="w-20">
 				<SelectValue />
@@ -107,7 +107,7 @@ const PageList = memo(({ items, selected, handleSelectChange }: PageListProps) =
 			<SelectContent>
 				{items.map((item) => (
 					<SelectItem key={item.label} value={item.page?.toString() ?? "1"}>
-						Page {item.label}
+						Halaman {item.label}
 					</SelectItem>
 				))}
 			</SelectContent>

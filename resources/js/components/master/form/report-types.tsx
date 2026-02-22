@@ -22,8 +22,8 @@ const FormHeader = memo(() => (
 			<FileTypeIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
 		</div>
 		<div>
-			<h3 className="font-semibold text-lg text-foreground">Master Report Type Configuration</h3>
-			<p className="text-sm text-muted-foreground">Configure report type settings and performance formulas</p>
+			<h3 className="font-semibold text-lg text-foreground">Konfigurasi Tipe Laporan</h3>
+			<p className="text-sm text-muted-foreground">Atur tipe laporan dan formula kinerja</p>
 		</div>
 	</div>
 ));

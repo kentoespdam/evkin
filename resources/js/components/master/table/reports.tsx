@@ -46,7 +46,7 @@ const ReportsTableActions = memo(({ row, setId, setShowDeleteDialog }: ReportsTa
 						</Link>
 					</Button>
 				</TooltipTrigger>
-				<TooltipContent>Edit</TooltipContent>
+				<TooltipContent>Ubah</TooltipContent>
 			</Tooltip>
 			<Tooltip>
 				<TooltipTrigger asChild>
@@ -59,7 +59,7 @@ const ReportsTableActions = memo(({ row, setId, setShowDeleteDialog }: ReportsTa
 						<TrashIcon className="size-4" />
 					</Button>
 				</TooltipTrigger>
-				<TooltipContent>Delete</TooltipContent>
+				<TooltipContent>Hapus</TooltipContent>
 			</Tooltip>
 		</div>
 	);
@@ -83,9 +83,9 @@ const FormulaIndicatorBadge = memo(({ formulaIndicator }: { formulaIndicator: st
 		() =>
 			formulaIndicator
 				? formulaIndicator.split("\n").map((row) => ({
-						hash: uuidv4(),
-						item: row,
-					}))
+					hash: uuidv4(),
+					item: row,
+				}))
 				: [],
 		[formulaIndicator],
 	);
@@ -144,7 +144,7 @@ const RulesBadge = memo(({ rules }: { rules: string | null }) => {
 
 	return (
 		<div className="flex flex-col gap-1.5">
-			<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Rules</span>
+			<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Aturan</span>
 			{listRules ? (
 				<div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-md px-3 py-2">
 					<div className="flex flex-col gap-2">
@@ -157,7 +157,7 @@ const RulesBadge = memo(({ rules }: { rules: string | null }) => {
 				</div>
 			) : (
 				<div className="bg-gray-50 dark:bg-gray-900/30 border border-gray-200 dark:border-gray-800 rounded-md px-3 py-2">
-					<span className="text-sm text-muted-foreground italic">No Rules Defined</span>
+					<span className="text-sm text-muted-foreground italic">Belum ada aturan</span>
 				</div>
 			)}
 		</div>
@@ -228,7 +228,7 @@ const ReportsTableBody = memo(({ page, setId, setShowDeleteDialog }: ReportsTabl
 
 const ReportsTable = ({ page, setId, setShowDeleteDialog }: ReportsTableProps) => {
 	if (page.meta.total === 0) {
-		return <TableEmpty tableName="Reports" />;
+		return <TableEmpty tableName="Data Laporan" />;
 	}
 
 	return (
