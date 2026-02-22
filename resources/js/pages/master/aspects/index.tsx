@@ -18,7 +18,7 @@ import type { Aspect } from "@/types/aspect";
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{
-		title: "Dashboard",
+		title: "Beranda",
 		href: dashboard().url,
 	},
 	{
@@ -26,7 +26,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 		href: "#",
 	},
 	{
-		title: "Aspects",
+		title: "Aspek",
 		href: "#",
 	},
 ];
@@ -42,24 +42,24 @@ const Aspects = ({ page }: AspectsProps) => {
 
 	return (
 		<AppLayout breadcrumbs={breadcrumbs}>
-			<Head title="Master Aspects" />
+			<Head title="Aspek Master" />
 			<div className="flex flex-col gap-6 p-4">
 				<Card>
 					<CardHeader className="flex-row items-center justify-between space-y-0">
 						<div className="space-y-1">
-							<CardTitle className="text-xl">Aspects Management</CardTitle>
-							<CardDescription>Manage your Master Aspects</CardDescription>
+							<CardTitle className="text-xl">Manajemen Aspek</CardTitle>
+							<CardDescription>Kelola Aspek Master Anda</CardDescription>
 						</div>
 						<Button className="gap-2" asChild>
 							<Link href={master.aspects.add().url}>
 								<PlusIcon className="h-4 w-4" />
-								Add Master Aspect
+								Tambah Aspek Master
 							</Link>
 						</Button>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<TableShowTotalText page={page} tableName="aspects">
-							<TableTextSearch params={params} handleSelectChange={handleSelectChange} text="Kode / Description" />
+							<TableTextSearch params={params} handleSelectChange={handleSelectChange} text="Kode / Deskripsi" />
 						</TableShowTotalText>
 						<AspectsTable page={page} setId={setId} setShowDeleteDialog={setShowDeleteDialog} />
 						<PaginationNav page={page} />

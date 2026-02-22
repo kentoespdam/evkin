@@ -25,7 +25,7 @@ export interface InputsIndexProps {
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{
-		title: "Dashboard",
+		title: "Beranda",
 		href: dashboard().url,
 	},
 	{
@@ -33,7 +33,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 		href: "#",
 	},
 	{
-		title: "Inputs",
+		title: "Input",
 		href: "#",
 	},
 ];
@@ -78,13 +78,13 @@ const MasterInputFilterComponent = memo(({ filters, aspects }: { filters: Master
 			<TableTextSearch
 				params={{ search: filters.search ?? "" }}
 				handleSelectChange={(v) => updateAndVisit("search", v.search ?? "")}
-				text="Kode / Description"
+				text="Kode / Deskripsi"
 				className="w-full sm:max-w-sm"
 			/>
 
 			<Select value={filters.aspect_id ?? ""} onValueChange={(v) => updateAndVisit("aspect_id", v)}>
 				<SelectTrigger className="w-fit min-w-48">
-					<SelectValue placeholder="Filter by Aspect" />
+					<SelectValue placeholder="Filter berdasarkan Aspek" />
 				</SelectTrigger>
 				<SelectContent>
 					{aspects.map((aspect) => (
@@ -96,7 +96,7 @@ const MasterInputFilterComponent = memo(({ filters, aspects }: { filters: Master
 			</Select>
 
 			{hasActiveFilters && (
-				<Button onClick={resetAll} variant="outline" className="gap-2" aria-label="Reset filters">
+				<Button onClick={resetAll} variant="outline" className="gap-2" aria-label="Reset filter">
 					<RefreshCwIcon className="size-4" /> Reset
 				</Button>
 			)}
@@ -111,18 +111,18 @@ const InputsIndex = ({ page, aspects, filters }: InputsIndexProps) => {
 
 	return (
 		<AppLayout breadcrumbs={breadcrumbs}>
-			<Head title="Master Inputs" />
+			<Head title="Input Master" />
 			<div className="flex flex-col gap-6 p-4">
 				<Card>
 					<CardHeader className="flex-row items-center justify-between space-y-0">
 						<div className="space-y-1">
-							<CardTitle className="text-xl">Inputs Management</CardTitle>
-							<CardDescription>Manage your master inputs</CardDescription>
+							<CardTitle className="text-xl">Manajemen Input</CardTitle>
+							<CardDescription>Kelola Input Master Anda</CardDescription>
 						</div>
 						<Button className="gap-2" asChild>
 							<Link href={master.inputs.add().url}>
 								<PlusIcon className="h-4 w-4" />
-								Add Master Input
+								Tambah Input Master
 							</Link>
 						</Button>
 					</CardHeader>

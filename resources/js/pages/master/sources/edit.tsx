@@ -14,7 +14,7 @@ interface SourcesEditProps {
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{
-		title: "Dashboard",
+		title: "Beranda",
 		href: dashboard().url,
 	},
 	{

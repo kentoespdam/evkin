@@ -13,7 +13,7 @@ interface InputUserProps {
 }
 const breadcrumbs: BreadcrumbItem[] = [
 	{
-		title: "Dashboard",
+		title: "Beranda",
 		href: dashboard().url,
 	},
 	{
@@ -25,7 +25,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 		href: master.users().url,
 	},
 	{
-		title: "Add",
+		title: "Tambah",
 		href: "#",
 	},
 ];

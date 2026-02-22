@@ -21,7 +21,7 @@ import type { ReportType } from "@/types/report-type";
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{
-		title: "Dashboard",
+		title: "Beranda",
 		href: dashboard().url,
 	},
 	{
@@ -29,7 +29,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 		href: "#",
 	},
 	{
-		title: "Reports",
+		title: "Laporan",
 		href: "#",
 	},
 ];
@@ -47,7 +47,6 @@ const useReportsFilter = (filters: ReportFilters) => {
 
 	const updateQueryAndVisit = useCallback((key: string, value: string) => {
 		const params = new URLSearchParams(window.location.search);
-		params.delete("page"); // Reset pagination on filter change
 		params.delete("per_page");
 
 		if (!value.trim()) {
@@ -109,18 +108,10 @@ const useReportsFilter = (filters: ReportFilters) => {
 
 // Komponen Select yang dipisahkan untuk reusability
 const ReportTypeSelect = memo(
-	({
-		reportTypes,
-		value,
-		onChange,
-	}: {
-		reportTypes: ReportType[];
-		value: string;
-		onChange: (value: string) => void;
-	}) => (
+	({ reportTypes, value, onChange }: { reportTypes: ReportType[]; value: string; onChange: (value: string) => void }) => (
 		<Select value={value} onValueChange={onChange}>
 			<SelectTrigger className="w-fit">
-				<SelectValue placeholder="Filter by Report Type" />
+				<SelectValue placeholder="Filter berdasarkan Jenis Laporan" />
 			</SelectTrigger>
 			<SelectContent>
 				{reportTypes.map((item) => (
@@ -130,9 +121,8 @@ const ReportTypeSelect = memo(
 				))}
 			</SelectContent>
 		</Select>
-	),
+	)
 );
-
 ReportTypeSelect.displayName = "ReportTypeSelect";
 
 const AspectSelect = memo(
@@ -152,7 +142,7 @@ const AspectSelect = memo(
 			return aspects.filter((aspect) => aspect.reportType?.id === reportTypeId);
 		}, [aspects, reportTypeId]);
 
-		const placeholder = reportTypeId ? "Filter by Aspect" : "Select Report Type first";
+		const placeholder = reportTypeId ? "Filter berdasarkan Aspek" : "Pilih Jenis Laporan terlebih dahulu";
 
 		return (
 			<Select value={value} onValueChange={onChange} disabled={!reportTypeId}>
@@ -189,11 +179,11 @@ const ReportsFilter = memo(({ page, reportTypes, aspects, filters }: MasterRepor
 			<div className="flex flex-col sm:flex-row gap-2">
 				<Input
 					name="search"
-					placeholder="Search Indicator"
+					placeholder="Cari Indikator"
 					className="sm:w-[250px]"
 					defaultValue={search ?? ""}
 					onChange={(e) => handleSearchChange(e.target.value)}
-					aria-label="Search reports"
+					aria-label="Cari laporan"
 				/>
 
 				<div className="flex flex-wrap gap-2">
@@ -227,20 +217,20 @@ const MasterReports = ({ page, reportTypes, aspects, filters }: MasterReportsPro
 
 	return (
 		<AppLayout breadcrumbs={breadcrumbs}>
-			<Head title="Master Reports" />
+			<Head title="Laporan Master" />
 
 			<div className="flex flex-col gap-6 p-4">
 				<Card>
 					<CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 						<div className="space-y-1">
-							<CardTitle className="text-2xl font-bold">Reports Management</CardTitle>
-							<CardDescription>Manage your Master Reports</CardDescription>
+							<CardTitle className="text-2xl font-bold">Manajemen Laporan</CardTitle>
+							<CardDescription>Kelola Laporan Master Anda</CardDescription>
 						</div>
 
 						<Button asChild className="gap-2">
 							<Link href={master.reports.add().url}>
 								<PlusIcon className="h-4 w-4" />
-								Add Master Report
+								Tambah Laporan Master
 							</Link>
 						</Button>
 					</CardHeader>

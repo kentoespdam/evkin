@@ -11,7 +11,7 @@ import type { RekapTahunansProps } from "@/types/rekap-tahunan";
 import { RekapTahunansFilters } from "./filter";
 
 const breadcrumbs: BreadcrumbItem[] = [
-	{ title: "Dashboard", href: "/dashboard" },
+	{ title: "Beranda", href: "/dashboard" },
 	{ title: "Reports", href: "#" },
 	{ title: "Rekap Tahunan", href: "#" },
 ];

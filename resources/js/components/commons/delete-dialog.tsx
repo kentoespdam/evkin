@@ -65,7 +65,7 @@ const DeleteDialog = ({ formAction, showDeleteDialog, setShowDeleteDialog }: Del
 								</DialogClose>
 
 								<Button type="submit" variant="destructive" disabled={processing}>
-									Hapus Peran
+									Hapus Role
 								</Button>
 							</DialogFooter>
 						</>

@@ -39,7 +39,7 @@ export const UserTableHeader = memo(() => {
 				<TableHead className="w-16 text-center">#</TableHead>
 				<TableHead>Pengguna</TableHead>
 				<TableHead>Email</TableHead>
-				<TableHead>Peran</TableHead>
+				<TableHead>Role</TableHead>
 			</TableRow>
 		</TableHeader>
 	);

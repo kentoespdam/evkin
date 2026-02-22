@@ -27,7 +27,7 @@ export const RoleTableHeader = memo(() => {
 		<TableHeader>
 			<TableRow className="hover:bg-transparent">
 				<TableHead className="w-16 text-center">#</TableHead>
-				<TableHead>Nama Peran</TableHead>
+				<TableHead>Nama Role</TableHead>
 			</TableRow>
 		</TableHeader>
 	);
@@ -130,7 +130,7 @@ TableAction.displayName = "TableAction";
 
 const RoleTable = memo(({ page, setId, setShowDeleteDialog }: RoleTableProps) => {
 	if (page.meta.total === 0) {
-		return <TableEmpty tableName="Data Peran" />;
+		return <TableEmpty tableName="Data Role" />;
 	}
 
 	return (

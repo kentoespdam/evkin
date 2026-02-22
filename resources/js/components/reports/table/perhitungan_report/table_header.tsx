@@ -53,7 +53,7 @@ const PerhitunganReportTableHeader = memo(
                     </TableHead>
                     <MonthHeader year={year} months={months} colspan={colspan} />
                     <TableHead className="text-center border" colSpan={colspan}>
-                        Pencapaian Total
+                        Total Pencapaian
                     </TableHead>
                     <TableHead className="text-center border" colSpan={colspan}>
                         Pencapaian Tahun

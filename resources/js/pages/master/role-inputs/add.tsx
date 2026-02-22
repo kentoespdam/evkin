@@ -11,7 +11,7 @@ import type { Role } from "@/types/role";
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{
-		title: "Dashboard",
+		title: "Beranda",
 		href: dashboard().url,
 	},
 	{
@@ -23,7 +23,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 		href: master.roleInputs().url,
 	},
 	{
-		title: "Add",
+		title: "Tambah",
 		href: "#",
 	},
 ];
@@ -36,9 +36,9 @@ interface AddRoleInputProps {
 const AddRoleInput = ({ roles, inputs }: AddRoleInputProps) => {
 	return (
 		<AppLayout breadcrumbs={breadcrumbs}>
-			<Head title={`Add Role Input`} />
+			<Head title={`Tambah Role Input`} />
 			<div className="flex flex-col gap-6 p-4">
-				{/* Header Card */}
+				{/* Kartu Header */}
 				<Card className="border-primary/20">
 					<CardHeader className="space-y-1">
 						<div className="flex items-center gap-3">
@@ -46,8 +46,8 @@ const AddRoleInput = ({ roles, inputs }: AddRoleInputProps) => {
 								<KeyIcon className="h-6 w-6 text-primary" />
 							</div>
 							<div>
-								<CardTitle className="text-2xl">Add Role Input</CardTitle>
-								<CardDescription>Add new Role Input information</CardDescription>
+								<CardTitle className="text-2xl">Tambah Role Input</CardTitle>
+								<CardDescription>Tambah informasi Role Input baru</CardDescription>
 							</div>
 						</div>
 					</CardHeader>

@@ -107,7 +107,7 @@ const PageList = memo(({ items, selected, handleSelectChange }: PageListProps) =
 			<SelectContent>
 				{items.map((item) => (
 					<SelectItem key={item.label} value={item.page?.toString() ?? "1"}>
-						Halaman {item.label}
+						Hal. {item.label}
 					</SelectItem>
 				))}
 			</SelectContent>

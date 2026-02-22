@@ -12,7 +12,7 @@ import type { RoleInput } from "@/types/role-inputs";
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{
-		title: "Dashboard",
+		title: "Beranda",
 		href: dashboard().url,
 	},
 	{
@@ -38,9 +38,9 @@ interface EditRoleInputProps {
 const EditRoleInput = ({ roles, inputs, data }: EditRoleInputProps) => {
 	return (
 		<AppLayout breadcrumbs={breadcrumbs}>
-			<Head title={`Edit Role Input`} />
+			<Head title={`Ubah Role Input`} />
 			<div className="flex flex-col gap-6 p-4">
-				{/* Header Card */}
+				{/* Kartu Header */}
 				<Card className="border-primary/20">
 					<CardHeader className="space-y-1">
 						<div className="flex items-center gap-3">
@@ -48,8 +48,8 @@ const EditRoleInput = ({ roles, inputs, data }: EditRoleInputProps) => {
 								<KeyIcon className="h-6 w-6 text-primary" />
 							</div>
 							<div>
-								<CardTitle className="text-2xl">Edit Role Input</CardTitle>
-								<CardDescription>Edit Role Input information</CardDescription>
+								<CardTitle className="text-2xl">Ubah Role Input</CardTitle>
+								<CardDescription>Ubah informasi Role Input</CardDescription>
 							</div>
 						</div>
 					</CardHeader>

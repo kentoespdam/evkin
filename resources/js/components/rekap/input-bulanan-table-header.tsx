@@ -22,7 +22,7 @@ const RekapInputBulanansTableHeader = memo(
 							toast.success(!isLocked ? "Periode berhasil dikunci" : "Periode berhasil dibuka");
 						},
 						onError: (errors) => {
-							toast.error(errors.message || "Gagal mengubah status lock");
+							toast.error(errors.message || "Gagal mengubah status kunci");
 						},
 					},
 				);
@@ -64,7 +64,7 @@ const RekapInputBulanansTableHeader = memo(
 							</TableHead>
 						);
 					})}
-					<TableHead className="w-32 border text-center font-semibold">RATA-RATA / PENCAPAIAN</TableHead>
+					<TableHead className="w-32 border text-center font-semibold">Rata-rata / Pencapaian</TableHead>
 				</TableRow>
 			</TableHeader>
 		);

@@ -200,7 +200,7 @@ const RoleInputForm = ({ roles, inputs, data }: RoleInputFormProps) => {
 								{/* Role Field */}
 								<Field>
 									<FieldLabel htmlFor="role_id">
-										Peran <StarRequired />
+										Role <StarRequired />
 									</FieldLabel>
 									<Select name="role_id" defaultValue={data?.role?.id} onValueChange={goto}>
 										<SelectTrigger>

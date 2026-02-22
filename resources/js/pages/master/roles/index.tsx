@@ -22,7 +22,7 @@ export interface RolesIndexProps {
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{
-		title: "Dashboard",
+		title: "Beranda",
 		href: dashboard().url,
 	},
 	{
@@ -30,7 +30,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 		href: "#",
 	},
 	{
-		title: "Roles",
+		title: "Role",
 		href: "#",
 	},
 ];
@@ -43,24 +43,24 @@ const RolesIndex = ({ page }: RolesIndexProps) => {
 
 	return (
 		<AppLayout breadcrumbs={breadcrumbs}>
-			<Head title="Roles" />
+			<Head title="Role" />
 			<div className="flex flex-col gap-6 p-4">
 				<Card>
 					<CardHeader className="flex-row items-center justify-between space-y-0">
 						<div className="space-y-1">
-							<CardTitle className="text-xl">Roles Management</CardTitle>
-							<CardDescription>Manage your Roles</CardDescription>
+							<CardTitle className="text-xl">Manajemen Role</CardTitle>
+							<CardDescription>Kelola Role Anda</CardDescription>
 						</div>
 						<Button className="gap-2" asChild>
 							<Link href={master.roles.add().url}>
 								<PlusIcon className="h-4 w-4" />
-								Add Role
+								Tambah Role
 							</Link>
 						</Button>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<TableShowTotalText page={page} tableName="roles">
-							<TableTextSearch params={params} handleSelectChange={handleSelectChange} text="Role Name" />
+							<TableTextSearch params={params} handleSelectChange={handleSelectChange} text="Nama Role" />
 						</TableShowTotalText>
 						<RoleTable page={page} setId={setId} setShowDeleteDialog={setShowDeleteDialog} />
 						<PaginationNav page={page} />

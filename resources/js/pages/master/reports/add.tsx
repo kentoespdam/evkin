@@ -12,7 +12,7 @@ import type { ReportType } from "@/types/report-type";
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{
-		title: "Dashboard",
+		title: "Beranda",
 		href: dashboard().url,
 	},
 	{
@@ -24,7 +24,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 		href: master.reports().url,
 	},
 	{
-		title: "Add",
+		title: "Tambah",
 		href: "#",
 	},
 ];

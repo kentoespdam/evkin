@@ -8,7 +8,7 @@ import type { BreadcrumbItem } from "@/types";
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{
-		title: "Dashboard",
+		title: "Beranda",
 		href: dashboard().url,
 	},
 	{
@@ -20,7 +20,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 		href: master.reportTypes().url,
 	},
 	{
-		title: "Add",
+		title: "Tambah",
 		href: "#",
 	},
 ];

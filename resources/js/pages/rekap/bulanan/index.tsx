@@ -9,7 +9,7 @@ import type { RekapBulanansProps } from "@/types/transaksi-inputs";
 import RekapBulanansFilters from "./filter";
 
 const breadcrumbs: BreadcrumbItem[] = [
-	{ title: "Dashboard", href: "/dashboard" },
+	{ title: "Beranda", href: "/dashboard" },
 	{ title: "Reports", href: "#" },
 	{ title: "Rekap Bulanan", href: "#" },
 ];

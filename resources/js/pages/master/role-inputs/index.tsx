@@ -22,7 +22,7 @@ export interface RoleInputsIndexProps {
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{
-		title: "Dashboard",
+		title: "Beranda",
 		href: dashboard().url,
 	},
 	{
@@ -30,7 +30,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 		href: "#",
 	},
 	{
-		title: "Role Input",
+		title: "Role Indikator",
 		href: "#",
 	},
 ];
@@ -42,18 +42,18 @@ const RoleInputsIndex = ({ page }: RoleInputsIndexProps) => {
 	const deleteUrl = useMemo(() => master.roleInputs.destroy(id).url, [id]);
 	return (
 		<AppLayout breadcrumbs={breadcrumbs}>
-			<Head title="Role Inputs" />
+			<Head title="Role Indikator" />
 			<div className="flex flex-col gap-6 p-4">
 				<Card>
 					<CardHeader className="flex-row items-center justify-between space-y-0">
 						<div className="space-y-1">
-							<CardTitle className="text-xl">Role Inputs Management</CardTitle>
-							<CardDescription>Manage your Role Inputs</CardDescription>
+							<CardTitle className="text-xl">Manajemen Role Indikator</CardTitle>
+							<CardDescription>Kelola Role Indikator Anda</CardDescription>
 						</div>
 						<Button className="gap-2" asChild>
 							<Link href={master.roleInputs.add().url}>
 								<PlusIcon className="h-4 w-4" />
-								Add Role Input
+								Tambah Role Indikator
 							</Link>
 						</Button>
 					</CardHeader>

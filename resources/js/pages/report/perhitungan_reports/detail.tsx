@@ -11,8 +11,8 @@ import type { PerhitunganReportsDetailProps } from "@/types/perhitungan-reports"
 const useBreadcrumbs = () =>
 	useMemo(
 		() => [
-			{ title: "Dashboard", href: "/dashboard" },
-			{ title: "Reports", href: "#" },
+			{ title: "Beranda", href: "/dashboard" },
+			{ title: "Laporan", href: "#" },
 			{ title: "Perhitungan", href: "#" },
 		],
 		[],
@@ -40,14 +40,14 @@ const PerhitunganReportsDetail = ({ page, reportTypes, aspects, filters }: Perhi
 
 	return (
 		<AppLayout breadcrumbs={breadcrumbs}>
-			<Head title="Perhitungan Reports" />
+			<Head title="Laporan Perhitungan" />
 
 			<div className="flex flex-col gap-6 p-4">
 				<Card>
 					<CardHeader className="gap-2 sm:flex-row sm:items-center sm:justify-between">
 						<div className="space-y-1">
-							<CardTitle className="text-2xl font-bold">Perhitungan Reports</CardTitle>
-							<CardDescription>Calculated report values with filters</CardDescription>
+							<CardTitle className="text-2xl font-bold">Laporan Perhitungan</CardTitle>
+							<CardDescription>Nilai laporan hasil perhitungan dengan filter</CardDescription>
 						</div>
 					</CardHeader>
 					<CardContent className="space-y-6">

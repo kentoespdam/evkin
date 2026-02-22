@@ -16,7 +16,7 @@ interface AspectEditProps {
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{
-		title: "Dashboard",
+		title: "Beranda",
 		href: dashboard().url,
 	},
 	{
@@ -24,11 +24,11 @@ const breadcrumbs: BreadcrumbItem[] = [
 		href: "#",
 	},
 	{
-		title: "Aspects",
+		title: "Aspek",
 		href: master.aspects().url,
 	},
 	{
-		title: "Add",
+		title: "Tambah",
 		href: "#",
 	},
 ];

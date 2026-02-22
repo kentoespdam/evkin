@@ -9,19 +9,19 @@ import type { BreadcrumbItem } from "@/types";
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{
-		title: "Dashboard",
+		title: "Beranda",
 		href: dashboard().url,
 	},
 	{
-		title: "Master",
+		title: "Data Master",
 		href: "#",
 	},
 	{
-		title: "Sources",
+		title: "Sumber Data",
 		href: master.sources().url,
 	},
 	{
-		title: "Add",
+		title: "Tambah",
 		href: "#",
 	},
 ];
@@ -29,7 +29,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 const SourcesAdd = () => {
 	return (
 		<AppLayout breadcrumbs={breadcrumbs}>
-			<Head title={`Add Source`} />
+			<Head title={`Tambah Sumber Data`} />
 			<div className="flex flex-col gap-6 p-4">
 				{/* Header Card */}
 				<Card className="border-primary/20">
@@ -39,8 +39,8 @@ const SourcesAdd = () => {
 								<GitPullRequestArrow className="h-6 w-6 text-primary" />
 							</div>
 							<div>
-								<CardTitle className="text-2xl">Add Source</CardTitle>
-								<CardDescription>Add new Source information</CardDescription>
+								<CardTitle className="text-2xl">Tambah Sumber Data</CardTitle>
+								<CardDescription>Tambah informasi sumber data baru</CardDescription>
 							</div>
 						</div>
 					</CardHeader>

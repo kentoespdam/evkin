@@ -28,7 +28,7 @@ const RoleInputTableHeader = memo(() => {
 		<TableHeader>
 			<TableRow>
 				<TableHead className="w-16 text-center">#</TableHead>
-				<TableHead>Peran</TableHead>
+				<TableHead>Role</TableHead>
 				<TableHead>Indikator</TableHead>
 			</TableRow>
 		</TableHeader>
@@ -127,7 +127,7 @@ TableAction.displayName = "TableAction";
 
 const RoleInputTable = ({ page, setId, setShowDeleteDialog }: RoleInputTableProps) => {
 	if (page.meta.total === 0) {
-		return <TableEmpty tableName="Data Peran Indikator" />;
+		return <TableEmpty tableName="Data Role Indikator" />;
 	}
 	return (
 		<div className="overflow-x-auto">

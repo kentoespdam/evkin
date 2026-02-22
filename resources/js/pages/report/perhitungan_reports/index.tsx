@@ -1,7 +1,6 @@
 import { Head } from "@inertiajs/react";
 import { useMemo } from "react";
 import PerhitunganReports from "@/components/reports/table/perhitungan_report";
-// import TemplateBuilder from "@/components/reports/table/perhitungan_report_builder";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AppLayout from "@/layouts/app-layout";
 import type { BreadcrumbItem } from "@/types";
@@ -9,8 +8,8 @@ import type { PerhitunganReportProps } from "@/types/perhitungan-reports";
 import PerhitunganReportIndexFilter from "./filter_index";
 
 const breadcrumbs: BreadcrumbItem[] = [
-	{ title: "Dashboard", href: "/dashboard" },
-	{ title: "Reports", href: "#" },
+	{ title: "Beranda", href: "/dashboard" },
+	{ title: "Laporan", href: "#" },
 ];
 
 const ReportPerhitungan = ({ masterReports, reportTypes, aspects, reports, filters }: PerhitunganReportProps) => {
@@ -18,7 +17,7 @@ const ReportPerhitungan = ({ masterReports, reportTypes, aspects, reports, filte
 
 	return (
 		<AppLayout breadcrumbs={breadcrumbs}>
-			<Head title="Perhitungan Reports" />
+			<Head title="Laporan Perhitungan" />
 			<div className="flex flex-col gap-6 p-4">
 				<Card>
 					<CardHeader className="gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -36,14 +35,6 @@ const ReportPerhitungan = ({ masterReports, reportTypes, aspects, reports, filte
 					</CardHeader>
 					<CardContent className="space-y-6">
 						<PerhitunganReportIndexFilter filters={filters} reportTypes={reportTypes} />
-						{/* <TemplateBuilder
-							masterReports={masterReports}
-							reportTypes={reportTypes}
-							aspects={aspects}
-							reports={reports}
-							filters={filters}
-							templateName={jenisReport?.templateName ?? "TEMPLATE_KEPMENDAGRI"}
-						/> */}
 						<PerhitunganReports
 							aspects={aspects}
 							masterReports={masterReports}

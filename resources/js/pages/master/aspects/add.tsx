@@ -14,7 +14,7 @@ interface AspectsAddProps {
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{
-		title: "Dashboard",
+		title: "Beranda",
 		href: dashboard().url,
 	},
 	{
@@ -22,11 +22,11 @@ const breadcrumbs: BreadcrumbItem[] = [
 		href: "#",
 	},
 	{
-		title: "Aspects",
+		title: "Aspek",
 		href: master.aspects().url,
 	},
 	{
-		title: "Add",
+		title: "Tambah",
 		href: "#",
 	},
 ];
@@ -34,9 +34,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 const AspectsAdd = ({ reportTypes }: AspectsAddProps) => {
 	return (
 		<AppLayout breadcrumbs={breadcrumbs}>
-			<Head title={`Add Master Aspect`} />
+			<Head title={`Tambah Aspek Master`} />
 			<div className="flex flex-col gap-6 p-4">
-				{/* Header Card */}
+				{/* Kartu Header */}
 				<Card className="border-primary/20">
 					<CardHeader className="space-y-1">
 						<div className="flex items-center gap-3">
@@ -44,8 +44,8 @@ const AspectsAdd = ({ reportTypes }: AspectsAddProps) => {
 								<TextCursorInputIcon className="h-6 w-6 text-primary" />
 							</div>
 							<div>
-								<CardTitle className="text-2xl">Add Master Aspect</CardTitle>
-								<CardDescription>Add new Master Aspect information</CardDescription>
+								<CardTitle className="text-2xl">Tambah Aspek Master</CardTitle>
+								<CardDescription>Tambah informasi Aspek Master baru</CardDescription>
 							</div>
 						</div>
 					</CardHeader>

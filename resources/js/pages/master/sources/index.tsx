@@ -22,7 +22,7 @@ export interface SourcesIndexProps {
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{
-		title: "Dashboard",
+		title: "Beranda",
 		href: dashboard().url,
 	},
 	{
@@ -30,7 +30,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 		href: "#",
 	},
 	{
-		title: "Sources",
+		title: "Sumber",
 		href: "#",
 	},
 ];
@@ -42,24 +42,24 @@ const SourcesIndex = ({ page }: SourcesIndexProps) => {
 
 	return (
 		<AppLayout breadcrumbs={breadcrumbs}>
-			<Head title="Sources Management" />
+			<Head title="Manajemen Sumber" />
 			<div className="flex flex-col gap-6 p-4">
 				<Card>
 					<CardHeader className="flex-row items-center justify-between space-y-0">
 						<div className="space-y-1">
-							<CardTitle className="text-xl">Sources Management</CardTitle>
-							<CardDescription>Manage your Sources</CardDescription>
+							<CardTitle className="text-xl">Manajemen Sumber</CardTitle>
+							<CardDescription>Kelola Sumber Anda</CardDescription>
 						</div>
 						<Button className="gap-2" asChild>
 							<Link href={master.sources.add().url}>
 								<PlusIcon className="h-4 w-4" />
-								Add Source
+								Tambah Sumber
 							</Link>
 						</Button>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<TableShowTotalText page={page} tableName="sources">
-							<TableTextSearch params={params} handleSelectChange={handleSelectChange} text="Source Name" />
+							<TableTextSearch params={params} handleSelectChange={handleSelectChange} text="Nama Sumber" />
 						</TableShowTotalText>
 						<SourcesTable page={page} setId={setId} setShowDeleteDialog={setShowDeleteDialog} />
 						<PaginationNav page={page} />

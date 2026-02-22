@@ -10,19 +10,19 @@ import type { Role } from "@/types/role";
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{
-		title: "Dashboard",
+		title: "Beranda",
 		href: dashboard().url,
 	},
 	{
-		title: "Master",
+		title: "Data Master",
 		href: "#",
 	},
 	{
-		title: "Roles",
+		title: "Role",
 		href: master.roles().url,
 	},
 	{
-		title: "Edit",
+		title: "Ubah",
 		href: "#",
 	},
 ];
@@ -34,7 +34,7 @@ interface RoleEditProps {
 const RoleEdit = ({ role }: RoleEditProps) => {
 	return (
 		<AppLayout breadcrumbs={breadcrumbs}>
-			<Head title={`Edit Role`} />
+			<Head title={`Ubah Role`} />
 			<div className="flex flex-col gap-6 p-4">
 				{/* Header Card */}
 				<Card className="border-primary/20">
@@ -44,8 +44,8 @@ const RoleEdit = ({ role }: RoleEditProps) => {
 								<UserIcon className="h-6 w-6 text-primary" />
 							</div>
 							<div>
-								<CardTitle className="text-2xl">Edit Role</CardTitle>
-								<CardDescription>Edit Role information</CardDescription>
+								<CardTitle className="text-2xl">Ubah Role</CardTitle>
+								<CardDescription>Ubah informasi peran</CardDescription>
 							</div>
 						</div>
 					</CardHeader>

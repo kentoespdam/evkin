@@ -21,7 +21,7 @@ import type { TransaksiInput, TransaksiInputFilter } from "@/types/transaksi-inp
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{
-		title: "Dashboard",
+		title: "Beranda",
 		href: dashboard().url,
 	},
 	{
@@ -29,7 +29,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 		href: "#",
 	},
 	{
-		title: "Inputs",
+		title: "Input",
 		href: "#",
 	},
 ];
@@ -89,7 +89,7 @@ const TransaksiInputsFilter = memo(({ filters }: { filters: TransaksiInputFilter
 			<Field className="sm:col-span-1">
 				<Select name="year" defaultValue={filters.year?.toString()} onValueChange={handleYearChange}>
 					<SelectTrigger>
-						<SelectValue placeholder="Select year" />
+						<SelectValue placeholder="Pilih tahun" />
 					</SelectTrigger>
 					<SelectContent>
 						{years.map((year) => (
@@ -105,7 +105,7 @@ const TransaksiInputsFilter = memo(({ filters }: { filters: TransaksiInputFilter
 			<Field className="sm:col-span-1">
 				<Select name="month" defaultValue={filters.month?.toString()} onValueChange={handleMonthChange}>
 					<SelectTrigger>
-						<SelectValue placeholder="Select month" />
+						<SelectValue placeholder="Pilih bulan" />
 					</SelectTrigger>
 					<SelectContent>
 						{months.map((month) => (
@@ -122,7 +122,7 @@ const TransaksiInputsFilter = memo(({ filters }: { filters: TransaksiInputFilter
 				<Input
 					name="search"
 					defaultValue={filters.search}
-					placeholder="Search indikator..."
+					placeholder="Cari indikator..."
 					onChange={handleInputChange}
 				/>
 			</Field>
@@ -178,13 +178,13 @@ const TransaksiInputs = ({ page, data, locks, filters }: TransaksiInputsProps) =
 
 	return (
 		<AppLayout breadcrumbs={breadcrumbs}>
-			<Head title="Transaksi Inputs" />
+			<Head title="Input Transaksi" />
 			<div className="flex flex-col gap-6 p-4">
 				<Card>
 					<CardHeader className="flex-row items-center justify-between space-y-0">
 						<div className="space-y-1">
-							<CardTitle className="text-xl">Inputs Management</CardTitle>
-							<CardDescription>Manage your Transaksi Inputs</CardDescription>
+							<CardTitle className="text-xl">Manajemen Input</CardTitle>
+							<CardDescription>Kelola Input Transaksi Anda</CardDescription>
 						</div>
 						<TransaksiInputButton isForm={isForm} setIsForm={setIsForm} disabled={isCurrentPeriodLocked} />
 					</CardHeader>

@@ -18,7 +18,7 @@ import type { UserWithRole } from "@/types/user";
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{
-		title: "Dashboard",
+		title: "Beranda",
 		href: dashboard().url,
 	},
 	{
@@ -26,7 +26,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 		href: "#",
 	},
 	{
-		title: "Users",
+		title: "Pengguna",
 		href: "#",
 	},
 ];
@@ -44,24 +44,24 @@ export default function UsersIndex({ page }: UsersIndexProps) {
 
 	return (
 		<AppLayout breadcrumbs={breadcrumbs}>
-			<Head title="Users Management" />
+			<Head title="Manajemen Pengguna" />
 			<div className="flex flex-col gap-6 p-4">
 				<Card>
 					<CardHeader className="flex-row items-center justify-between space-y-0">
 						<div className="space-y-1">
-							<CardTitle className="text-xl">Users Management</CardTitle>
-							<CardDescription>Manage your Users and their Roles</CardDescription>
+							<CardTitle className="text-xl">Manajemen Pengguna</CardTitle>
+							<CardDescription>Kelola Pengguna dan Role mereka</CardDescription>
 						</div>
 						<Button className="gap-2" asChild>
 							<Link href={master.users.add().url}>
 								<PlusIcon className="h-4 w-4" />
-								Add User
+								Tambah Pengguna
 							</Link>
 						</Button>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<TableShowTotalText page={page} tableName="users">
-							<TableTextSearch params={params} handleSelectChange={handleSelectChange} text="User, email, role" />
+							<TableTextSearch params={params} handleSelectChange={handleSelectChange} text="Pengguna, email, role" />
 						</TableShowTotalText>
 						<UserTable page={page} setId={setId} setShowDeleteDialog={setShowDeleteDialog} />
 						<PaginationNav page={page} />

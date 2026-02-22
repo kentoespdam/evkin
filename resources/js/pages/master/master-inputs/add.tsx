@@ -16,7 +16,7 @@ interface MasterInputAddProps {
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{
-		title: "Dashboard",
+		title: "Beranda",
 		href: dashboard().url,
 	},
 	{
@@ -28,7 +28,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 		href: master.inputs().url,
 	},
 	{
-		title: "Add",
+		title: "Tambah",
 		href: "#",
 	},
 ];

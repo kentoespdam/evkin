@@ -57,7 +57,7 @@ export const useSidebarConfig = (): SidebarConfig => {
 				title: "Data Master",
 				items: [
 					{
-						title: "Peran",
+						title: "Role",
 						href: master.roles().url,
 						icon: MemoizedIcons.Network,
 					},
@@ -77,7 +77,7 @@ export const useSidebarConfig = (): SidebarConfig => {
 						icon: MemoizedIcons.TextCursorInputIcon,
 					},
 					{
-						title: "Peran Indikator",
+						title: "Role Indikator",
 						href: master.roleInputs().url,
 						icon: MemoizedIcons.KeyIcon,
 					},

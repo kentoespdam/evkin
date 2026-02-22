@@ -18,7 +18,7 @@ import type { ReportType } from "@/types/report-type";
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{
-		title: "Dashboard",
+		title: "Beranda",
 		href: dashboard().url,
 	},
 	{
@@ -26,7 +26,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 		href: "#",
 	},
 	{
-		title: "Report Types",
+		title: "Jenis Laporan",
 		href: "#",
 	},
 ];
@@ -42,24 +42,24 @@ const ReportTypesPage = ({ page }: ReportTypesPageProps) => {
 
 	return (
 		<AppLayout breadcrumbs={breadcrumbs}>
-			<Head title="Report Types" />
+			<Head title="Jenis Laporan" />
 			<div className="flex flex-col gap-6 p-4">
 				<Card>
 					<CardHeader className="flex-row items-center justify-between space-y-0">
 						<div className="space-y-1">
-							<CardTitle className="text-xl">Report Types Management</CardTitle>
-							<CardDescription>Manage your Report Types</CardDescription>
+							<CardTitle className="text-xl">Manajemen Jenis Laporan</CardTitle>
+							<CardDescription>Kelola Jenis Laporan Anda</CardDescription>
 						</div>
 						<Button className="gap-2" asChild>
 							<Link href={master.reportTypes.add().url}>
 								<PlusIcon className="h-4 w-4" />
-								Add Report Type
+								Tambah Jenis Laporan
 							</Link>
 						</Button>
 					</CardHeader>
 					<CardContent className="space-y-4">
-						<TableShowTotalText page={page} tableName="Report Types">
-							<TableTextSearch params={params} handleSelectChange={handleSelectChange} text="Report Type" />
+						<TableShowTotalText page={page} tableName="Jenis Laporan">
+							<TableTextSearch params={params} handleSelectChange={handleSelectChange} text="Jenis Laporan" />
 						</TableShowTotalText>
 						<ReportTypesTable page={page} setId={setId} setShowDeleteDialog={setShowDeleteDialog} />
 						<PaginationNav page={page} />
