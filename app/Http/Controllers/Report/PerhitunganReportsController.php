@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Report;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ExportIndexRequest;
 use App\Http\Resources\AspectsCollection;
 use App\Http\Resources\MasterReportsCollection;
 use App\Http\Resources\PerhitunganReportsCollection;
@@ -31,7 +30,7 @@ class PerhitunganReportsController extends Controller
         $defaultReportTypeSqid = $this->getDefaultReportTypeSqid();
 
         $masterReports = MasterReports::where('report_type_id', $reportTypeId)
-            ->when($request->filled('search'), fn($query) => $query->where('desc_indicator', 'like', "%{$request->search}%"))
+            ->when($request->filled('search'), fn ($query) => $query->where('desc_indicator', 'like', "%{$request->search}%"))
             ->get();
 
         $reports = PerhitunganReports::getPerhitunganReports($year, $reportTypeId, $request->search, includeLastDecember: true);
@@ -97,12 +96,12 @@ class PerhitunganReportsController extends Controller
         $reports = PerhitunganReports::with('masterReport')
             ->where('year', $year)
             ->where('month', $month)
-            ->whereHas('masterReport', fn($q) => $q->where('report_type_id', $reportTypeId))
-            ->when($request->filled('search'), fn($q) => $q->where('desc_indicator', 'like', "%{$request->search}%"))
+            ->whereHas('masterReport', fn ($q) => $q->where('report_type_id', $reportTypeId))
+            ->when($request->filled('search'), fn ($q) => $q->where('desc_indicator', 'like', "%{$request->search}%"))
             ->when($request->filled('aspect_id'), function ($q) use ($request) {
                 $aspectId = $this->getAspectId($request->aspect_id);
                 if ($aspectId) {
-                    return $q->whereHas('masterReport', fn($inner) => $inner->where('aspect_id', $aspectId));
+                    return $q->whereHas('masterReport', fn ($inner) => $inner->where('aspect_id', $aspectId));
                 }
 
                 return $q;
@@ -168,7 +167,7 @@ class PerhitunganReportsController extends Controller
     {
         $status = Cache::get("export.{$exportId}");
 
-        if (!$status) {
+        if (! $status) {
             return response()->json([
                 'status' => 'not_found',
                 'message' => 'Export not found or expired',
@@ -182,7 +181,7 @@ class PerhitunganReportsController extends Controller
     {
         $status = Cache::get("export.{$exportId}");
 
-        if (!$status || $status['status'] !== 'completed') {
+        if (! $status || $status['status'] !== 'completed') {
             abort(404, message: 'Export not found or not ready');
         }
 
@@ -190,7 +189,7 @@ class PerhitunganReportsController extends Controller
 
         $filePath = storage_path("app/exports/{$status['file_path']}");
 
-        if (!file_exists($filePath)) {
+        if (! file_exists($filePath)) {
             abort(404, 'Export file not found');
         }
 

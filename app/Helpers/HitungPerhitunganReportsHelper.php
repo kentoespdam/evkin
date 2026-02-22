@@ -106,7 +106,7 @@ class HitungPerhitunganReportsHelper
 
             return $results;
         } catch (\Throwable $e) {
-            Log::error('Error in hitungLaporanPerhitungan: ' . $e->getMessage(), [
+            Log::error('Error in hitungLaporanPerhitungan: '.$e->getMessage(), [
                 'year' => $year,
                 'month' => $month,
                 'trace' => $e->getTraceAsString(),
@@ -237,7 +237,7 @@ class HitungPerhitunganReportsHelper
                 ]
             );
         } catch (\Throwable $e) {
-            Log::error('Error storing HitungPerhitunganReports results: ' . $e->getMessage());
+            Log::error('Error storing HitungPerhitunganReports results: '.$e->getMessage());
         }
     }
 

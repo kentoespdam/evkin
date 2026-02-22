@@ -29,6 +29,7 @@ class PerhitunganReportExcelBuilder
     private const ARCHIVEMENT_COL = 42; // AP
 
     private const ARCHIVEMENT_INDICATOR_COL = 43; // AQ
+
     private const ARCHIVEMENT_BOBOT_COL = 44; // AR
 
     private const TOTAL_COLUMNS = 47; // up to column AU (for merging)
@@ -87,7 +88,7 @@ class PerhitunganReportExcelBuilder
             $currentRow = $this->positionTracker->nextRow();
             ExcelStyleManager::addCell(
                 $sheet,
-                'A' . $currentRow,
+                'A'.$currentRow,
                 $line,
                 ExcelStyleManager::mergeStyles(
                     ExcelStyleManager::FONT_BOLD_16_STYLE,
@@ -188,7 +189,7 @@ class PerhitunganReportExcelBuilder
         foreach ($cells as $column => $value) {
             ExcelStyleManager::addCell(
                 $sheet,
-                $column . $row,
+                $column.$row,
                 (string) $value,
                 $style
             );
@@ -242,21 +243,21 @@ class PerhitunganReportExcelBuilder
 
         ExcelStyleManager::addCell(
             $sheet,
-            Coordinate::stringFromColumnIndex($columnIndex) . $row,
+            Coordinate::stringFromColumnIndex($columnIndex).$row,
             is_numeric($nilai) ? number_format($nilai, 2) : '-',
             $baseSytle
         );
 
         ExcelStyleManager::addCell(
             $sheet,
-            Coordinate::stringFromColumnIndex($columnIndex + 1) . $row,
+            Coordinate::stringFromColumnIndex($columnIndex + 1).$row,
             is_numeric($nilaiIndicator) ? number_format($nilaiIndicator, 2) : '-',
             $indicatorStyle
         );
 
         ExcelStyleManager::addCell(
             $sheet,
-            Coordinate::stringFromColumnIndex($columnIndex + 2) . $row,
+            Coordinate::stringFromColumnIndex($columnIndex + 2).$row,
             is_numeric($nilai_bobot) ? number_format($nilai_bobot, 2) : '-',
             $baseSytle
         );
@@ -307,7 +308,7 @@ class PerhitunganReportExcelBuilder
 
         ExcelStyleManager::addCell(
             $sheet,
-            'A' . $currentRow,
+            'A'.$currentRow,
             $aspect->name,
             $styles,
             colSpan: self::TOTAL_COLUMNS
@@ -343,21 +344,21 @@ class PerhitunganReportExcelBuilder
 
         ExcelStyleManager::addCell(
             $sheet,
-            Coordinate::stringFromColumnIndex(self::ARCHIVEMENT_COL) . $row,
+            Coordinate::stringFromColumnIndex(self::ARCHIVEMENT_COL).$row,
             is_numeric($nilaiArchivement) ? number_format($nilaiArchivement, 2) : '-',
             $style
         );
 
         ExcelStyleManager::addCell(
             $sheet,
-            Coordinate::stringFromColumnIndex(self::ARCHIVEMENT_INDICATOR_COL) . $row,
+            Coordinate::stringFromColumnIndex(self::ARCHIVEMENT_INDICATOR_COL).$row,
             is_numeric($nilaiArchivementIndicator) ? number_format($nilaiArchivementIndicator, 2) : '-',
             $indicatorStyle
         );
 
         ExcelStyleManager::addCell(
             $sheet,
-            Coordinate::stringFromColumnIndex(self::ARCHIVEMENT_BOBOT_COL) . $row,
+            Coordinate::stringFromColumnIndex(self::ARCHIVEMENT_BOBOT_COL).$row,
             is_numeric($nilaiBobotArchivement) ? number_format($nilaiBobotArchivement, 2) : '-',
             $style
         );
@@ -380,7 +381,7 @@ class PerhitunganReportExcelBuilder
 
         ExcelStyleManager::addCell(
             $sheet,
-            'A' . $currentRow,
+            'A'.$currentRow,
             'NILAI KINERJA ASPEK KEUANGAN',
             $styleLabel,
             colSpan: self::BASIC_INFO_COLUMNS
@@ -435,14 +436,14 @@ class PerhitunganReportExcelBuilder
             // Empty cell for the first column of the month pair
             ExcelStyleManager::addCell(
                 $sheet,
-                Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex,
+                Coordinate::stringFromColumnIndex($columnIndex).$rowIndex,
                 '',
                 $styleLabel
             );
 
             ExcelStyleManager::addCell(
                 $sheet,
-                Coordinate::stringFromColumnIndex($columnIndex + 1) . $rowIndex,
+                Coordinate::stringFromColumnIndex($columnIndex + 1).$rowIndex,
                 '',
                 $styleLabel
             );
@@ -451,7 +452,7 @@ class PerhitunganReportExcelBuilder
         $columnIndex = $colSpan > 1 ? $columnIndex : $columnIndex + 2; // Move to the next month if not spanning
         ExcelStyleManager::addCell(
             $sheet,
-            Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex,
+            Coordinate::stringFromColumnIndex($columnIndex).$rowIndex,
             $value,
             $styleLabel,
             $colSpan
@@ -476,7 +477,7 @@ class PerhitunganReportExcelBuilder
 
         ExcelStyleManager::addCell(
             $sheet,
-            'A' . $currentRow,
+            'A'.$currentRow,
             $label,
             $styleLabel,
             colSpan: self::BASIC_INFO_COLUMNS
@@ -546,7 +547,7 @@ class PerhitunganReportExcelBuilder
         ];
 
         $monthHeaders = array_map(
-            fn($month) => new CellHelper(
+            fn ($month) => new CellHelper(
                 value: "{$month} {$this->year}",
                 colspan: 3,
                 rowspan: 2

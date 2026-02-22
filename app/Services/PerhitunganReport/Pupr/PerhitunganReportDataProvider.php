@@ -102,9 +102,9 @@ class PerhitunganReportDataProvider
     private function prepareArchivementData(Collection $reports): Collection
     {
         return $reports
-            ->filter(fn($report) => $report->month == $this->lastInputMonth)
+            ->filter(fn ($report) => $report->month == $this->lastInputMonth)
             ->keyBy('master_report_id')
-            ->map(fn($report) => collect([
+            ->map(fn ($report) => collect([
                 'master_report_id' => $report->master_report_id,
                 'aspect_id' => $report->masterReport->aspect_id,
                 'nilai_archivement' => $report->nilai_archivement,
@@ -118,19 +118,18 @@ class PerhitunganReportDataProvider
         $groupedMasterReports = $masterReports->groupBy('aspect_id');
 
         $groupedReports = $reportData
-            ->groupBy(fn($item) => $item->masterReport->aspect_id)
+            ->groupBy(fn ($item) => $item->masterReport->aspect_id)
             ->map(
-                fn($aspectGroup) => $aspectGroup->groupBy('master_report_id')
+                fn ($aspectGroup) => $aspectGroup->groupBy('master_report_id')
                     ->map(
-                        fn($masterReportGroup) => $masterReportGroup->keyBy(fn($item) => sprintf('%d-%d', $item->year, $item->month))
+                        fn ($masterReportGroup) => $masterReportGroup->keyBy(fn ($item) => sprintf('%d-%d', $item->year, $item->month))
                     )
             );
 
         $groupedArchivementByAspect = $archivementData
             ->groupBy('aspect_id')
             ->map(
-                fn($group) =>
-                $group->keyBy('master_report_id')
+                fn ($group) => $group->keyBy('master_report_id')
             );
 
         $totalNilaiByAspect = [];
@@ -140,19 +139,19 @@ class PerhitunganReportDataProvider
             $aspectId = $aspect->id;
 
             $totalNilaiByAspect[$aspectId] = $reportData
-                ->where(fn($item) => $item->masterReport->aspect_id == $aspectId)
-                ->groupBy(fn($item) => sprintf('%d-%d', $item->year, $item->month))
-                ->map(fn($subGroup) => $subGroup->sum('nilai_bobot'));
+                ->where(fn ($item) => $item->masterReport->aspect_id == $aspectId)
+                ->groupBy(fn ($item) => sprintf('%d-%d', $item->year, $item->month))
+                ->map(fn ($subGroup) => $subGroup->sum('nilai_bobot'));
 
             $totalArchivementByAspect[$aspectId] = $archivementData
-                ->where(fn($item) => $item['aspect_id'] == $aspectId)
+                ->where(fn ($item) => $item['aspect_id'] == $aspectId)
                 ->sum('nilai_bobot_archivement');
         }
 
         $totalNilaiPerformanceByYearMonth = collect($totalNilaiByAspect)
             ->reduce(function ($carry, $nilaiKinerjaByYearMonth) {
                 foreach ($nilaiKinerjaByYearMonth as $yearMonth => $nilaiKinerja) {
-                    if (!isset($carry[$yearMonth])) {
+                    if (! isset($carry[$yearMonth])) {
                         $carry[$yearMonth] = ['total' => 0];
                     }
                     $carry[$yearMonth]['total'] += $nilaiKinerja;

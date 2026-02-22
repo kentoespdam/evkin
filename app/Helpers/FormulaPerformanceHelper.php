@@ -14,7 +14,7 @@ class FormulaPerformanceHelper
 {
     public static function evaluateFormulaWithVariables(string $formula, ?float $value = null)
     {
-        if ($formula == null || $value == null || $formula == '' || !is_numeric($value)) {
+        if ($formula == null || $value == null || $formula == '' || ! is_numeric($value)) {
             return null;
         }
         // Split formula into lines
@@ -38,9 +38,10 @@ class FormulaPerformanceHelper
 
             // Evaluate the condition
             if (self::evaluateCondition($condition, $value)) {
-                return str_replace("\"", "", $result);
+                return str_replace('"', '', $result);
             }
         }
+
         return null;
     }
 
@@ -57,27 +58,27 @@ class FormulaPerformanceHelper
 
             if (str_starts_with($part, 'GT ')) {
                 $threshold = (float) trim(substr($part, 3));
-                if (!($value > $threshold)) {
+                if (! ($value > $threshold)) {
                     return false;
                 }
             } elseif (str_starts_with($part, 'GTE ')) {
                 $threshold = (float) trim(substr($part, 4));
-                if (!($value >= $threshold)) {
+                if (! ($value >= $threshold)) {
                     return false;
                 }
             } elseif (str_starts_with($part, 'LT ')) {
                 $threshold = (float) trim(substr($part, 3));
-                if (!($value < $threshold)) {
+                if (! ($value < $threshold)) {
                     return false;
                 }
             } elseif (str_starts_with($part, 'LTE ')) {
                 $threshold = (float) trim(substr($part, 4));
-                if (!($value <= $threshold)) {
+                if (! ($value <= $threshold)) {
                     return false;
                 }
             } elseif (str_starts_with($part, 'EQ ')) {
                 $threshold = (float) trim(substr($part, 3));
-                if (!($value == $threshold)) {
+                if (! ($value == $threshold)) {
                     return false;
                 }
             }

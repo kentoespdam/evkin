@@ -103,7 +103,7 @@ class ExcelStyleManager
 
     public const FORMAT_NUMBER_00_STYLE = [
         'numberFormat' => [
-            'format_code' => "0.00",
+            'format_code' => '0.00',
         ],
     ];
 
@@ -160,7 +160,7 @@ class ExcelStyleManager
         $row = $cell->getRow();
         $cell->setValue($value);
 
-        if (!empty($styleArray) && $styleArray !== null) {
+        if (! empty($styleArray) && $styleArray !== null) {
             $sheet->getStyle($cellCoordinate)->applyFromArray($styleArray);
             if (in_array('numberFormat', array_keys($styleArray))) {
                 $sheet->getStyle($cellCoordinate)->getNumberFormat()->setFormatCode($styleArray['numberFormat']['format_code']);
@@ -263,13 +263,13 @@ class ExcelStyleManager
         $value,
         ExcelConfiguration $config
     ): void {
-        $style = $sheet->getStyle($column . $row);
+        $style = $sheet->getStyle($column.$row);
 
         // Number formatting for numeric columns
         if (in_array($colIndex + 1, $config->numberColumns)) {
             if (is_numeric($value)) {
                 $format = $config->columnFormats[$colIndex + 1] ?? '0.00';
-                self::applyNumberFormat($sheet, $column . $row, $format);
+                self::applyNumberFormat($sheet, $column.$row, $format);
             }
         }
 
@@ -361,8 +361,8 @@ class ExcelStyleManager
             'creator' => 'Developer Perumdam Tirta Satria',
             'lastModifiedBy' => 'Developer Perumdam Tirta Satria',
             'title' => $config->sheetTitle,
-            'subject' => 'Export from ' . config('app.name'),
-            'description' => 'Generated on ' . now()->format('Y-m-d H:i:s'),
+            'subject' => 'Export from '.config('app.name'),
+            'description' => 'Generated on '.now()->format('Y-m-d H:i:s'),
         ];
 
         $allProperties = array_merge($defaultProperties, $config->documentProperties);
