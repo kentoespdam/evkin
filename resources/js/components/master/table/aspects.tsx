@@ -20,6 +20,7 @@ const AspectsTableHeader = memo(() => {
 		<TableHeader>
 			<TableRow className="bg-muted/50">
 				<TableHead className="w-16 text-center font-semibold">#</TableHead>
+				<TableHead className="w-24 text-center font-semibold">Aksi</TableHead>
 				<TableHead className="font-semibold">
 					<div className="flex items-center gap-2">
 						<FileTypeIcon className="h-4 w-4 text-muted-foreground" />
@@ -44,7 +45,6 @@ const AspectsTableHeader = memo(() => {
 						Bobot
 					</div>
 				</TableHead>
-				<TableHead className="w-24 text-center font-semibold">Aksi</TableHead>
 			</TableRow>
 		</TableHeader>
 	);
@@ -116,6 +116,9 @@ const AspectsTableBody = memo(({ page, setId, setShowDeleteDialog }: AspectsTabl
 						</Badge>
 					</TableCell>
 					<TableCell>
+						<AspectsTableActions row={item} setId={setId} setShowDeleteDialog={setShowDeleteDialog} />
+					</TableCell>
+					<TableCell>
 						{item.reportType ? (
 							<div className="flex items-center gap-2">
 								<div className="flex items-center justify-center w-8 h-8 rounded-md bg-gradient-to-br from-blue-500/10 to-purple-500/10">
@@ -173,9 +176,6 @@ const AspectsTableBody = memo(({ page, setId, setShowDeleteDialog }: AspectsTabl
 						) : (
 							<span className="text-xs text-muted-foreground italic">-</span>
 						)}
-					</TableCell>
-					<TableCell>
-						<AspectsTableActions row={item} setId={setId} setShowDeleteDialog={setShowDeleteDialog} />
 					</TableCell>
 				</TableRow>
 			))}

@@ -1,18 +1,11 @@
 import { Link } from "@inertiajs/react";
-import { MoreHorizontal, PencilIcon, TrashIcon } from "lucide-react";
+import { FileTextIcon, PencilIcon, ShieldCheckIcon, TrashIcon } from "lucide-react";
 import { memo, useCallback, useMemo, useState } from "react";
 import TableEmpty from "@/components/commons/table-empty";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import master from "@/routes/master";
 import type { Pagination } from "@/types";
 import type { RoleInput } from "@/types/role-inputs";
@@ -26,10 +19,11 @@ interface RoleInputTableProps {
 const RoleInputTableHeader = memo(() => {
 	return (
 		<TableHeader>
-			<TableRow>
-				<TableHead className="w-16 text-center">#</TableHead>
-				<TableHead>Role</TableHead>
-				<TableHead>Indikator</TableHead>
+			<TableRow className="hover:bg-transparent bg-muted/50">
+				<TableHead className="w-16 text-center font-semibold">#</TableHead>
+				<TableHead className="text-center font-semibold">Aksi</TableHead>
+				<TableHead className="font-semibold">Role</TableHead>
+				<TableHead className="font-semibold">Indikator</TableHead>
 			</TableRow>
 		</TableHeader>
 	);
@@ -52,26 +46,37 @@ const RoleInputTableBody = memo(({ page, setId, setShowDeleteDialog }: RoleInput
 			{rows.map((item) => (
 				<TableRow
 					key={item.id}
-					className="group"
+					className="group transition-all hover:bg-primary/5"
 					onClick={() => setSelectedRowId(selectedRowId === item.id ? null : item.id)}
 				>
-					<TableCell className="w-16 text-center">{item.urut}</TableCell>
+					<TableCell className="w-16 text-center font-semibold text-muted-foreground">{item.urut}</TableCell>
+					<TableCell className="w-30 text-center">
+						<TableAction row={item} setId={setId} setShowDeleteDialog={setShowDeleteDialog} />
+					</TableCell>
 					<TableCell>
 						<div className="flex items-center gap-3">
-							<TableAction
-								row={item}
-								isSelected={item.id === selectedRowId}
-								setId={setId}
-								setShowDeleteDialog={setShowDeleteDialog}
-							/>
-							{item.role.name}
+							<div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-blue-500/20 to-blue-500/5 ring-2 ring-blue-500/10 transition-all group-hover:scale-110 group-hover:ring-blue-500/30">
+								<ShieldCheckIcon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+							</div>
+							<Badge variant="secondary" className="font-semibold capitalize">
+								{item.role.name}
+							</Badge>
 						</div>
 					</TableCell>
-					<TableCell className="flex gap-1">
-						<Badge variant="outline" color="secondary">
-							{item.masterInput.kode}
-						</Badge>
-						<span>- {item.masterInput.description}</span>
+					<TableCell>
+						<div className="flex items-center gap-3">
+							<div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 ring-2 ring-emerald-500/10 transition-all group-hover:scale-110 group-hover:ring-emerald-500/30">
+								<FileTextIcon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+							</div>
+							<div className="flex flex-col gap-1">
+								<div className="flex items-center gap-2">
+									<Badge variant="outline" className="font-semibold">
+										{item.masterInput.kode}
+									</Badge>
+								</div>
+								<span className="text-sm text-muted-foreground">{item.masterInput.description}</span>
+							</div>
+						</div>
 					</TableCell>
 				</TableRow>
 			))}
@@ -82,45 +87,46 @@ RoleInputTableBody.displayName = "RoleInputTableBody";
 
 interface TableActionProps {
 	row: RoleInput;
-	isSelected: boolean;
 	setId: (id: string) => void;
 	setShowDeleteDialog: (show: boolean) => void;
 }
-const TableAction = memo(({ row, isSelected, setId, setShowDeleteDialog }: TableActionProps) => {
+const TableAction = memo(({ row, setId, setShowDeleteDialog }: TableActionProps) => {
 	const handleDelete = useCallback(() => {
 		setId(row.id);
 		setShowDeleteDialog(true);
 	}, [row.id, setId, setShowDeleteDialog]);
 
 	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
-				<Button
-					variant="ghost"
-					size="icon"
-					className={`size-8 transition-opacity md:opacity-0 md:group-hover:opacity-100 ${isSelected ? "opacity-100" : "opacity-0"}`}
-				>
-					<MoreHorizontal className="size-4" />
-				</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end" className="w-40">
-				<DropdownMenuLabel>Aksi</DropdownMenuLabel>
-				<DropdownMenuSeparator />
-				<DropdownMenuItem asChild className="text-blue-500 font-bold">
-					<Link href={master.roleInputs.edit.url(row.role.id)} className="flex items-center gap-2">
-						<PencilIcon className="size-4 text-blue-500" />
-						Ubah
-					</Link>
-				</DropdownMenuItem>
-				<DropdownMenuItem
-					className="flex items-center gap-2 text-destructive focus:text-destructive font-bold"
-					onClick={handleDelete}
-				>
-					<TrashIcon className="size-4 text-destructive" />
-					Hapus
-				</DropdownMenuItem>
-			</DropdownMenuContent>
-		</DropdownMenu>
+		<div className="flex items-center justify-center gap-2">
+			<Tooltip>
+				<TooltipTrigger asChild>
+					<Button
+						asChild
+						size="sm"
+						variant="outline"
+						className="h-8 w-8 p-0 transition-all hover:scale-110 text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200 dark:text-blue-400 dark:hover:bg-blue-950/50 dark:border-blue-800"
+					>
+						<Link href={master.roleInputs.edit.url(row.role.id)}>
+							<PencilIcon className="size-4" />
+						</Link>
+					</Button>
+				</TooltipTrigger>
+				<TooltipContent className="font-medium">Ubah Role Input</TooltipContent>
+			</Tooltip>
+			<Tooltip>
+				<TooltipTrigger asChild>
+					<Button
+						size="sm"
+						variant="outline"
+						onClick={handleDelete}
+						className="h-8 w-8 p-0 transition-all hover:scale-110 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/30 dark:hover:bg-destructive/20"
+					>
+						<TrashIcon className="size-4" />
+					</Button>
+				</TooltipTrigger>
+				<TooltipContent className="font-medium">Hapus Role Input</TooltipContent>
+			</Tooltip>
+		</div>
 	);
 });
 TableAction.displayName = "TableAction";
@@ -130,7 +136,7 @@ const RoleInputTable = ({ page, setId, setShowDeleteDialog }: RoleInputTableProp
 		return <TableEmpty tableName="Data Role Indikator" />;
 	}
 	return (
-		<div className="overflow-x-auto">
+		<div className="overflow-x-auto rounded-lg border border-primary/10">
 			<Table>
 				<RoleInputTableHeader />
 				<RoleInputTableBody page={page} setId={setId} setShowDeleteDialog={setShowDeleteDialog} />

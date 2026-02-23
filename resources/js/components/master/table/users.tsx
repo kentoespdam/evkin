@@ -1,19 +1,13 @@
 import { Link } from "@inertiajs/react";
-import { MoreHorizontal, PencilIcon, TrashIcon } from "lucide-react";
+import { PencilIcon, TrashIcon } from "lucide-react";
 import { memo, useCallback, useMemo } from "react";
 import TableEmpty from "@/components/commons/table-empty";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import master from "@/routes/master";
 import type { Pagination } from "@/types";
 import type { UserWithRole } from "@/types/user";
 
@@ -37,6 +31,7 @@ export const UserTableHeader = memo(() => {
 		<TableHeader>
 			<TableRow className="hover:bg-transparent">
 				<TableHead className="w-16 text-center">#</TableHead>
+				<TableHead className="text-center">Aksi</TableHead>
 				<TableHead>Pengguna</TableHead>
 				<TableHead>Email</TableHead>
 				<TableHead>Role</TableHead>
@@ -59,9 +54,11 @@ export const UserTableBody = memo(({ page, setId, setShowDeleteDialog }: UserTab
 			{rows.map((item) => (
 				<TableRow key={item.id} className="group">
 					<TableCell className="text-center font-medium text-muted-foreground">{item.no}</TableCell>
+					<TableCell className="w-30">
+						<TableAction row={item} setId={setId} setShowDeleteDialog={setShowDeleteDialog} />
+					</TableCell>
 					<TableCell>
 						<div className="flex items-center gap-3">
-							<TableAction row={item} setId={setId} setShowDeleteDialog={setShowDeleteDialog} />
 							<Avatar className="h-9 w-9">
 								<AvatarImage src={item.avatar} alt={item.name} />
 								<AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
@@ -96,31 +93,36 @@ const TableAction = memo(({ row, setId, setShowDeleteDialog }: TableActionProps)
 	}, [row.id, setId, setShowDeleteDialog]);
 
 	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
-				<Button variant="ghost" size="icon" className="size-8 opacity-0 group-hover:opacity-100 transition-opacity">
-					<span className="sr-only">Buka menu</span>
-					<MoreHorizontal className="size-4" />
-				</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end" className="w-40">
-				<DropdownMenuLabel>Aksi</DropdownMenuLabel>
-				<DropdownMenuSeparator />
-				<DropdownMenuItem asChild className="text-blue-500 font-bold">
-					<Link href={`/master/users/${row.id}/edit`} className="flex items-center gap-2">
-						<PencilIcon className="size-4 text-blue-500" />
-						Ubah
-					</Link>
-				</DropdownMenuItem>
-				<DropdownMenuItem
-					className="flex items-center gap-2 text-destructive focus:text-destructive font-bold"
-					onClick={handleDelete}
-				>
-					<TrashIcon className="size-4 text-destructive" />
-					Hapus
-				</DropdownMenuItem>
-			</DropdownMenuContent>
-		</DropdownMenu>
+		<div className="flex items-center justify-center gap-2">
+			<Tooltip>
+				<TooltipTrigger asChild>
+					<Button
+						asChild
+						size="sm"
+						variant="outline"
+						className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950"
+					>
+						<Link href={master.users.edit.url(row.id)}>
+							<PencilIcon className="size-4" />
+						</Link>
+					</Button>
+				</TooltipTrigger>
+				<TooltipContent>Ubah Pengguna</TooltipContent>
+			</Tooltip>
+			<Tooltip>
+				<TooltipTrigger asChild>
+					<Button
+						size="sm"
+						variant="outline"
+						onClick={handleDelete}
+						className="text-destructive hover:text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/20"
+					>
+						<TrashIcon className="size-4" />
+					</Button>
+				</TooltipTrigger>
+				<TooltipContent>Hapus Pengguna</TooltipContent>
+			</Tooltip>
+		</div>
 	);
 });
 TableAction.displayName = "TableAction";

@@ -17,6 +17,8 @@ class RolesResource extends JsonResource
         return [
             'id' => $this->sqid,
             'name' => $this->name,
+            'created_at' => $this->created_at?->toISOString(),
+            'updated_at' => $this->updated_at?->toISOString(),
         ];
     }
 }

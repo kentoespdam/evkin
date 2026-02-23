@@ -45,20 +45,20 @@ const RolesIndex = ({ page }: RolesIndexProps) => {
 		<AppLayout breadcrumbs={breadcrumbs}>
 			<Head title="Role" />
 			<div className="flex flex-col gap-6 p-4">
-				<Card>
-					<CardHeader className="flex-row items-center justify-between space-y-0">
+				<Card className="border-primary/10 shadow-lg">
+					<CardHeader className="flex-row items-center justify-between space-y-0 border-b border-primary/10 bg-gradient-to-br from-primary/5 via-primary/3 to-transparent pb-6">
 						<div className="space-y-1">
-							<CardTitle className="text-xl">Manajemen Role</CardTitle>
-							<CardDescription>Kelola Role Anda</CardDescription>
+							<CardTitle className="text-2xl font-bold">Manajemen Role</CardTitle>
+							<CardDescription className="text-base">Kelola dan atur role pengguna dalam sistem</CardDescription>
 						</div>
-						<Button className="gap-2" asChild>
+						<Button className="gap-2 shadow-md transition-all hover:shadow-lg" asChild>
 							<Link href={master.roles.add().url}>
 								<PlusIcon className="h-4 w-4" />
 								Tambah Role
 							</Link>
 						</Button>
 					</CardHeader>
-					<CardContent className="space-y-4">
+					<CardContent className="space-y-4 pt-6">
 						<TableShowTotalText page={page} tableName="roles">
 							<TableTextSearch params={params} handleSelectChange={handleSelectChange} text="Nama Role" />
 						</TableShowTotalText>

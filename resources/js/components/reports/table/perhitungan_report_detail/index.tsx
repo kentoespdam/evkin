@@ -17,7 +17,7 @@ interface PerhitunganReportsTableProps {
 
 const PerhitunganReportsDetailTableHeader = memo(() => (
 	<TableHeader>
-		<TableRow>
+		<TableRow className="border-t">
 			<TableCell>#</TableCell>
 			<TableCell>Periode</TableCell>
 			<TableCell>Indikator</TableCell>
@@ -81,7 +81,7 @@ interface ReportTableRowProps {
 	};
 }
 const ReportTableRow = memo(({ row }: ReportTableRowProps) => (
-	<TableRow key={row.id}>
+	<TableRow key={row.id} className="odd:bg-muted">
 		<TableCell>{row.urut}</TableCell>
 		<TableCell>{`${row.year}-${row.month}`}</TableCell>
 		<TableCell>{row.descIndicator}</TableCell>

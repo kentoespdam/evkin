@@ -1,17 +1,10 @@
 import { Link } from "@inertiajs/react";
-import { MoreHorizontal, PencilIcon, TrashIcon } from "lucide-react";
+import { PencilIcon, TrashIcon } from "lucide-react";
 import { memo, useCallback, useMemo, useState } from "react";
 import TableEmpty from "@/components/commons/table-empty";
 import { Button } from "@/components/ui/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import master from "@/routes/master";
 import type { Pagination } from "@/types";
 import type { MasterSource } from "@/types/master-source";
@@ -27,6 +20,7 @@ const SourcesTableHeader = memo(() => {
 		<TableHeader>
 			<TableRow>
 				<TableHead className="w-16 text-center">#</TableHead>
+				<TableHead className="w-30 text-center">Aksi</TableHead>
 				<TableHead>Nama Sumber</TableHead>
 			</TableRow>
 		</TableHeader>
@@ -54,14 +48,11 @@ const SourcesTableBody = memo(({ page, setId, setShowDeleteDialog }: SourcesTabl
 					onClick={() => setSelectedRowId(selectedRowId === item.id ? null : item.id)}
 				>
 					<TableHead className="w-16 text-center">{item.urut}</TableHead>
+					<TableHead className="w-30 text-center">
+						<SourcesTableAction row={item} setId={setId} setShowDeleteDialog={setShowDeleteDialog} />
+					</TableHead>
 					<TableHead>
 						<div className="flex items-center gap-3">
-							<SourcesTableAction
-								row={item}
-								setId={setId}
-								setShowDeleteDialog={setShowDeleteDialog}
-								isSelected={selectedRowId === item.id}
-							/>
 							<div className="flex flex-col">{item.name}</div>
 						</div>
 					</TableHead>
@@ -76,43 +67,44 @@ interface SourcesTableActionProps {
 	row: MasterSource;
 	setId: (id: string) => void;
 	setShowDeleteDialog: (show: boolean) => void;
-	isSelected: boolean;
 }
-const SourcesTableAction = memo(({ row, setId, setShowDeleteDialog, isSelected }: SourcesTableActionProps) => {
+const SourcesTableAction = memo(({ row, setId, setShowDeleteDialog }: SourcesTableActionProps) => {
 	const handleDelete = useCallback(() => {
 		setId(row.id);
 		setShowDeleteDialog(true);
 	}, [row.id, setId, setShowDeleteDialog]);
 
 	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
-				<Button
-					variant="ghost"
-					size="icon"
-					className={`size-8 transition-opacity md:opacity-0 md:group-hover:opacity-100 ${isSelected ? "opacity-100" : "opacity-0"}`}
-				>
-					<MoreHorizontal className="size-4" />
-				</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end" className="w-40">
-				<DropdownMenuLabel>Aksi</DropdownMenuLabel>
-				<DropdownMenuSeparator />
-				<DropdownMenuItem asChild className="text-blue-500 font-bold">
-					<Link href={master.sources.edit.url(row.id)} className="flex items-center gap-2">
-						<PencilIcon className="size-4 text-blue-500" />
-						Ubah
-					</Link>
-				</DropdownMenuItem>
-				<DropdownMenuItem
-					className="flex items-center gap-2 text-destructive focus:text-destructive font-bold"
-					onClick={handleDelete}
-				>
-					<TrashIcon className="size-4 text-destructive" />
-					Hapus
-				</DropdownMenuItem>
-			</DropdownMenuContent>
-		</DropdownMenu>
+		<div className="flex items-center justify-center gap-2">
+			<Tooltip>
+				<TooltipTrigger asChild>
+					<Button
+						asChild
+						size="sm"
+						variant="outline"
+						className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950"
+					>
+						<Link href={master.sources.edit.url(row.id)}>
+							<PencilIcon className="size-4" />
+						</Link>
+					</Button>
+				</TooltipTrigger>
+				<TooltipContent>Ubah Sumber</TooltipContent>
+			</Tooltip>
+			<Tooltip>
+				<TooltipTrigger asChild>
+					<Button
+						size="sm"
+						variant="outline"
+						onClick={handleDelete}
+						className="text-destructive hover:text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/20"
+					>
+						<TrashIcon className="size-4" />
+					</Button>
+				</TooltipTrigger>
+				<TooltipContent>Hapus Sumber</TooltipContent>
+			</Tooltip>
+		</div>
 	);
 });
 SourcesTableAction.displayName = "SourcesTableAction";
