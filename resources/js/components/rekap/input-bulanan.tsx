@@ -11,7 +11,12 @@ import SectionHeaderRekapBuilder from "./section-header";
 
 const RekapInputBulanansTable = memo(
 	({ page, aspects, reportTypes, rekapData, rekapTahunan, lockTransaksiInputs, filters }: RekapBulanansProps) => {
-		const { aspectDataMap, pageDataMap, rekapDataMap } = useRekapBulananData(page, rekapData, aspects, rekapTahunan);
+		const { aspectDataMap, pageDataMap, rekapDataMap, rekapTahunanMap } = useRekapBulananData(
+			page,
+			rekapData,
+			aspects,
+			rekapTahunan,
+		);
 
 		if (page.meta.total === 0) {
 			return <TableEmpty tableName="Rekap Bulanan" />;
@@ -33,6 +38,7 @@ const RekapInputBulanansTable = memo(
 									pageDataMap={pageDataMap}
 									rekapDataMap={rekapDataMap}
 									year={filters.year}
+									rekapTahunanMap={rekapTahunanMap}
 								/>
 							</Table>
 						</div>

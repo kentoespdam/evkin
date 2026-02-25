@@ -8,35 +8,34 @@ import { TableBody, TableCell, TableRow } from "../ui/table";
 import AspectRowBuilder from "./aspect-row-builder";
 
 interface BodyRowBuilderProps {
-	pageData: MasterInput;
+	masterInput: MasterInput;
 	rekapDataMap: Map<string, number>;
+	rekapTahunan?: number;
 	year: number;
 }
-const BodyRow = memo(({ pageData, rekapDataMap, year }: BodyRowBuilderProps) => {
-	const keyLastYear = `${pageData.id}-${year - 1}-12`;
-	const nilaiLastYear = rekapDataMap.get(keyLastYear) || 0;
-	const isFilledLastYear = nilaiLastYear > 0;
+const BodyRow = memo(({ masterInput, rekapDataMap, rekapTahunan, year }: BodyRowBuilderProps) => {
+	const masterInputId = masterInput.id;
 	return (
 		<TableRow className="group hover:bg-muted/40">
 			<TableCell className="border text-center">
 				<Badge variant="outline" className="font-semibold">
-					{pageData.seq}
+					{masterInput.seq}
 				</Badge>
 			</TableCell>
 			<TableCell className="border">
 				<div className="space-y-1">
-					<p className="font-medium text-foreground">{pageData.description}</p>
-					<p className="text-xs text-muted-foreground">Kode: {pageData.kode}</p>
+					<p className="font-medium text-foreground">{masterInput.description}</p>
+					<p className="text-xs text-muted-foreground">Kode: {masterInput.kode}</p>
 				</div>
 			</TableCell>
 			<TableCell className="border">
-				<Badge variant="outline">{pageData.masterSource?.name}</Badge>
+				<Badge variant="outline">{masterInput.masterSource?.name}</Badge>
 			</TableCell>
 			<TableCell className="border text-center">
-				<Badge variant="secondary">{pageData.satuan}</Badge>
+				<Badge variant="secondary">{masterInput.satuan}</Badge>
 			</TableCell>
 			{monthsList().map((month) => {
-				const mapKey = `${pageData.id}-${year}-${month.value}`;
+				const mapKey = `${masterInputId}-${year}-${month.value}`;
 				const nilaiForMonth = rekapDataMap.get(mapKey) || 0;
 				const isFilled = nilaiForMonth > 0;
 				return (
@@ -54,11 +53,11 @@ const BodyRow = memo(({ pageData, rekapDataMap, year }: BodyRowBuilderProps) => 
 
 			<TableCell
 				className={cn("border text-center", {
-					"text-right text-foreground": isFilledLastYear,
-					"text-muted-foreground": !isFilledLastYear,
+					"text-right text-foreground": rekapTahunan,
+					"text-muted-foreground": !rekapTahunan,
 				})}
 			>
-				{isFilledLastYear ? formatNumber(nilaiLastYear) : "-"}
+				{rekapTahunan ? formatNumber(rekapTahunan) : "-"}
 			</TableCell>
 		</TableRow>
 	);
@@ -70,11 +69,12 @@ interface RekapInputBulanansTableBodyProps {
 	aspects: Aspect[];
 	pageDataMap: Map<string, MasterInput[]>;
 	rekapDataMap: Map<string, number>;
+	rekapTahunanMap: Map<string, number>;
 	year: number;
 }
 
 const RekapInputBulanansTableBody = memo(
-	({ aspects, pageDataMap, rekapDataMap, year }: RekapInputBulanansTableBodyProps) => {
+	({ aspects, pageDataMap, rekapDataMap, rekapTahunanMap, year }: RekapInputBulanansTableBodyProps) => {
 		return aspects.map((aspect) => {
 			const pageData = pageDataMap.get(aspect.id) || [];
 			if (pageData.length === 0) return null;
@@ -82,9 +82,19 @@ const RekapInputBulanansTableBody = memo(
 				<Fragment key={aspect.id}>
 					<AspectRowBuilder aspect={aspect} colspan={17} />
 					<TableBody>
-						{pageData.map((item) => (
-							<BodyRow key={item.id} pageData={item} rekapDataMap={rekapDataMap} year={year} />
-						))}
+						{pageData.map((item) => {
+							const rekapTahunan = rekapTahunanMap.get(item.id);
+							console.log("rekapTahunan for item", item.id, ":", rekapTahunan);
+							return (
+								<BodyRow
+									key={item.id}
+									masterInput={item}
+									rekapDataMap={rekapDataMap}
+									rekapTahunan={rekapTahunan}
+									year={year}
+								/>
+							);
+						})}
 					</TableBody>
 				</Fragment>
 			);

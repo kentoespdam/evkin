@@ -72,21 +72,28 @@ export const useRekapBulananData = (
 
 		const rekapDataMap = new Map<string, number>();
 		for (const item of rekapData) {
-			if (item.masterInput?.id && item.year && item.month) {
-				rekapDataMap.set(`${item.masterInput.id}-${item.year}-${item.month}`, item.nilai);
+			const masterInputId = item.masterInput?.id;
+			const year = item.year;
+			const month = item.month;
+			if (masterInputId && year && month) {
+				const mapKey = `${masterInputId}-${year}-${month}`;
+				console.log("key", mapKey, "value", item.nilai);
+				rekapDataMap.set(mapKey, item.nilai);
 			}
 		}
 
+		const rekapTahunanMap = new Map<string, number>();
 		for (const item of rekapTahunan) {
-			if (item.masterInput?.id && item.year) {
-				rekapDataMap.set(`${item.masterInput.id}-${item.year}-12`, item.nilai);
+			const masterInputId = item.masterInput?.id;
+			if (masterInputId) {
+				rekapTahunanMap.set(masterInputId, item.nilai);
 			}
 		}
-
 		return {
 			aspectDataMap,
 			pageDataMap,
 			rekapDataMap,
+			rekapTahunanMap,
 		};
 	}, [page.data, rekapData, aspects, rekapTahunan]);
 };

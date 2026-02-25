@@ -53,7 +53,7 @@ class RekapInputController extends Controller
 
         $rekapTahunan = RekapInputTahunans::with(self::REKAP_RELATIONS)
             ->whereIn('master_input_id', $masterIds)
-            ->where('year', $year - 1)
+            ->where('year', $year)
             ->orderBy('seq')
             ->get();
         $lockTransaksiInputs = LockTransaksiInputs::where('year', $year)->get();
