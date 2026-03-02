@@ -84,7 +84,6 @@ const RekapInputBulanansTableBody = memo(
 					<TableBody>
 						{pageData.map((item) => {
 							const rekapTahunan = rekapTahunanMap.get(item.id);
-							console.log("rekapTahunan for item", item.id, ":", rekapTahunan);
 							return (
 								<BodyRow
 									key={item.id}

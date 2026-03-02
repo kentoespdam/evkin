@@ -77,7 +77,6 @@ export const useRekapBulananData = (
 			const month = item.month;
 			if (masterInputId && year && month) {
 				const mapKey = `${masterInputId}-${year}-${month}`;
-				console.log("key", mapKey, "value", item.nilai);
 				rekapDataMap.set(mapKey, item.nilai);
 			}
 		}
