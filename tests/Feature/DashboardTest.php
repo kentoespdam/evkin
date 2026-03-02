@@ -44,7 +44,7 @@ class DashboardTest extends TestCase
             ->get(route('dashboard'));
 
         $response->assertOk();
-        $response->assertInertia(fn($page) => $page
+        $response->assertInertia(fn ($page) => $page
             ->component('dashboard')
             ->has('data'));
     }
@@ -55,7 +55,7 @@ class DashboardTest extends TestCase
             ->get(route('dashboard'));
 
         $response->assertOk();
-        $response->assertInertia(fn($page) => $page
+        $response->assertInertia(fn ($page) => $page
             ->component('dashboard')
             ->has('data.stats.totalUsers')
             ->has('data.stats.usersByRole'));
@@ -67,7 +67,7 @@ class DashboardTest extends TestCase
             ->get(route('dashboard'));
 
         $response->assertOk();
-        $response->assertInertia(fn($page) => $page
+        $response->assertInertia(fn ($page) => $page
             ->component('dashboard')
             ->missing('data.stats.totalUsers')
             ->missing('data.stats.usersByRole'));
@@ -79,7 +79,7 @@ class DashboardTest extends TestCase
             ->get(route('dashboard'));
 
         $response->assertOk();
-        $response->assertInertia(fn($page) => $page
+        $response->assertInertia(fn ($page) => $page
             ->component('dashboard')
             ->has('data')
             ->has('data.stats')
@@ -116,7 +116,7 @@ class DashboardTest extends TestCase
             ->get(route('dashboard'));
 
         $response->assertOk();
-        $response->assertInertia(fn($page) => $page
+        $response->assertInertia(fn ($page) => $page
             ->where('data.inputCompletion.total', 1)
             ->where('data.inputCompletion.completed', 1)
             ->where('data.inputCompletion.percentage', 100));
@@ -141,7 +141,7 @@ class DashboardTest extends TestCase
             ->get(route('dashboard'));
 
         $response->assertOk();
-        $response->assertInertia(fn($page) => $page
+        $response->assertInertia(fn ($page) => $page
             ->where('data.pendingPeriods.0.year', 2025)
             ->where('data.pendingPeriods.0.month', 1));
     }
@@ -167,7 +167,7 @@ class DashboardTest extends TestCase
             ->get(route('dashboard'));
 
         $response->assertOk();
-        $response->assertInertia(fn($page) => $page
+        $response->assertInertia(fn ($page) => $page
             ->has('data.recentActivities', 1)
             ->where('data.recentActivities.0.masterInput.kode', 'TEST-01'));
     }
@@ -178,7 +178,7 @@ class DashboardTest extends TestCase
             ->get(route('dashboard'));
 
         $response->assertOk();
-        $response->assertInertia(fn($page) => $page
+        $response->assertInertia(fn ($page) => $page
             ->has('data.trends', 12)); // Should have 12 months of data
     }
 }

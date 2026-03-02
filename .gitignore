@@ -49,7 +49,6 @@ auth.json
 /.fleet
 /.idea
 /.nova
-/.vscode
 /.zed
 .phpactor.json
 *.swp
