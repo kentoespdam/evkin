@@ -5,6 +5,8 @@ namespace App\Services\PerhitunganReport\Kepmendagri;
 use App\Data\ExcelConfiguration;
 use App\Helpers\CellHelper;
 use App\Helpers\DateHelper;
+use App\Helpers\EvaluateRulesHelper;
+use App\Models\Master\MasterReports;
 use App\Services\Excel\ExcelStyleManager;
 use App\Services\Excel\PositionTracker;
 use App\Services\Excel\PositionTrackerBuilder;
@@ -261,7 +263,7 @@ class PerhitunganReportExcelBuilder
         $currentRow = $this->positionTracker->nextRow();
 
         $this->addBasicInfoCells($sheet, $currentRow, $masterReport);
-        $this->addMonthlyDataCells($sheet, $currentRow, $reports);
+        $this->addMonthlyDataCells($sheet, $currentRow, $masterReport, $reports);
         $this->addArchivementCells($sheet, $currentRow, $archivements);
     }
 
@@ -299,7 +301,7 @@ class PerhitunganReportExcelBuilder
     /**
      * Add monthly data columns (two per month) for the current year and last December.
      */
-    private function addMonthlyDataCells(Worksheet $sheet, int $row, Collection $reports): void
+    private function addMonthlyDataCells(Worksheet $sheet, int $row, MasterReports $masterReport, Collection $reports): void
     {
         $columnIndex = self::MONTH_DATA_START_COL;
 
@@ -307,7 +309,11 @@ class PerhitunganReportExcelBuilder
         foreach (range(1, self::MONTH_COUNT) as $month) {
             $key = sprintf('%d-%d', $this->year, $month);
             $report = $reports[$key] ?? null;
-            $this->addDetailCellsForMonth($sheet, $row, $columnIndex, $report);
+            if ($masterReport->with_rules) {
+                $this->addDetailRuleCellsForMonth($sheet, $row, $columnIndex, $report, $masterReport->rules);
+            } else {
+                $this->addDetailCellsForMonth($sheet, $row, $columnIndex, $report);
+            }
             $columnIndex += 2;
         }
 
@@ -352,6 +358,46 @@ class PerhitunganReportExcelBuilder
             $sheet,
             Coordinate::stringFromColumnIndex($columnIndex).$row,
             is_numeric($nilai) ? number_format($nilai, 2) : '-',
+            $baseSytle
+        );
+
+        ExcelStyleManager::addCell(
+            $sheet,
+            Coordinate::stringFromColumnIndex($columnIndex + 1).$row,
+            is_numeric($nilaiIndicator) ? number_format($nilaiIndicator, 2) : '-',
+            $indicatorStyle
+        );
+    }
+
+    private function addDetailRuleCellsForMonth(Worksheet $sheet, int $row, int $columnIndex, $report, ?string $rules): void
+    {
+        $nilaiPencapaian = EvaluateRulesHelper::evaluateRulesOptions($rules, $report->nilai ?? null);
+        $nilaiIndicator = $report->nilai_indicator ?? null;
+
+        $styleFillPink = [];
+        $styleTextRed = [];
+        if (is_numeric($nilaiIndicator) && $nilaiIndicator <= 2) {
+            $styleFillPink = ExcelStyleManager::FILL_SOLID_LIGHT_PINK_STYLE;
+            if ($nilaiIndicator <= 1) {
+                $styleTextRed = ExcelStyleManager::FONT_COLOR_RED_STYLE;
+            }
+        }
+
+        $baseSytle = ExcelStyleManager::mergeStyles(
+            ExcelStyleManager::ALIGN_CENTER_CENTER_STYLE,
+            ExcelStyleManager::ALL_BORDER_STYLE
+        );
+
+        $indicatorStyle = ExcelStyleManager::mergeStyles(
+            $baseSytle,
+            $styleFillPink,
+            $styleTextRed
+        );
+
+        ExcelStyleManager::addCell(
+            $sheet,
+            Coordinate::stringFromColumnIndex($columnIndex).$row,
+            $nilaiPencapaian,
             $baseSytle
         );
 

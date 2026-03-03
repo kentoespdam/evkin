@@ -12,14 +12,13 @@ use App\Services\Excel\ExcelStyleManager;
 use App\Services\Excel\PositionTracker;
 use App\Services\Excel\PositionTrackerBuilder;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ExportReportPerhitunganDetailService
 {
-    private const EXPORTS_DIRECTORY = 'exports';
+    private const EXPORTS_DIRECTORY = 'public';
 
     private const TITLE_ROW_HEIGHT = 2;
 
@@ -282,7 +281,6 @@ class ExportReportPerhitunganDetailService
         $filePath = storage_path(sprintf('app/%s/%s', self::EXPORTS_DIRECTORY, $this->fileName));
 
         // Ensure directory exists
-        Storage::makeDirectory(self::EXPORTS_DIRECTORY);
 
         $writer = new Xlsx($this->spreadsheet);
         $writer->save($filePath);
@@ -314,7 +312,8 @@ class ExportReportPerhitunganDetailService
 
     public function getFilePath(): string
     {
-        return sprintf('%s/%s', self::EXPORTS_DIRECTORY, $this->fileName);
+
+        return sprintf('app/%s/%s', self::EXPORTS_DIRECTORY, $this->fileName);
 
     }
 }

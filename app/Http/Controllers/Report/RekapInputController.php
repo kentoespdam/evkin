@@ -215,7 +215,7 @@ class RekapInputController extends Controller
             abort(404, 'Export not found or not ready');
         }
 
-        $filePath = storage_path("app/exports/{$status['file_path']}");
+        $filePath = storage_path("app/public/{$status['file_path']}");
 
         if (! file_exists($filePath)) {
             abort(404, 'Export file not found');

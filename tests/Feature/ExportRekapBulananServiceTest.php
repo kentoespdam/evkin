@@ -93,4 +93,14 @@ class ExportRekapBulananServiceTest extends TestCase
         $this->assertStringEndsWith('.xlsx', $filePath);
         $this->assertTrue(filesize($filePath) > 0);
     }
+
+    public function test_get_file_path_creates_exports_directory(): void
+    {
+        Storage::disk('local')->assertMissing(ExportRekapBulananService::EXPORTS_DIRECTORY);
+
+        $service = new ExportRekapBulananService($this->year);
+        $service->getFilePath();
+
+        Storage::disk('local')->assertExists(ExportRekapBulananService::EXPORTS_DIRECTORY);
+    }
 }

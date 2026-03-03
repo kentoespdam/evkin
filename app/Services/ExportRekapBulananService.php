@@ -12,7 +12,6 @@ use App\Services\Excel\ExcelStyleManager;
 use App\Services\Excel\PositionTracker;
 use App\Services\Excel\PositionTrackerBuilder;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -22,7 +21,7 @@ class ExportRekapBulananService
 {
     private const REKAP_RELATIONS = ['masterInput.masterSource', 'masterInput.aspect.reportType'];
 
-    public const EXPORTS_DIRECTORY = 'exports';
+    public const EXPORTS_DIRECTORY = 'public';
 
     private const TITLE_ROW_HEIGHT = 2;
 
@@ -436,7 +435,6 @@ class ExportRekapBulananService
         $filePath = storage_path(sprintf('app/%s/%s', self::EXPORTS_DIRECTORY, $this->fileName));
 
         // Ensure directory exists
-        Storage::makeDirectory(self::EXPORTS_DIRECTORY);
 
         $writer = new Xlsx($this->spreadsheet);
         $writer->save($filePath);
@@ -473,6 +471,7 @@ class ExportRekapBulananService
 
     public function getFilePath(): string
     {
+
         $filePath = sprintf('app/%s/%s', self::EXPORTS_DIRECTORY, $this->fileName);
 
         return storage_path($filePath);

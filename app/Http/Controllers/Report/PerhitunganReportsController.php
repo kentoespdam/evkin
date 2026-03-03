@@ -187,7 +187,7 @@ class PerhitunganReportsController extends Controller
 
         Log::info('file_path', ['file_path' => $status['file_path']]);
 
-        $filePath = storage_path("app/exports/{$status['file_path']}");
+        $filePath = storage_path("app/public/{$status['file_path']}");
 
         if (! file_exists($filePath)) {
             abort(404, 'Export file not found');

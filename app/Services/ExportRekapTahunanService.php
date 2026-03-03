@@ -11,7 +11,6 @@ use App\Services\Excel\PositionTracker;
 use App\Services\Excel\PositionTrackerBuilder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -19,7 +18,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ExportRekapTahunanService
 {
-    private const EXPORTS_DIRECTORY = 'exports';
+    private const EXPORTS_DIRECTORY = 'public';
 
     private const TITLE_ROW_HEIGHT = 2;
 
@@ -392,7 +391,6 @@ class ExportRekapTahunanService
         $filePath = storage_path(sprintf('app/%s/%s', self::EXPORTS_DIRECTORY, $this->fileName));
 
         // Ensure directory exists
-        Storage::makeDirectory(self::EXPORTS_DIRECTORY);
 
         $writer = new Xlsx($this->spreadsheet);
         $writer->save($filePath);
@@ -429,6 +427,7 @@ class ExportRekapTahunanService
 
     public function getFilePath(): string
     {
+
         $filePath = sprintf('app/%s/%s', self::EXPORTS_DIRECTORY, $this->fileName);
 
         return storage_path($filePath);

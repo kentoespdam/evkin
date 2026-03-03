@@ -14,7 +14,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
  */
 class ExportReportPerhitunganKepmendagriService
 {
-    private const EXPORTS_DIRECTORY = 'exports';
+    private const EXPORTS_DIRECTORY = 'public';
 
     private int $year;
 
@@ -80,8 +80,6 @@ class ExportReportPerhitunganKepmendagriService
     {
         $filePath = storage_path(sprintf('app/%s/%s', self::EXPORTS_DIRECTORY, $this->fileName));
 
-        Storage::makeDirectory(self::EXPORTS_DIRECTORY);
-
         $writer = new Xlsx($spreadsheet);
         $writer->save($filePath);
 
@@ -106,6 +104,6 @@ class ExportReportPerhitunganKepmendagriService
      */
     public function getFilePath(): string
     {
-        return sprintf('%s/%s', self::EXPORTS_DIRECTORY, $this->fileName);
+        return sprintf('app/%s/%s', self::EXPORTS_DIRECTORY, $this->fileName);
     }
 }

@@ -71,7 +71,7 @@ class ExportReportDetailJob implements ShouldQueue
             );
             $exportService->generateAndStore();
 
-            $filePath = storage_path("app/{$exportService->getFilePath()}");
+            $filePath = storage_path("app/public/{$exportService->getFileName()}");
 
             // Update status to completed
             Cache::put("export.{$this->exportId}", [

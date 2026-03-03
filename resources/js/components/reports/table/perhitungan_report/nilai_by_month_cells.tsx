@@ -15,7 +15,7 @@ interface NilaiWithRulesProps {
 const NilaiWithRules = memo(({ rules, nilai, nilaiIndicator, templateName, nilaiBobot }: NilaiWithRulesProps) => {
     return (
         <>
-            <TableCell className="border text-center text-wrap">{evaluateRulesOptions(rules, nilai)}</TableCell>
+            <TableCell className="border text-center whitespace-pre-wrap">{evaluateRulesOptions(rules, nilai)}</TableCell>
             <TableCell className="border text-center">{nilaiIndicator ? nilaiIndicator : "-"}</TableCell>
             {templateName === "TEMPLATE_PUPR" ? (
                 <TableCell className="border text-center">{nilaiBobot ? nilaiBobot : "-"}</TableCell>
