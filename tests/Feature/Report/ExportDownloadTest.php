@@ -24,8 +24,8 @@ class ExportDownloadTest extends TestCase
 
         $response->assertOk();
         $response->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-
-        @unlink($filePath);
+        $response->streamedContent();
+        $this->assertFileDoesNotExist($filePath);
     }
 
     public function test_rekap_export_download_uses_public_storage_path(): void
@@ -44,8 +44,8 @@ class ExportDownloadTest extends TestCase
 
         $response->assertOk();
         $response->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-
-        @unlink($filePath);
+        $response->streamedContent();
+        $this->assertFileDoesNotExist($filePath);
     }
 
     private function createExportFile(string $fileName): string

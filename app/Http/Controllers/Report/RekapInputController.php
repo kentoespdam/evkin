@@ -222,7 +222,21 @@ class RekapInputController extends Controller
         }
 
         return response()->streamDownload(function () use ($filePath) {
-            echo file_get_contents($filePath);
+            $stream = fopen($filePath, 'rb');
+
+            if ($stream === false) {
+                return;
+            }
+
+            try {
+                fpassthru($stream);
+            } finally {
+                fclose($stream);
+
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+            }
         }, basename($status['file_path']), [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]);
