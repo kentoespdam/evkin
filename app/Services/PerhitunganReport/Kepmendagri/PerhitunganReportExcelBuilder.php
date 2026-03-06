@@ -372,26 +372,11 @@ class PerhitunganReportExcelBuilder
     private function addDetailRuleCellsForMonth(Worksheet $sheet, int $row, int $columnIndex, $report, ?string $rules): void
     {
         $nilaiPencapaian = EvaluateRulesHelper::evaluateRulesOptions($rules, $report->nilai ?? null);
-        $nilaiIndicator = $report->nilai_indicator ?? null;
-
-        $styleFillPink = [];
-        $styleTextRed = [];
-        if (is_numeric($nilaiIndicator) && $nilaiIndicator <= 2) {
-            $styleFillPink = ExcelStyleManager::FILL_SOLID_LIGHT_PINK_STYLE;
-            if ($nilaiIndicator <= 1) {
-                $styleTextRed = ExcelStyleManager::FONT_COLOR_RED_STYLE;
-            }
-        }
+        $nilai = $report->nilai ?? null;
 
         $baseSytle = ExcelStyleManager::mergeStyles(
             ExcelStyleManager::ALIGN_CENTER_CENTER_STYLE,
             ExcelStyleManager::ALL_BORDER_STYLE
-        );
-
-        $indicatorStyle = ExcelStyleManager::mergeStyles(
-            $baseSytle,
-            $styleFillPink,
-            $styleTextRed
         );
 
         ExcelStyleManager::addCell(
@@ -404,8 +389,8 @@ class PerhitunganReportExcelBuilder
         ExcelStyleManager::addCell(
             $sheet,
             Coordinate::stringFromColumnIndex($columnIndex + 1).$row,
-            is_numeric($nilaiIndicator) ? number_format($nilaiIndicator, 2) : '-',
-            $indicatorStyle
+            is_numeric($nilai) ? number_format($nilai, 2) : '-',
+            $baseSytle
         );
     }
 
