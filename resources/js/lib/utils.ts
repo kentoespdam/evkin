@@ -45,6 +45,7 @@ export const monthsList = (): { value: number; label: string }[] => {
 		{ value: 12, label: "Desember" },
 	];
 };
+export const MONTHS = monthsList();
 export type MonthOption = ReturnType<typeof monthsList>[number];
 
 export const getMonthName = (monthValue: number): string => {

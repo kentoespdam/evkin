@@ -7,57 +7,58 @@ import type { Report } from "@/types/report";
 import NilaiCells from "./nilai_cells";
 
 interface NilaiWithRulesProps {
-    templateName: string;
-    rules?: string | null;
-    nilai?: number;
-    nilaiBobot?: number;
+	templateName: string;
+	rules?: string | null;
+	nilai?: number;
+	nilaiBobot?: number;
 }
 const NilaiWithRules = memo(({ rules, nilai, templateName, nilaiBobot }: NilaiWithRulesProps) => {
-    return (
-        <>
-            <TableCell className="border text-center whitespace-pre-wrap">{evaluateRulesOptions(rules, nilai)}</TableCell>
-            <TableCell className="border text-center">{nilai ? formatNumber(nilai, 0) : "-"}</TableCell>
-            {templateName === "TEMPLATE_PUPR" ? (
-                <TableCell className="border text-center">{nilaiBobot ? nilaiBobot : "-"}</TableCell>
-            ) : null}
-        </>
-    );
+	return (
+		<>
+			<TableCell className="border text-center whitespace-pre-wrap">{evaluateRulesOptions(rules, nilai)}</TableCell>
+			<TableCell className="border text-center">{nilai ? formatNumber(nilai, 0) : "-"}</TableCell>
+			{templateName === "TEMPLATE_PUPR" ? (
+				<TableCell className="border text-center">{nilaiBobot ? nilaiBobot : "-"}</TableCell>
+			) : null}
+		</>
+	);
 });
 NilaiWithRules.displayName = "NilaiWithRules";
 
 interface NilaiByMonthProps {
-    report: Report;
-    year: number;
-    months: { value: number; label: string }[];
-    reportsByKey: Map<string, PerhitunganReportDetail>;
-    templateName: string;
+	report: Report;
+	year: number;
+	months: { value: number; label: string }[];
+	reportsByKey: Map<string, PerhitunganReportDetail>;
+	templateName: string;
 }
 const NilaiByMonth = memo(({ report, year, months, reportsByKey, templateName }: NilaiByMonthProps) =>
-    months.map((month) => {
-        const key = `${report.id}-${year}-${month.value}`;
-        const reportDetail = reportsByKey?.get(key);
-        const nilai = reportDetail?.nilai;
-        const nilaiIndicator = reportDetail?.nilaiIndicator;
-        const nilaiBobot = reportDetail?.nilaiBobot;
+	months.map((month) => {
+		const SEP = "|";
+		const key = `${report.id}${SEP}${year}${SEP}${month.value}`;
+		const reportDetail = reportsByKey?.get(key);
+		const nilai = reportDetail?.nilai;
+		const nilaiIndicator = reportDetail?.nilaiIndicator;
+		const nilaiBobot = reportDetail?.nilaiBobot;
 
-        return report.withRules ? (
-            <NilaiWithRules
-                templateName={templateName}
-                key={month.value}
-                rules={report?.rules}
-                nilai={nilai}
-                nilaiBobot={nilaiBobot}
-            />
-        ) : (
-            <NilaiCells
-                key={month.value}
-                nilai={nilai}
-                nilaiIndicator={nilaiIndicator}
-                nilaiBobot={nilaiBobot}
-                templateName={templateName}
-            />
-        );
-    }),
+		return report.withRules ? (
+			<NilaiWithRules
+				templateName={templateName}
+				key={month.value}
+				rules={report?.rules}
+				nilai={nilai}
+				nilaiBobot={nilaiBobot}
+			/>
+		) : (
+			<NilaiCells
+				key={month.value}
+				nilai={nilai}
+				nilaiIndicator={nilaiIndicator}
+				nilaiBobot={nilaiBobot}
+				templateName={templateName}
+			/>
+		);
+	}),
 );
 NilaiByMonth.displayName = "NilaiByMonth";
 
